@@ -36,7 +36,7 @@ const TEMPLATE_NAMES = [
 ];
 
 async function openTemplate(page: Page, name = '桁架精工') {
-  await page.getByRole('button', { name: `使用模板 ${name}` }).click();
+  await page.getByRole('button', { name: new RegExp(`使用(此)?模板 ${name}`) }).click();
   await expect(page.locator('.builder')).toBeVisible();
   await expect(page.locator('.device-screen .site-root')).toBeVisible();
 }
@@ -78,13 +78,21 @@ test.describe('template gallery', () => {
     await expect(page.locator('.template-card')).toHaveCount(5);
 
     await page.getByRole('button', { name: /^全部/ }).first().click();
-    await page.getByLabel('搜索模板').fill('TRS-01');
+    await page.getByLabel('搜索').fill('TRS-01');
     await expect(page.locator('.template-card')).toHaveCount(1);
     await expect(page.locator('.template-card')).toContainText('桁架精工');
 
-    await page.getByLabel('搜索模板').fill('不存在的模板');
+    await page.getByLabel('搜索').fill('不存在的模板');
     await expect(page.locator('.library-empty')).toBeVisible();
     await page.getByRole('button', { name: '重置筛选' }).click();
+    await expect(page.locator('.template-card')).toHaveCount(30);
+  });
+
+  test('switches to Arabic and mirrors the interface', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('.locale-switcher select').selectOption('ar');
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('مواقع');
     await expect(page.locator('.template-card')).toHaveCount(30);
   });
 

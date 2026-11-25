@@ -3242,3 +3242,48 @@ a {
   font: inherit;
   font-size: 10px;
 }
+
+/* Locale switcher */
+.locale-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 6px;
+  border: 1px solid var(--shell-line);
+  background: transparent;
+  color: var(--shell-ink);
+}
+.locale-switcher svg { width: 13px; height: 13px; opacity: 0.7; }
+.locale-switcher select {
+  max-width: 84px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: var(--mono, 'IBM Plex Mono', monospace);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.locale-switcher select:focus-visible { outline: 2px solid var(--shell-accent); outline-offset: 2px; }
+
+html[dir='rtl'] body { direction: rtl; }
+html[dir='rtl'] .gallery-links { margin-left: auto; margin-right: 0; }
+html[dir='rtl'] .gallery-nav-right { flex-direction: row-reverse; }
+html[dir='rtl'] .builder-topbar { direction: rtl; }
+html[dir='rtl'] .topbar-back svg,
+html[dir='rtl'] .gallery-btn svg,
+html[dir='rtl'] .gallery-nav-cta svg { transform: scaleX(-1); }
+html[dir='rtl'] .rail-section { text-align: right; }
+
+.field-select {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 9px;
+  border: 1px solid var(--shell-line);
+  background: #fffdf8;
+  color: var(--shell-ink);
+  font: inherit;
+  font-size: 12px;
+}
+html[dir='rtl'] .field-select { direction: rtl; }

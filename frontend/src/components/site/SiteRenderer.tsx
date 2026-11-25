@@ -1,5 +1,6 @@
 import type { MouseEvent } from 'react';
 import type { Device, SiteDocument, SiteSection } from '../../types/site';
+import { localeDir, localeHtmlLang } from '../../i18n/locales';
 import { themeStyle } from '../../lib/theme';
 import { resolveSectionStyle, styleVars } from '../../lib/sectionStyles';
 import { Hero } from './Heroes';
@@ -91,12 +92,15 @@ export function SiteRenderer({
   onSelect,
   onEditSection,
 }: SiteRendererProps) {
+  const locale = doc.locale ?? (doc.market === 'global' ? 'en' : 'zh-CN');
   return (
     <div
       className={`site-root ${doc.theme.dark ? 'site-root--dark' : ''} ${editable ? 'site-root--editable' : ''}`}
       style={themeStyle(doc)}
       data-device={device}
       data-theme={doc.theme.id}
+      lang={localeHtmlLang(locale)}
+      dir={localeDir(locale)}
     >
       <a className="skip-link" href="#main">跳到主要内容</a>
       <div className="site-scroll" data-site-scroll>

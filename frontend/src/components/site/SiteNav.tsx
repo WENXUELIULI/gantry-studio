@@ -1,15 +1,20 @@
 import { useState } from 'react';
 import type { SiteDocument } from '../../types/site';
+import { siteChrome } from '../../i18n/siteStrings';
 
 export function SiteNav({ doc }: { doc: SiteDocument }) {
   const [open, setOpen] = useState(false);
-  const isGlobal = doc.market === 'global';
-  const ctaLabel = isGlobal ? 'Enquire' : '询价';
-  const status = isGlobal ? 'AVAILABLE Q3' : '可接单 Q3';
+  const locale = doc.locale ?? (doc.market === 'global' ? 'en' : 'zh-CN');
+  const chrome = siteChrome(locale);
+  const code = locale === 'zh-CN' ? 'CN' : locale.split('-')[0].toUpperCase();
+  const nav = doc.nav.map((item, index) => ({
+    ...item,
+    label: chrome.nav[index] ?? item.label,
+  }));
 
   return (
     <header className={`site-nav ${doc.theme.dark ? 'site-nav--dark' : ''}`}>
-      <a className="site-brand" href="#top" aria-label={`${doc.name} home`}>
+      <a className="site-brand" href="#top" aria-label={`${doc.name} ${chrome.home}`}>
         <span className="site-brand-mark" aria-hidden="true">
           <i />
           <i />
@@ -18,13 +23,13 @@ export function SiteNav({ doc }: { doc: SiteDocument }) {
         <span className="site-brand-text">
           <strong>{doc.name}</strong>
           <span className="mono">
-            {isGlobal ? 'EN' : 'CN'} / {doc.code}
+            {code} / {doc.code}
           </span>
         </span>
       </a>
 
-      <nav className="site-links" aria-label={isGlobal ? 'Main navigation' : '主导航'}>
-        {doc.nav.map((item) => (
+      <nav className="site-links" aria-label={chrome.mainNav}>
+        {nav.map((item) => (
           <a href={item.href} key={item.href}>
             {item.label}
           </a>
@@ -34,16 +39,16 @@ export function SiteNav({ doc }: { doc: SiteDocument }) {
       <div className="site-nav-right">
         <span className="site-status mono">
           <i aria-hidden="true" />
-          {status}
+          {chrome.status}
         </span>
         <a className="site-nav-cta" href="#cta">
-          {ctaLabel}
+          {chrome.cta}
           <span aria-hidden="true">↗</span>
         </a>
         <button
           className="site-menu-button"
           type="button"
-          aria-label={open ? '关闭菜单' : '打开菜单'}
+          aria-label={open ? chrome.closeMenu : chrome.openMenu}
           aria-expanded={open}
           onClick={() => setOpen((value) => !value)}
         >
@@ -53,7 +58,7 @@ export function SiteNav({ doc }: { doc: SiteDocument }) {
       </div>
 
       <div className="site-mobile-menu" hidden={!open}>
-        {doc.nav.map((item, index) => (
+        {nav.map((item, index) => (
           <a href={item.href} key={item.href} onClick={() => setOpen(false)}>
             <span className="mono">0{index + 1}</span>
             {item.label}
@@ -61,9 +66,9 @@ export function SiteNav({ doc }: { doc: SiteDocument }) {
         ))}
         <a href="#cta" onClick={() => setOpen(false)}>
           <span className="mono">
-            {String(doc.nav.length + 1).padStart(2, '0')}
+            {String(nav.length + 1).padStart(2, '0')}
           </span>
-          {ctaLabel}
+          {chrome.cta}
         </a>
       </div>
     </header>

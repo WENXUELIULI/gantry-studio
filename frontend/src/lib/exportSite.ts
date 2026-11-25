@@ -2,6 +2,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { SiteDocument, SiteSection } from '../types/site';
 import { SiteRenderer } from '../components/site/SiteRenderer';
+import { localeDir, localeHtmlLang } from '../i18n/locales';
 import siteCss from '../styles/site.css?raw';
 
 function escapeHtml(value: string): string {
@@ -158,7 +159,7 @@ export async function siteToHtml(doc: SiteDocument): Promise<string> {
   const mono = fontFamily(doc.theme.mono, 'monospace');
 
   return `<!doctype html>
-<html lang="${doc.market === 'global' ? 'en' : 'zh-CN'}">
+<html lang="${localeHtmlLang(doc.locale ?? (doc.market === 'global' ? 'en' : 'zh-CN'))}" dir="${localeDir(doc.locale ?? (doc.market === 'global' ? 'en' : 'zh-CN'))}">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />

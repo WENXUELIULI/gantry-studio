@@ -20,7 +20,9 @@ gantry-studio/
 - 桌面/手机双视图，HTML 单文件、整站 ZIP、JSON 项目源文件导出。
 - 登录后项目保存到云端；同一个账号在 PC 和手机打开的是同一份多页草稿。
 - 生成与导出要求登录；JSON 项目源文件带 Pro 权益接缝。
-- 前端 113 个 Vitest 单测、8 条 Playwright E2E；后端 4 条 Spring Boot 集成测试。
+- 七语言界面：简体中文、English、العربية、Türkçe、עברית、فارسی、اردو；阿拉伯语/希伯来语/波斯语/乌尔都语自动 RTL。
+- 生成站点可单独设置语言，导出 HTML 写入对应 `lang` 与 `dir`。
+- 前端 129 个 Vitest 单测、9 条 Playwright E2E；后端 4 条 Spring Boot 集成测试。
 
 ## 本地运行
 

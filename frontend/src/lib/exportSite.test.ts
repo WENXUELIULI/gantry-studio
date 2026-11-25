@@ -32,7 +32,7 @@ describe('siteToHtml', () => {
   it('returns a complete standalone document', async () => {
     const html = await siteToHtml(makeDoc());
     expect(html.startsWith('<!doctype html>')).toBe(true);
-    expect(html).toContain('<html lang="zh-CN">');
+    expect(html).toContain('<html lang="zh-CN" dir="ltr">');
     expect(html).toContain('<meta name="viewport"');
     expect(html).toContain('<style>');
     expect(html).toContain('.hero--video');
@@ -82,11 +82,19 @@ describe('siteToHtml', () => {
   it('exports an international template with English language and navigation', async () => {
     const doc = createDocumentFromTemplate(TEMPLATE_BY_ID['lumen-glass']);
     const html = await siteToHtml(doc);
-    expect(html).toContain('<html lang="en">');
+    expect(html).toContain('<html lang="en" dir="ltr">');
     expect(html).toContain('LUMEN GLASS');
     expect(html).toContain('Enquire');
     expect(html).toContain('LIGHT,');
     expect(html).not.toContain('询价');
+  });
+
+  it('exports an Arabic document with RTL direction', async () => {
+    const doc = createDocumentFromTemplate(TEMPLATE_BY_ID['truss-precision']);
+    doc.locale = 'ar';
+    const html = await siteToHtml(doc);
+    expect(html).toContain('<html lang="ar" dir="rtl">');
+    expect(html).toContain('dir="rtl"');
   });
 
   it('keeps working when an asset request fails', async () => {

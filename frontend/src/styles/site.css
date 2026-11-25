@@ -2805,3 +2805,28 @@
     display: block;
   }
 }
+
+/* RTL site variants */
+.site-root[dir='rtl'] { text-align: right; }
+.site-root[dir='rtl'] .site-nav,
+.site-root[dir='rtl'] .site-nav__links,
+.site-root[dir='rtl'] .hero-actions,
+.site-root[dir='rtl'] .section-head,
+.site-root[dir='rtl'] .proof-grid,
+.site-root[dir='rtl'] .footer-grid {
+  direction: rtl;
+}
+.site-root[dir='rtl'] .hero-copy,
+.site-root[dir='rtl'] .section-head,
+.site-root[dir='rtl'] .capability,
+.site-root[dir='rtl'] .product-card,
+.site-root[dir='rtl'] .process-step,
+.site-root[dir='rtl'] .proof-quote,
+.site-root[dir='rtl'] .footer-brand {
+  text-align: right;
+}
+.site-root[dir='rtl'] .hero-title,
+.site-root[dir='rtl'] .hero-title-line { letter-spacing: 0; }
+.site-root[dir='rtl'] .section-index { margin-right: 0; margin-left: 10px; }
+.site-root[dir='rtl'] .arrow,
+.site-root[dir='rtl'] .btn svg { transform: scaleX(-1); }

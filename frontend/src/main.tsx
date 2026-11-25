@@ -7,13 +7,16 @@ import '@fontsource/ibm-plex-mono/500.css';
 import './styles/shell.css';
 import './styles/site.css';
 import App from './App';
+import { initI18n } from './i18n';
 
 const root = document.getElementById('root');
 
 if (!root) throw new Error('Missing #root element');
 
-createRoot(root).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+initI18n().then(() => {
+  createRoot(root).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+});

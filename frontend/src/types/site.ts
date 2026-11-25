@@ -1,3 +1,5 @@
+import type { LocaleCode } from '../i18n/locales';
+
 export type MarketId = 'cn' | 'global';
 
 export type IndustryId =
@@ -255,6 +257,7 @@ export interface SiteDocument {
   name: string;
   templateId: string;
   market: MarketId;
+  locale?: LocaleCode;
   industry: IndustryId;
   style: StyleId;
   theme: Theme;

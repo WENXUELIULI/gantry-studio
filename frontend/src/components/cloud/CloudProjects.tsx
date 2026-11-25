@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ArrowUpRight, Cloud, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   ApiError,
   getPage,
@@ -19,6 +20,7 @@ export function CloudProjects({
   onClose: () => void;
   onNeedAuth: () => void;
 }) {
+  const { t, i18n } = useTranslation();
   const [projects, setProjects] = useState<ProjectSummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,20 +68,25 @@ export function CloudProjects({
         className="cloud-dialog"
         role="dialog"
         aria-modal="true"
-        aria-label="云端项目"
+        aria-label={t('cloud.title')}
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <button type="button" className="auth-close" aria-label="关闭云端项目" onClick={onClose}>
+        <button
+          type="button"
+          className="auth-close"
+          aria-label={`${t('common.close')} ${t('cloud.title')}`}
+          onClick={onClose}
+        >
           <X size={15} />
         </button>
         <span className="mono auth-kicker">CLOUD / YOUR PROJECTS</span>
-        <h2>云端工作区</h2>
-        <p className="auth-lead">登录同一账户，PC、手机和 App 看到的是同一份项目。</p>
+        <h2>{t('cloud.title')}</h2>
+        <p className="auth-lead">{t('cloud.lead')}</p>
 
-        {loading && <p className="cloud-empty">读取中…</p>}
+        {loading && <p className="cloud-empty">{t('common.loading')}</p>}
         {error && <p className="auth-error">{error}</p>}
         {!loading && !error && projects.length === 0 && (
-          <p className="cloud-empty">还没有云端项目。从模板库打开一套模板，保存后就会出现在这里。</p>
+          <p className="cloud-empty">{t('cloud.empty')}</p>
         )}
 
         <div className="cloud-list">
@@ -97,7 +104,7 @@ export function CloudProjects({
                 <strong>{project.name}</strong>
                 <span className="mono">
                   {project.pageCount} PAGES · {project.status} ·{' '}
-                  {new Date(project.updatedAt).toLocaleDateString('zh-CN')}
+                  {new Date(project.updatedAt).toLocaleDateString(i18n.language)}
                 </span>
               </span>
               <ArrowUpRight size={15} />

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   ChevronDown,
@@ -24,8 +25,10 @@ import { SiteRenderer } from '../site/SiteRenderer';
 import { Inspector, type InspectorTab } from './Inspector';
 import { SECTION_LABELS, SECTION_TYPES, type SectionType } from '../../types/site';
 import { documentStats } from '../../lib/site';
+import { LocaleSwitcher } from '../i18n/LocaleSwitcher';
 
 function PageTabs() {
+  const { t } = useTranslation();
   const pages = useProjectStore((state) => state.pages);
   const activeKey = useProjectStore((state) => state.activeKey);
   const switchPage = useProjectStore((state) => state.switchPage);
@@ -68,10 +71,10 @@ function PageTabs() {
         <details className="rail-page-meta" key={activePage.key}>
           <summary>页面设置</summary>
           <label>
-            <span>标题</span>
+            <span>{t('builder.pageTitle')}</span>
             <input
               defaultValue={activePage.title}
-              aria-label="页面标题"
+              aria-label={t('builder.pageTitle')}
               onBlur={(event) => commitMeta(activePage.key, { title: event.target.value })}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') event.currentTarget.blur();
@@ -79,10 +82,10 @@ function PageTabs() {
             />
           </label>
           <label>
-            <span>路径</span>
+            <span>{t('builder.pagePath')}</span>
             <input
               defaultValue={activePage.path}
-              aria-label="页面路径"
+              aria-label={t('builder.pagePath')}
               onBlur={(event) => commitMeta(activePage.key, { path: event.target.value })}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') event.currentTarget.blur();
@@ -101,7 +104,7 @@ function PageTabs() {
         }}
       >
         <Plus size={12} />
-        页面
+        {t('builder.pages')}
       </button>
     </div>
   );
@@ -382,6 +385,7 @@ function Topbar({
   const future = useBuilderStore((state) => state.future);
   const [name, setName] = useState(doc?.name ?? '');
   const [cloudState, setCloudState] = useState<string | null>(null);
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     setName(doc?.name ?? '');
@@ -395,11 +399,11 @@ function Topbar({
   };
 
   const savedLabel = savedAt
-    ? `已保存 ${new Date(savedAt).toLocaleTimeString('zh-CN', {
+    ? `${t('common.saved')} ${new Date(savedAt).toLocaleTimeString(i18n.language, {
         hour: '2-digit',
         minute: '2-digit',
       })}`
-    : '未保存';
+    : t('common.save');
 
   const saveCloud = async () => {
     if (!readSession()) {
@@ -432,7 +436,7 @@ function Topbar({
 
       <button type="button" className="topbar-back" onClick={closeProject}>
         <ArrowLeft size={13} />
-        模板库
+        {t('common.templates')}
       </button>
 
       <div className="topbar-project">
@@ -457,20 +461,22 @@ function Topbar({
 
       <span className="topbar-spacer" />
 
-      <div className="topbar-group" aria-label="撤销重做">
-        <button type="button" aria-label="撤销" disabled={!history.length} onClick={undo}>
+      <LocaleSwitcher compact />
+
+      <div className="topbar-group" aria-label={t('common.undo')}>
+        <button type="button" aria-label={t('common.undo')} disabled={!history.length} onClick={undo}>
           <Undo2 size={13} />
         </button>
-        <button type="button" aria-label="重做" disabled={!future.length} onClick={redo}>
+        <button type="button" aria-label={t('common.redo')} disabled={!future.length} onClick={redo}>
           <Redo2 size={13} />
         </button>
       </div>
 
-      <div className="topbar-group" aria-label="设备视图">
+      <div className="topbar-group" aria-label={t('common.desktop')}>
         <button
           type="button"
           className={device === 'desktop' ? 'is-active' : ''}
-          aria-label="桌面视图"
+          aria-label={t('common.desktop')}
           onClick={() => setDevice('desktop')}
         >
           <Monitor size={13} />
@@ -478,7 +484,7 @@ function Topbar({
         <button
           type="button"
           className={device === 'mobile' ? 'is-active' : ''}
-          aria-label="手机视图"
+          aria-label={t('common.mobile')}
           onClick={() => setDevice('mobile')}
         >
           <Smartphone size={13} />
@@ -487,15 +493,15 @@ function Topbar({
 
       <button type="button" className="topbar-action" onClick={() => void saveCloud()}>
         <Cloud size={13} />
-        云端
+        {t('common.cloud')}
       </button>
       <button type="button" className="topbar-action" onClick={onPreview}>
         <Eye size={13} />
-        预览
+        {t('common.preview')}
       </button>
       <button type="button" className="topbar-action topbar-action--primary" onClick={onExport}>
         <Download size={13} />
-        导出
+        {t('common.export')}
       </button>
     </header>
   );

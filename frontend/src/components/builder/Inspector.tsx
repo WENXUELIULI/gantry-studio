@@ -18,8 +18,10 @@ import {
   Trash2,
   Upload,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useBuilderStore } from '../../store/builder';
 import { useProjectStore } from '../../store/project';
+import { LOCALES } from '../../i18n/locales';
 import {
   SECTION_LABELS,
   type MediaCrop,
@@ -1035,6 +1037,7 @@ function ContentPanel({
 function ThemePanel() {
   const doc = useBuilderStore((state) => state.doc);
   const updateTheme = useBuilderStore((state) => state.updateTheme);
+  const setDocumentLocale = useBuilderStore((state) => state.setDocumentLocale);
   if (!doc) return null;
   const theme = doc.theme;
 
@@ -1081,6 +1084,29 @@ function ThemePanel() {
           <br />
           {theme.name}
         </span>
+      </div>
+
+      <div className="inspector-group">
+        <div className="inspector-group-head">
+          <span className="mono">站点语言 / SITE LOCALE</span>
+        </div>
+        <select
+          className="field-select"
+          aria-label="站点语言"
+          value={doc.locale ?? (doc.market === 'global' ? 'en' : 'zh-CN')}
+          onChange={(event) =>
+            setDocumentLocale(event.target.value as (typeof LOCALES)[number]['code'])
+          }
+        >
+          {LOCALES.map((locale) => (
+            <option key={locale.code} value={locale.code}>
+              {locale.nativeName} · {locale.code}
+            </option>
+          ))}
+        </select>
+        <p className="style-hint">
+          控制导出 HTML 的 lang / dir。阿拉伯语、希伯来语、波斯语、乌尔都语会自动切换为 RTL。
+        </p>
       </div>
 
       <div className="inspector-group">
@@ -1485,6 +1511,7 @@ export function Inspector({
   tab: InspectorTab;
   onTab: (tab: InspectorTab) => void;
 }) {
+  const { t } = useTranslation();
   const doc = useBuilderStore((state) => state.doc);
   const selectedId = useBuilderStore((state) => state.selectedId);
   const section = doc?.sections.find((item) => item.id === selectedId);
@@ -1503,7 +1530,7 @@ export function Inspector({
           onClick={() => onTab('content')}
         >
           <Layers size={12} />
-          内容
+          {t('builder.contentTab')}
         </button>
         <button
           type="button"
@@ -1511,7 +1538,7 @@ export function Inspector({
           onClick={() => onTab('theme')}
         >
           <Palette size={12} />
-          主题
+          {t('builder.themeTab')}
         </button>
         <button
           type="button"
@@ -1519,7 +1546,7 @@ export function Inspector({
           onClick={() => onTab('export')}
         >
           <Code2 size={12} />
-          导出
+          {t('builder.exportTab')}
         </button>
       </div>
       <div className="inspector-scroll" ref={bodyRef}>

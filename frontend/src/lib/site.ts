@@ -39,6 +39,7 @@ export function createDocumentFromTemplate(
     name: template.name,
     templateId: template.id,
     market: template.market,
+    locale: template.market === 'global' ? 'en' : 'zh-CN',
     industry: template.industry,
     style: template.style,
     theme: { ...template.theme },

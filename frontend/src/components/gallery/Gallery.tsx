@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -21,6 +22,7 @@ import type {
   StyleId,
   TemplateDefinition,
 } from '../../types/site';
+import { LocaleSwitcher } from '../i18n/LocaleSwitcher';
 
 interface GalleryProps {
   onOpen: (templateId: string) => void;
@@ -65,12 +67,13 @@ function TemplateCard({
   onOpen: (id: string) => void;
   index: number;
 }) {
+  const { t } = useTranslation();
   return (
     <button
       type="button"
       className="template-card"
       onClick={() => onOpen(template.id)}
-      aria-label={`使用模板 ${template.name}`}
+      aria-label={`${t('gallery.useTemplate')} ${template.name}`}
     >
       <div className="template-cover">
         <img className="template-cover-main" src={template.cover.image} alt="" loading="lazy" />
@@ -87,7 +90,7 @@ function TemplateCard({
             {String(index + 1).padStart(2, '0')} / {TEMPLATES.length}
           </span>
           <span className="template-open">
-            使用此模板
+            {t('gallery.useTemplate')}
             <ArrowUpRight size={15} strokeWidth={1.5} />
           </span>
         </div>
@@ -122,6 +125,7 @@ function TemplateCard({
 }
 
 export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
+  const { t } = useTranslation();
   const [market, setMarket] = useState<MarketId | 'all'>('all');
   const [industry, setIndustry] = useState<IndustryId | 'all'>('all');
   const [style, setStyle] = useState<StyleId | 'all'>('all');
@@ -153,7 +157,7 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
   return (
     <div className="gallery">
       <header className="gallery-nav">
-        <a className="gallery-brand" href="#top" aria-label="GANTRY 首页">
+        <a className="gallery-brand" href="#top" aria-label={t('common.app')}>
           <span className="gallery-brand-mark" aria-hidden="true">
             <i />
             <i />
@@ -161,26 +165,27 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
           </span>
           <span>
             <strong>GANTRY</strong>
-            <small className="mono">桁架 / SITE FOUNDRY</small>
+            <small className="mono">{t('common.tagline')}</small>
           </span>
         </a>
-        <nav className="gallery-links" aria-label="产品导航">
-          <a href="#templates">模板库</a>
-          <a href="#how">工作方式</a>
-          <a href="#system">主题系统</a>
-          <a href="#about">关于</a>
+        <nav className="gallery-links" aria-label={t('common.templates')}>
+          <a href="#templates">{t('common.templates')}</a>
+          <a href="#how">{t('gallery.how')}</a>
+          <a href="#system">{t('gallery.system')}</a>
+          <a href="#about">{t('gallery.about')}</a>
         </nav>
         <div className="gallery-nav-right">
           <span className="gallery-status mono">
             <i aria-hidden="true" />
             {TEMPLATES.length} TEMPLATES ONLINE
           </span>
+          <LocaleSwitcher compact />
           <button
             type="button"
             className="gallery-nav-cta gallery-nav-user"
             onClick={user ? onCloud : onAuth}
           >
-            {user ? user.displayName : '登录'}
+            {user ? user.displayName : t('common.login')}
             <ArrowRight size={14} strokeWidth={1.6} />
           </button>
         </div>
@@ -191,51 +196,48 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
           <div className="gallery-hero-copy">
             <div className="gallery-kicker mono">
               <span className="gallery-kicker-line" />
-              WEBSITE FOUNDRY / FOR INDUSTRY
+              {t('gallery.eyebrow')}
             </div>
             <h1 className="gallery-headline">
-              为工业
+              {t('gallery.title1')}
               <br />
-              造一座
+              {t('gallery.title2')}
               <br />
-              <em>不会过期</em>
+              <em>{t('gallery.title3')}</em>
               <br />
-              的官网。
+              {t('gallery.title4')}
             </h1>
-            <p className="gallery-deck">
-              不是套模板。先选行业与语气，再把你自己的产品、参数与故事放进去。
-              从滚动视频到图片拼贴，从桌面到手机，一次编辑，生成可部署的代码。
-            </p>
+            <p className="gallery-deck">{t('gallery.lead')}</p>
             <div className="gallery-actions">
               <a className="gallery-btn gallery-btn--primary" href="#templates">
-                浏览 {TEMPLATES.length} 套模板
+                {t('gallery.browse', { count: TEMPLATES.length })}
                 <ArrowUpRight size={16} strokeWidth={1.6} />
               </a>
               <a className="gallery-btn gallery-btn--ghost" href="#how">
-                看它如何工作
+                {t('gallery.how')}
               </a>
             </div>
             <div className="gallery-stats">
               <div>
                 <strong>{String(TEMPLATES.length).padStart(2, '0')}</strong>
-                <span className="mono">TEMPLATES</span>
+                <span className="mono">{t('gallery.statTemplates')}</span>
               </div>
               <div>
                 <strong>{String(INDUSTRIES.length).padStart(2, '0')}</strong>
-                <span className="mono">INDUSTRIES</span>
+                <span className="mono">{t('gallery.statIndustries')}</span>
               </div>
               <div>
                 <strong>{String(STYLES.length).padStart(2, '0')}</strong>
-                <span className="mono">STYLES</span>
+                <span className="mono">{t('gallery.statStyles')}</span>
               </div>
               <div>
                 <strong>{String(MARKETS.length).padStart(2, '0')}</strong>
-                <span className="mono">MARKETS</span>
+                <span className="mono">{t('gallery.statMarkets')}</span>
               </div>
             </div>
           </div>
 
-          <div className="gallery-bento" aria-label="模板预览">
+          <div className="gallery-bento" aria-label={t('common.templates')}>
             <div className="bento-card bento-card--video">
               <video
                 src="/assets/truss-loop.webm"
@@ -303,28 +305,21 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
                 <span className="gallery-kicker-line" />
                 02 / TEMPLATE INDEX
               </div>
-              <h2 className="gallery-h2">
-                挑一个起点，
-                <br />
-                然后把它改成你的。
-              </h2>
+              <h2 className="gallery-h2">{t('gallery.libraryTitle')}</h2>
             </div>
-            <p>
-              每套模板都是完整的八段式页面，不是一张截图。
-              点击任意模板进入画布，所有文字、图片、参数都可以替换。
-            </p>
+            <p>{t('gallery.libraryLead')}</p>
           </div>
 
           <div className="library-controls">
             <div className="filter-row">
-              <span className="filter-label mono">市场</span>
+              <span className="filter-label mono">{t('gallery.market')}</span>
               <div className="filter-chips">
                 <button
                   type="button"
                   className={market === 'all' ? 'is-active' : ''}
                   onClick={() => setMarket('all')}
                 >
-                  全部
+                  {t('common.all')}
                   <span>{TEMPLATES.length}</span>
                 </button>
                 {MARKETS.map((item) => {
@@ -347,14 +342,14 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
             </div>
 
             <div className="filter-row">
-              <span className="filter-label mono">行业</span>
+              <span className="filter-label mono">{t('gallery.industry')}</span>
               <div className="filter-chips">
                 <button
                   type="button"
                   className={industry === 'all' ? 'is-active' : ''}
                   onClick={() => setIndustry('all')}
                 >
-                  全部
+                  {t('common.all')}
                   <span>{TEMPLATES.length}</span>
                 </button>
                 {INDUSTRIES.map((item) => {
@@ -377,14 +372,14 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
             </div>
 
             <div className="filter-row">
-              <span className="filter-label mono">风格</span>
+              <span className="filter-label mono">{t('gallery.style')}</span>
               <div className="filter-chips filter-chips--style">
                 <button
                   type="button"
                   className={style === 'all' ? 'is-active' : ''}
                   onClick={() => setStyle('all')}
                 >
-                  全部
+                  {t('common.all')}
                 </button>
                 {STYLES.map((item) => (
                   <button
@@ -405,8 +400,8 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="搜索行业、风格、关键词…"
-                  aria-label="搜索模板"
+                  placeholder={t('gallery.searchPlaceholder')}
+                  aria-label={t('common.search')}
                 />
               </label>
               <span className="result-count mono">
@@ -429,8 +424,8 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
           ) : (
             <div className="library-empty">
               <span className="mono">NO MATCH / 000</span>
-              <h3>没有找到这个组合。</h3>
-              <p>换一个行业或风格，或者清空搜索词。</p>
+              <h3>{t('gallery.emptyTitle')}</h3>
+              <p>{t('gallery.emptyBody')}</p>
               <button
                 type="button"
                 className="gallery-btn gallery-btn--primary"
@@ -441,7 +436,7 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
                   setQuery('');
                 }}
               >
-                重置筛选
+                {t('gallery.resetFilters')}
               </button>
             </div>
           )}

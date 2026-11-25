@@ -49,6 +49,17 @@ describe('SiteRenderer', () => {
     );
   });
 
+  it('applies language and direction from the document locale', () => {
+    const doc = makeDoc();
+    doc.locale = 'ar';
+    const { container } = render(<SiteRenderer doc={doc} />);
+    const root = container.querySelector('.site-root');
+    expect(root).toHaveAttribute('lang', 'ar');
+    expect(root).toHaveAttribute('dir', 'rtl');
+    expect(screen.getAllByText('استفسار').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('الأرقام').length).toBeGreaterThan(0);
+  });
+
   it('renders all six hero systems without crashing', () => {
     const kinds = [
       'video-scrub',

@@ -10,6 +10,7 @@ import { TEMPLATE_BY_ID } from '../data/templates';
 import { createId } from '../lib/id';
 import { createSection } from '../lib/sections';
 import { createDocumentFromTemplate } from '../lib/site';
+import type { LocaleCode } from '../i18n/locales';
 
 export const STORAGE_KEY = 'gantry:site:v1';
 
@@ -36,6 +37,7 @@ interface BuilderState {
   ) => void;
   updateTheme: (patch: Partial<Theme>) => void;
   setDocumentName: (name: string) => void;
+  setDocumentLocale: (locale: LocaleCode) => void;
   moveSection: (id: string, direction: -1 | 1) => void;
   toggleSection: (id: string) => void;
   addSection: (type: SectionType) => void;
@@ -179,6 +181,10 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
 
     setDocumentName: (name) => {
       withDoc((doc) => ({ ...doc, name: name.trim() || doc.name }));
+    },
+
+    setDocumentLocale: (locale) => {
+      withDoc((doc) => ({ ...doc, locale }));
     },
 
     moveSection: (id, direction) => {
