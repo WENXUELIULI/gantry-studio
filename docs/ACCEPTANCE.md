@@ -1,52 +1,65 @@
 # GANTRY 验收记录
 
 日期：2026-11-25  
-范围：当前仓库 `E:\asd\gantry-studio` 的前端可交互版本（Phase 1–3）。
+范围：`E:\asd\gantry-studio` 的前后端可运行版本（Phase 1–4）。
 
 ## 1. 验收结论
 
-前端低保真到高保真可交互版本通过验收：
+低代码官网生成器的主链路通过验收：
 
-- 30 套官网模板可筛选、可打开、可编辑、可导出。
+- 30 套官网模板可筛选、可打开、可编辑、可生成。
 - 6 种首屏叙事、8 类区块、18 套主题、11 种风格、13 个行业。
-- 桌面/手机双视图、滚动视频、3–4 图拼贴、组件级样式、图片焦点/缩放均可用。
-- 112 个单元测试、6 条 Playwright E2E、类型检查、Lint、生产构建全部通过。
+- 桌面/手机双视图、滚动视频、3–4 图拼贴、组件级样式、图片焦点/独立裁剪均可用。
+- 登录、云端项目、多页编辑、PC → 手机接力、单页 HTML / 整站 ZIP 导出已打通。
+- 前端 113 个单元测试、8 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
 
-尚未通过的部分：真实登录、在线支付、服务端源码导出鉴权。当前仅实现前端 entitlement 演示门槛，按 `docs/WORKFLOW.md` Phase 5 接入后端。
+尚未完成：真实源码（React/Java）生成、在线支付、手机端编辑工作台。JSON 项目源文件当前是页面文档，不是生成出来的工程源码。
 
 ## 2. 功能对照
 
 | 要求 | 实现 | 证据 |
 | --- | --- | --- |
-| 超多类型官网 | 30 套模板：机械、玻璃、商品、半导体、能源、机器人、仪器、建筑、五金、物流、化工、医疗、汽车 | `src/data/templates.ts`、`src/data/globalTemplates.ts`、`src/data/extraTemplates.ts` |
+| 超多类型官网 | 30 套模板：机械、玻璃、商品、半导体、能源、机器人、仪器、建筑、五金、物流、化工、医疗、汽车 | `frontend/src/data/templates.ts`、`globalTemplates.ts`、`extraTemplates.ts` |
 | 国内外风格 | 20 套中文 + 10 套英文；市场筛选；英文导航/CTA/文档语言 | `e2e/site.spec.ts` 市场筛选用例 |
-| 用户配置图片 | 上传、焦点 X/Y、缩放 1–2.5；烘焙到 HTML inline style | `Inspector` 的 `MediaField`/`CropField`、`src/lib/media.ts` |
-| 视频背景随滚动播放 | `useSectionProgress` 驱动 `video.currentTime`；235vh 滚动段 | E2E `scroll position drives the hero video timeline` |
-| 3–4 张图按页面高度组合 | 6 种 hero 中的 image-collage；图片按滚动进度位移 | `Heroes.tsx`、`site.css` |
-| 桌面/手机切换 | Builder 设备切换；容器查询重排；手机预览 390×844 | E2E 手机无横向溢出、截图 `builder-mobile.png` |
-| 模板选择后自由编辑 | 内容字段、内联文本、区块增删/排序/隐藏、主题、SectionStyle、撤销/重做 | `store/builder.ts`、`Inspector.tsx` |
-| 生成代码 | 单文件 HTML：内联 CSS、图片 dataURL、视频、滚动/菜单 runtime | E2E 导出后用 `file://` 打开并断言 8 区块 |
-| 源码/会员边界 | HTML 免费；JSON 项目源文件加演示级 Pro 门槛 | `src/lib/entitlement.ts`、`builder-export.png` |
+| 用户配置图片 | 上传、焦点 X/Y、缩放 1–2.5、独立裁剪弹窗；烘焙到 HTML inline style | `Inspector` 的 `MediaField`/`CropField`/`ImageCropper`、`frontend/src/lib/media.ts` |
+| 视频背景随滚动播放 | `useSectionProgress` 驱动 `video.currentTime`；235cqh 滚动段 | E2E `scroll position drives the hero video timeline` |
+| 3–4 张图按页面高度组合 | image-collage；图片按滚动进度位移 | `Heroes.tsx`、`site.css` |
+| 桌面/手机切换 | Builder 设备切换；容器查询重排；手机预览 390×844 | E2E 手机无横向溢出、`builder-mobile.png` |
+| 模板选择后自由编辑 | 内容字段、内联文本、区块增删/排序/隐藏、主题、SectionStyle、撤销/重做 | `frontend/src/store/builder.ts`、`Inspector.tsx` |
+| 多页官网 | 页面 tab、添加页面、每页独立文档、整站 ZIP | `frontend/src/store/project.ts`、`e2e/cloud.spec.ts` |
+| 登录与跨设备 | JWT 注册/登录/刷新；云端项目；PC 保存后同账号重新打开 | `backend/src/main/java/com/gantry/auth`、`frontend/src/lib/api.ts`、`cloudSave.ts` |
+| 生成要求登录 | 未登录点击导出弹出登录；登录后才生成 HTML/ZIP | E2E `requires login before generating or exporting` |
+| 生成代码 | 单文件 HTML 内联 CSS/图片/视频/滚动脚本；整站 ZIP 保留多页路径 | E2E 导出后用 `file://` 打开；`exportProject.test.ts` |
+| 源码/会员边界 | HTML 免费；JSON 项目源文件 Free 锁定、Pro 演示解锁 | `backend` 402 `PRO_REQUIRED`；`entitlement.ts`；`builder-export.png` |
 
 ## 3. 命令与结果
 
+前端：
+
 ```bash
+cd frontend
 npx tsc --noEmit          # 通过
-npx vitest run            # 15 files, 112 tests passed
-npx playwright test       # 6 passed (24.6s)
+npx vitest run            # 16 files, 113 tests passed
+npx playwright test       # 8 passed (1.0m)
 npm run lint              # 0 error, 0 warning
-npm run build             # 1622 modules
+npm run build             # 1629 modules
 ```
 
-构建体积：
+前端构建体积：
 
-- 首屏 `index` 350.78 kB / gzip 116.85 kB
-- 按需 `Builder` 323.84 kB / gzip 92.11 kB，`Gallery` 19.35 kB / gzip 6.68 kB
-- CSS 87.96 kB / gzip 16.27 kB
+- 首屏 `index` 361.16 kB / gzip 120.80 kB
+- 按需 `Builder` 338.01 kB / gzip 98.73 kB，`Gallery` 19.22 kB / gzip 6.64 kB
+- `ImageCropper` 3.27 kB / gzip 1.42 kB
+- CSS 92.27 kB / gzip 17.10 kB
+
+后端：
+
+```bash
+cd backend
+mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
+```
 
 ## 4. 视觉验收
-
-已检查截图：
 
 - `screenshots/gallery-top.png`：30 TEMPLATES / 13 行业 / 11 风格 / 02 市场
 - `screenshots/gallery-templates.png`：30 套卡片
@@ -55,18 +68,23 @@ npm run build             # 1622 modules
 - `screenshots/builder-hdw.png`、`builder-lgc.png`、`builder-chm.png`、`builder-med.png`、`builder-aut.png`、`builder-apx.png`
 - `screenshots/builder-style.png`、`builder-style-applied.png`
 - `screenshots/builder-cropper.png`、`builder-cropper-applied.png`
-- `screenshots/builder-export.png`
+- `screenshots/builder-export.png`：登录提示 + 单文件 HTML + 整站 ZIP + Free/Pro
+- `screenshots/auth-dialog.png`、`builder-pages.png`、`cloud-projects.png`
 - `screenshots/preview-mobile.png`
 
 ## 5. 已知边界
 
-1. 单页官网；多页、博客、产品详情页未实现。
-2. 独立裁剪弹窗已实现；压缩质量与格式选择未实现。
-3. 真实登录、云项目、支付、服务端源码生成未接入；entitlement 仅为前端演示。
-4. 编辑器是桌面工作台；手机视图用于预览，不用于手机端编辑。
-5. 首屏 JS 约 351 kB；Builder 与 Gallery 已路由级拆包，模板数据仍可继续拆分。
+1. 生成的是静态 HTML / ZIP，不是可二次开发的 React 工程源码。
+2. 云端保存是显式按钮，不是自动保存；冲突时由 `expectedVersion` 返回 409。
+3. 支付未接；Pro 仍是本地演示 + 服务端 plan 字段，没有真实订单。
+4. 编辑器是桌面工作台；手机用于查看/预览，不提供完整编辑。
+5. 首屏 JS 约 361 kB；Builder 与 Gallery 已拆包，模板数据仍可继续懒加载。
+6. 后端默认 H2 文件库；生产需切 PostgreSQL 并配置真实 JWT secret。
 
 ## 6. 下一步
 
-- Phase 5：Supabase Auth/项目存储 + Hono 权益 API + Stripe/微信/支付宝。
-- Phase 6：30 套全量视觉回归、axe 可访问性、移动端布局断言、验收报告定稿。
+- 把前后端推送到 GitHub，保留分阶段提交记录。
+- 补页面标题/路径编辑与自动保存。
+- 接支付（Stripe / 微信 / 支付宝）与真实权益校验。
+- 实现服务端 React 源码生成与下载鉴权。
+- 30 套全量视觉回归、移动端编辑、axe 可访问性。

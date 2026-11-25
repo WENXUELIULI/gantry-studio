@@ -19,16 +19,18 @@ GANTRY 的第一步目标不是做一个通用页面搭建器，而是验证一�
 - 13 个行业、11 个风格、18 套主题、2 个市场。
 - 6 种首屏：滚动视频、图片拼贴、分屏社论、全幅、动态字、产品舞台。
 - 8 个区块：hero / metrics / capabilities / products / process / proof / cta / footer。
-- 编辑器：模板库筛选、区块内容编辑、图片上传、图片焦点/缩放、组件级 SectionStyle、主题 token、桌面/手机视图、预览、undo/redo、localStorage 草稿。
-- 导出：单文件 HTML（内联 CSS、图片 dataURL、滚动/菜单 runtime）与 JSON 项目源文件；JSON 带演示级 Pro 门槛。
-- 质量门禁：112 个 Vitest 单测、6 条 Playwright E2E、tsc、ESLint、build。
+- 编辑器：模板库筛选、区块内容编辑、图片上传、图片焦点/缩放/独立裁剪、组件级 SectionStyle、主题 token、多页、云端项目、桌面/手机视图、预览、undo/redo、localStorage 草稿。
+- 导出：单文件 HTML（内联 CSS、图片 dataURL、滚动/菜单 runtime）、整站 ZIP，以及 JSON 项目源文件；JSON 带演示级 Pro 门槛。
+- 质量门禁：113 个 Vitest 单测、8 条 Playwright E2E、4 条后端 Spring Boot 测试、tsc、ESLint、build。
+- 后端：Java 21 + Spring Boot 3.5.6、JWT/refresh、项目/页面、乐观锁、导出 artifact、H2/PostgreSQL、Flyway。
 
 ## 验证输出（2026-11-25）
 
 - `npx tsc --noEmit`：通过。
-- `npx vitest run`：15 个测试文件，112 个测试通过。
-- `npx playwright test`：6/6 passed，覆盖 30 套模板 smoke 与独立裁剪。
-- `npm run build`：1622 modules；首屏 `index` 350.78 kB / gzip 116.85 kB；按需 `Builder` 323.84 kB、`Gallery` 19.35 kB；CSS 87.96 kB。
+- `npx vitest run`：16 个测试文件，113 个测试通过。
+- `npx playwright test`：8/8 passed，覆盖 30 套模板 smoke、独立裁剪、云端多页与登录闸门。
+- `npm run build`：1629 modules；首屏 `index` 361.16 kB / gzip 120.80 kB；按需 `Builder` 338.01 kB、`Gallery` 19.22 kB；CSS 92.27 kB。
+- `mvn -B test`：4 tests，0 failures。
 - `npm run lint`：0 error / 0 warning。
 
 ## 关键决策

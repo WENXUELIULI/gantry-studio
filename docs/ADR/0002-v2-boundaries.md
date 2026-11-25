@@ -1,8 +1,8 @@
 # ADR 0002 — v2 边界
 
-- 状态：Accepted
+- 状态：Accepted（2026-11-25 实现补充：后端改为 Java 21 + Spring Boot，多页已落地；Supabase 方案作废）
 - 日期：2026-11-25
-- 关联：[WORKFLOW.md](../WORKFLOW.md)
+- 关联：[WORKFLOW.md](../WORKFLOW.md)、[API.md](../API.md)
 
 ## 决策
 
