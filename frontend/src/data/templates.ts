@@ -12,6 +12,7 @@ import type {
 import { THEME_BY_ID } from './themes';
 import { GLOBAL_TEMPLATES } from './globalTemplates';
 import { EXTRA_TEMPLATES } from './extraTemplates';
+import { buildCatalogue } from './generatedTemplates';
 
 const A = '/assets';
 
@@ -843,11 +844,13 @@ const DOMESTIC_TEMPLATES: TemplateDefinition[] = [
   },
 ];
 
-export const TEMPLATES: TemplateDefinition[] = [
+const CURATED_TEMPLATES: TemplateDefinition[] = [
   ...DOMESTIC_TEMPLATES,
   ...GLOBAL_TEMPLATES,
   ...EXTRA_TEMPLATES,
 ];
+
+export const TEMPLATES: TemplateDefinition[] = buildCatalogue(CURATED_TEMPLATES);
 
 export const TEMPLATE_BY_ID = Object.fromEntries(
   TEMPLATES.map((template) => [template.id, template]),

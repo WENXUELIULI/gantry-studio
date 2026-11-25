@@ -3,18 +3,29 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { Gallery } from './Gallery';
 import { TEMPLATES } from '../../data/templates';
 
+const PAGE_SIZE = 24;
+
 describe('Gallery', () => {
-  it('renders the headline, counters and every template card', () => {
+  it('renders the headline, counters and the first page of template cards', () => {
     render(<Gallery onOpen={vi.fn()} />);
     expect(
       screen.getByRole('heading', { name: /为工业/ }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: /使用此模板/ })).toHaveLength(
-      TEMPLATES.length,
+      PAGE_SIZE,
     );
     expect(
       screen.getByText(`${TEMPLATES.length} TEMPLATES ONLINE`),
     ).toBeInTheDocument();
+    expect(screen.getByText(`已显示 ${PAGE_SIZE} / ${TEMPLATES.length} 套`)).toBeInTheDocument();
+  });
+
+  it('loads another page of templates', () => {
+    render(<Gallery onOpen={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: '加载更多' }));
+    expect(screen.getAllByRole('button', { name: /使用此模板/ })).toHaveLength(
+      PAGE_SIZE * 2,
+    );
   });
 
   it('opens the selected template', () => {
@@ -33,7 +44,7 @@ describe('Gallery', () => {
       (template) => template.industry === 'glass',
     ).length;
     expect(screen.getAllByRole('button', { name: /使用此模板/ })).toHaveLength(
-      expected,
+      Math.min(PAGE_SIZE, expected),
     );
     expect(
       document.querySelector('.result-count')?.textContent?.replace(/\s+/g, ' '),
@@ -47,7 +58,7 @@ describe('Gallery', () => {
       (template) => template.market === 'global',
     ).length;
     expect(screen.getAllByRole('button', { name: /使用此模板/ })).toHaveLength(
-      expected,
+      Math.min(PAGE_SIZE, expected),
     );
     expect(
       screen.getByRole('button', { name: '使用此模板 ATLAS MACHINE WORKS' }),
@@ -55,7 +66,7 @@ describe('Gallery', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /^中国市场/ }));
     expect(screen.getAllByRole('button', { name: /使用此模板/ })).toHaveLength(
-      TEMPLATES.filter((template) => template.market === 'cn').length,
+      PAGE_SIZE,
     );
   });
 
@@ -82,7 +93,7 @@ describe('Gallery', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '重置筛选' }));
     expect(screen.getAllByRole('button', { name: /使用此模板/ })).toHaveLength(
-      TEMPLATES.length,
+      PAGE_SIZE,
     );
   });
 
@@ -96,7 +107,7 @@ describe('Gallery', () => {
         template.style === 'industrial-editorial',
     ).length;
     expect(screen.getAllByRole('button', { name: /使用此模板/ })).toHaveLength(
-      expected,
+      Math.min(PAGE_SIZE, expected),
     );
   });
 });

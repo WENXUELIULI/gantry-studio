@@ -7,12 +7,12 @@
 
 低代码官网生成器的主链路通过验收：
 
-- 30 套官网模板可筛选、可打开、可编辑、可生成。
+- 715 套官网模板可筛选、可打开、可编辑、可生成；每个「行业 × 风格」组合恰好 5 套。
 - 6 种首屏叙事、8 类区块、18 套主题、11 种风格、13 个行业。
 - 桌面/手机双视图、滚动视频、3–4 图拼贴、组件级样式、图片焦点/独立裁剪均可用。
 - 七语言 UI（zh-CN / en / ar / tr / he / fa / ur）与 RTL；生成站点可设置 locale，导出写入 lang/dir。
 - 登录、云端项目、多页编辑、PC → 手机接力、单页 HTML / 整站 ZIP 导出已打通。
-- 前端 138 个单元测试、17 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
+- 前端 139 个单元测试、18 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
 
 尚未完成：真实源码（React/Java）生成、在线支付、手机端编辑工作台。JSON 项目源文件当前是页面文档，不是生成出来的工程源码。
 
@@ -20,7 +20,7 @@
 
 | 要求 | 实现 | 证据 |
 | --- | --- | --- |
-| 超多类型官网 | 30 套模板：机械、玻璃、商品、半导体、能源、机器人、仪器、建筑、五金、物流、化工、医疗、汽车 | `frontend/src/data/templates.ts`、`globalTemplates.ts`、`extraTemplates.ts` |
+| 超多类型官网 | 715 套模板：13 行业 × 11 风格 × 5 套；30 套手工 + 685 套工厂生成 | `frontend/src/data/templates.ts`、`generatedTemplates.ts`、`globalTemplates.ts` |
 | 国内外风格 | 20 套中文 + 10 套英文；市场筛选；英文导航/CTA/文档语言 | `e2e/site.spec.ts` 市场筛选用例 |
 | 用户配置图片 | 上传、焦点 X/Y、缩放 1–2.5、独立裁剪弹窗；烘焙到 HTML inline style | `Inspector` 的 `MediaField`/`CropField`/`ImageCropper`、`frontend/src/lib/media.ts` |
 | 视频背景随滚动播放 | `useSectionProgress` 驱动 `video.currentTime`；235cqh 滚动段 | E2E `scroll position drives the hero video timeline` |
@@ -40,18 +40,18 @@
 ```bash
 cd frontend
 npx tsc --noEmit          # 通过
-npx vitest run            # 23 files, 138 tests passed
+npx vitest run            # 23 files, 139 tests passed
 npx playwright test       # 9 passed (35.6s)
 npm run lint              # 0 error, 0 warning
-npm run build             # 1661 modules
+npm run build             # 1662 modules
 ```
 
 前端构建体积：
 
-- 首屏 `index` 458.60 kB / gzip 153.12 kB
-- 按需 `Builder` 350.15 kB / gzip 102.53 kB，`Gallery` 19.11 kB / gzip 6.43 kB
+- 首屏 `index` 476.21 kB / gzip 158.79 kB
+- 按需 `Builder` 350.15 kB / gzip 102.53 kB，`Gallery` 15.67 kB / gzip 4.77 kB
 - `ImageCropper` 3.27 kB / gzip 1.42 kB
-- CSS 98.36 kB / gzip 18.38 kB
+- CSS 98.63 kB / gzip 18.43 kB
 
 后端：
 
@@ -62,9 +62,11 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 
 ## 4. 视觉验收
 
-- `screenshots/gallery-top.png`：30 TEMPLATES / 13 行业 / 11 风格 / 02 市场
-- `screenshots/gallery-templates.png`：30 套卡片
-- `screenshots/gallery-global.png`、`gallery-global-cards.png`：国际市场 10 套
+- `screenshots/gallery-top.png`：715 TEMPLATES / 13 行业 / 11 风格 / 02 市场
+- `screenshots/gallery-templates.png`：715 套目录（首屏 24 套分页）
+- `screenshots/gallery-715.png`：715 套模板计数与筛选
+- `screenshots/builder-generated.png`：工厂生成的行业 × 风格组合模板
+- `screenshots/gallery-global.png`、`gallery-global-cards.png`：国际市场模板
 - `screenshots/builder-desktop.png`、`builder-mobile.png`
 - `screenshots/builder-hdw.png`、`builder-lgc.png`、`builder-chm.png`、`builder-med.png`、`builder-aut.png`、`builder-apx.png`
 - `screenshots/builder-style.png`、`builder-style-applied.png`
@@ -85,7 +87,7 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 2. 云端保存是显式按钮，不是自动保存；冲突时由 `expectedVersion` 返回 409。
 3. 支付未接；Pro 仍是本地演示 + 服务端 plan 字段，没有真实订单。
 4. 编辑器是桌面工作台；手机用于查看/预览，不提供完整编辑。
-5. 首屏 JS 约 458.60 kB；Builder 与 Gallery 已拆包，模板数据仍可继续懒加载。
+5. 首屏 JS 约 476.21 kB；Builder 与 Gallery 已拆包，模板数据仍可继续懒加载。
 6. 后端默认 H2 文件库；生产需切 PostgreSQL 并配置真实 JWT secret。
 7. 七语言 UI 已覆盖导航、首屏、筛选、登录、云端、Builder 顶栏与导出面板；Inspector 字段与模板正文仍以中文/英文为主，五语内容翻译待补。
 
@@ -95,4 +97,4 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 - 补页面标题/路径编辑与自动保存。
 - 接支付（Stripe / 微信 / 支付宝）与真实权益校验。
 - 实现服务端 React 源码生成与下载鉴权。
-- 30 套全量视觉回归、移动端编辑、axe 可访问性。
+- 715 套全量视觉回归、移动端编辑、axe 可访问性。

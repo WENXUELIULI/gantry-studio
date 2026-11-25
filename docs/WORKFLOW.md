@@ -6,17 +6,19 @@
 
 **Architecture:** 前端继续采用 React 19 + TypeScript + Vite + Zustand。数据层用「模板元数据（轻） + 模板内容（按需加载）」拆包；样式层用「主题 token → 区块 style recipe → 内容」三层；导出层拆成免费 HTML 导出与受服务端鉴权的源码导出；后端采用 Supabase Auth/Postgres/Storage + 独立 Hono API，所有会员权益只在服务端判定。
 
-**Tech Stack:** React 19、TypeScript 5.9、Vite 7、Zustand 5、Zod 4、Motion、Vitest、Testing Library、Playwright、ESLint 9；后端 Hono + Node 22 + Supabase（Auth/Postgres/Storage），支付采用 Stripe Checkout（国际）与微信支付/支付宝适配器（国内）。
+**Tech Stack:** React 19、TypeScript 5.9、Vite 7、Zustand 5、Zod 4、Motion、Vitest、Testing Library、Playwright、ESLint 9；后端已落地为 Java 21 + Spring Boot 3.5（JWT / JPA / Flyway），支付采用 Stripe Checkout（国际）与微信支付/支付宝适配器（国内）。
+
+> 2026-11-26 状态更新：模板目录已扩展为 **715 套 = 13 行业 × 11 风格 × 每组合 5 套**（30 套手工 + 685 套模板工厂生成）；后端已从原计划的 Hono/Supabase 改为 Java 21 + Spring Boot。下文保留原始 v2 计划，涉及 30 套/65 套的历史任务以本节状态为准。
 
 ## Global Constraints
 
 - 不覆盖 `E:\asd` 下已有项目；本项目根目录固定为 `E:\asd\gantry-studio`。
 - 不新增 UI 组件库；产品壳与官网模板继续使用自有 CSS 与工业编辑风设计语言。
-- 30 套模板每套必须有 8 个区块：hero / metrics / capabilities / products / process / proof / cta / footer。
+- 715 套模板每套必须有 8 个区块：hero / metrics / capabilities / products / process / proof / cta / footer。
 - 所有模板必须同时通过桌面 1440×900 与手机 390×844 的布局验证，不允许横向溢出。
 - 源码导出能力不得只靠前端布尔值或 localStorage 判定；服务端必须是唯一可信源。
 - 不把 Stripe/微信/支付宝密钥写入 `VITE_*` 环境变量或前端 bundle。
-- 每次改动必须保持现有 30 套模板可用；迁移以回归测试保护，不做一次性大爆炸重写。
+- 每次改动必须保持现有 715 套模板可用；迁移以回归测试保护，不做一次性大爆炸重写。
 - 关键纯函数（contrast、focal、crop、style resolve、template factory）必须先写失败测试，再写实现。
 - 任何「已完成 / 已修复 / 已通过」的表述，必须先附命令输出或截图证据。
 
@@ -24,10 +26,9 @@
 
 ## 1. 当前基线（2026-11-25）
 
-- 模板：30 套（国内 20 + 国际 10），13 个行业，11 种风格，18 套主题，2 个市场。
-- 首屏：6 种叙事（video-scrub / image-collage / split-editorial / full-bleed / kinetic-type / product-stage）。
+- 715 套模板：13 个行业 × 11 种风格 × 每组合 5 套；30 套手工 + 685 套工厂生成。
 - 页面区块：8 类；编辑器支持就地改字、上下移动、显隐、复制、删除、撤销/重做、桌面/手机视图、主题切换、组件级样式、图片焦点/独立裁剪、多页、云端保存、HTML/ZIP/JSON 导出。
-- 质量：138 个 Vitest 测试、17 条 Playwright 用例、4 条后端 Spring Boot 测试、`tsc`、`lint`、`build` 全通过。
+- 质量：139 个 Vitest 测试、18 条 Playwright 用例、4 条后端 Spring Boot 测试、`tsc`、`lint`、`build` 全通过。
 - 已知边界：生成物是静态 HTML/ZIP，不是可二次开发的 React 工程源码；云端保存是显式按钮；支付与真实源码生成未接；手机端只用于查看/预览。
 
 ## 2. v2 范围
@@ -623,7 +624,7 @@ export interface PaymentProvider {
 
 **Task 0.1 记录基线**
 - 文件：`docs/ADR/0001-baseline.md`
-- 内容：当前 30 套模板、138 单测、17 E2E、构建体积、已知边界。
+- 内容：当前 715 套模板、139 单测、18 E2E、构建体积、已知边界。
 - 命令：`npx tsc --noEmit && npx vitest run && npx playwright test && npm run build`。
 - 验收：四项输出贴进 ADR；后续任何回归可对比。
 

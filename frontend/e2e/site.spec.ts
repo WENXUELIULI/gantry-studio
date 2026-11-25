@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 
+const PAGE_SIZE = 24;
 const TEMPLATE_NAMES = [
   '桁架精工',
   '熔光玻璃',
@@ -36,6 +37,7 @@ const TEMPLATE_NAMES = [
 ];
 
 async function openTemplate(page: Page, name = '桁架精工') {
+  await page.getByLabel('搜索').fill(name);
   await page.getByRole('button', { name: new RegExp(`使用(此)?模板 ${name}`) }).click();
   await expect(page.locator('.builder')).toBeVisible();
   await expect(page.locator('.device-screen .site-root')).toBeVisible();
@@ -52,30 +54,31 @@ async function register(page: Page) {
 }
 
 test.describe('template gallery', () => {
-  test('shows thirty templates and filters by market, industry, style and search', async ({
+  test('shows the paginated catalogue and filters by market, industry, style and search', async ({
     page,
   }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('为工业');
-    await expect(page.locator('.template-card')).toHaveCount(30);
+    await expect(page.locator('.template-card')).toHaveCount(PAGE_SIZE);
+    await expect(page.locator('.result-count')).toHaveText('715 / 715');
 
     await page.getByRole('button', { name: /^国际市场/ }).click();
-    await expect(page.locator('.template-card')).toHaveCount(10);
+    await expect(page.locator('.template-card')).toHaveCount(PAGE_SIZE);
     await expect(page.locator('.template-card').first()).toContainText('ATLAS');
     await page.getByRole('button', { name: /^中国市场/ }).click();
-    await expect(page.locator('.template-card')).toHaveCount(20);
+    await expect(page.locator('.template-card')).toHaveCount(PAGE_SIZE);
 
     const marketFilters = page.locator('.filter-row').filter({ hasText: '市场' });
     const industryFilters = page.locator('.filter-row').filter({ hasText: '行业' });
     await marketFilters.getByRole('button', { name: /^全部/ }).click();
     await page.getByRole('button', { name: /^玻璃与器皿/ }).click();
-    await expect(page.locator('.template-card')).toHaveCount(2);
-    await expect(page.locator('.result-count')).toHaveText('02 / 30');
+    await expect(page.locator('.template-card')).toHaveCount(PAGE_SIZE);
+    await expect(page.locator('.result-count')).toHaveText('55 / 715');
     await expect(page.locator('.template-card').first()).toContainText('熔光玻璃');
 
     await industryFilters.getByRole('button', { name: /^全部/ }).click();
     await page.getByRole('button', { name: /^工业编辑/ }).click();
-    await expect(page.locator('.template-card')).toHaveCount(5);
+    await expect(page.locator('.template-card')).toHaveCount(PAGE_SIZE);
 
     await page.getByRole('button', { name: /^全部/ }).first().click();
     await page.getByLabel('搜索').fill('TRS-01');
@@ -85,7 +88,20 @@ test.describe('template gallery', () => {
     await page.getByLabel('搜索').fill('不存在的模板');
     await expect(page.locator('.library-empty')).toBeVisible();
     await page.getByRole('button', { name: '重置筛选' }).click();
-    await expect(page.locator('.template-card')).toHaveCount(30);
+    await expect(page.locator('.template-card')).toHaveCount(PAGE_SIZE);
+  });
+
+  test('opens a generated industry-by-style combination', async ({ page }) => {
+    await page.goto('/');
+    await page.getByLabel('搜索').fill('工业编辑风 · 第');
+    await expect(page.locator('.template-card').first()).toBeVisible();
+    await page.locator('.template-card').first().click();
+    await expect(page.locator('.section-slot')).toHaveCount(8);
+    await expect(page.locator('.device-screen h1').first()).not.toBeEmpty();
+    const overflow = await page.locator('.device-screen .site-scroll').evaluate(
+      (node) => node.scrollWidth - node.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(2);
   });
 
   test('switches to Arabic and mirrors the interface', async ({ page }) => {    await page.goto('/');
@@ -93,7 +109,7 @@ test.describe('template gallery', () => {
     await page.getByRole('option', { name: /العربية/ }).click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('مواقع');
-    await expect(page.locator('.template-card')).toHaveCount(30);
+    await expect(page.locator('.template-card')).toHaveCount(PAGE_SIZE);
   });
 
   test('gallery has no horizontal overflow on a phone viewport', async ({ page }) => {
@@ -104,7 +120,7 @@ test.describe('template gallery', () => {
       () => document.documentElement.scrollWidth - window.innerWidth,
     );
     expect(overflow).toBeLessThanOrEqual(1);
-    await expect(page.locator('.template-card')).toHaveCount(30);
+    await expect(page.locator('.template-card')).toHaveCount(PAGE_SIZE);
   });
 });
 
@@ -367,8 +383,8 @@ test.describe('builder', () => {
     await expect(page.getByLabel('缩放').first()).toHaveValue('1.6');
   });
 
-  test('all thirty templates open with eight complete sections', async ({ page }) => {
-    test.setTimeout(240_000);
+  test('all curated templates open with eight complete sections', async ({ page }) => {
+    test.setTimeout(300_000);
     await page.goto('/');
 
     for (const name of TEMPLATE_NAMES) {

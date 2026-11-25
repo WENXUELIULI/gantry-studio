@@ -1,0 +1,10 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.addInitScript(() => localStorage.setItem('gantry:locale:v1', 'zh-CN'));
+await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle' });
+await page.locator('#templates').scrollIntoViewIfNeeded();
+await page.waitForTimeout(700);
+await page.screenshot({ path: 'E:/asd/gantry-studio/frontend/screenshots/gallery-templates.png' });
+await browser.close();
+console.log('gallery templates screenshot done');

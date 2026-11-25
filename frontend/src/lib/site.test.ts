@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { TEMPLATE_BY_ID, TEMPLATES } from '../data/templates';
+import { INDUSTRIES, STYLES } from '../data/taxonomy';
 import {
   cloneSections,
   countWords,
@@ -105,13 +106,22 @@ describe('cloneSections', () => {
 });
 
 describe('template library', () => {
-  it('ships thirty unique templates across every industry and both markets', () => {
-    expect(TEMPLATES).toHaveLength(30);
-    expect(new Set(TEMPLATES.map((item) => item.id)).size).toBe(30);
-    expect(new Set(TEMPLATES.map((item) => item.code)).size).toBe(30);
-    expect(new Set(TEMPLATES.map((item) => item.industry)).size).toBe(13);
-    expect(TEMPLATES.filter((item) => item.market === 'cn')).toHaveLength(20);
-    expect(TEMPLATES.filter((item) => item.market === 'global')).toHaveLength(10);
+  it('ships five editions for every industry and style combination', () => {
+    expect(TEMPLATES).toHaveLength(INDUSTRIES.length * STYLES.length * 5);
+    expect(new Set(TEMPLATES.map((item) => item.id)).size).toBe(TEMPLATES.length);
+    expect(new Set(TEMPLATES.map((item) => item.code)).size).toBe(TEMPLATES.length);
+    expect(new Set(TEMPLATES.map((item) => item.industry)).size).toBe(INDUSTRIES.length);
+
+    const counts = new Map<string, number>();
+    for (const item of TEMPLATES) {
+      const key = `${item.industry}:${item.style}`;
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    for (const industry of INDUSTRIES) {
+      for (const style of STYLES) {
+        expect(counts.get(`${industry.id}:${style.id}`)).toBe(5);
+      }
+    }
   });
 
   it('gives every template a complete eight-section narrative', () => {

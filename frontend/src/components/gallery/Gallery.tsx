@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowRight,
@@ -124,15 +124,21 @@ function TemplateCard({
   );
 }
 
+const PAGE_SIZE = 24;
+
 export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
   const { t } = useTranslation();
   const [market, setMarket] = useState<MarketId | 'all'>('all');
   const [industry, setIndustry] = useState<IndustryId | 'all'>('all');
   const [style, setStyle] = useState<StyleId | 'all'>('all');
   const [query, setQuery] = useState('');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [market, industry, style, query]);
+
+  const filtered = useMemo(() => {    const needle = query.trim().toLowerCase();
     return TEMPLATES.filter((template) => {
       if (market !== 'all' && template.market !== market) return false;
       if (industry !== 'all' && template.industry !== industry) return false;
@@ -153,6 +159,8 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
         .includes(needle);
     });
   }, [market, industry, style, query]);
+
+  const visible = filtered.slice(0, visibleCount);
 
   return (
     <div className="gallery">
@@ -412,7 +420,7 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
 
           {filtered.length ? (
             <div className="template-grid">
-              {filtered.map((template, index) => (
+              {visible.map((template, index) => (
                 <TemplateCard
                   key={template.id}
                   template={template}
@@ -440,6 +448,20 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
               </button>
             </div>
           )}
+          {filtered.length > visible.length ? (
+            <div className="library-more">
+              <span className="mono">
+                {t('gallery.showing', { shown: visible.length, total: filtered.length })}
+              </span>
+              <button
+                type="button"
+                className="gallery-btn"
+                onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
+              >
+                {t('gallery.loadMore')}
+              </button>
+            </div>
+          ) : null}
         </section>
 
         <section className="how" id="how">

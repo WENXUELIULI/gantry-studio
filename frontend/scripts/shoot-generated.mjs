@@ -1,0 +1,12 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.addInitScript(() => localStorage.setItem('gantry:locale:v1', 'zh-CN'));
+await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle' });
+await page.getByLabel('搜索').fill('工业编辑风 · 第');
+await page.locator('.template-card').first().click();
+await page.waitForSelector('.builder');
+await page.waitForTimeout(900);
+await page.screenshot({ path: 'E:/asd/gantry-studio/frontend/screenshots/builder-generated.png' });
+await browser.close();
+console.log('generated template screenshot done');
