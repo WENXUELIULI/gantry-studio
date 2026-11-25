@@ -1,0 +1,23 @@
+# frontend
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.local
+*.log
+
+# backend
+backend/target/
+backend/data/
+backend/logs/
+*.class
+
+# local environment
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
