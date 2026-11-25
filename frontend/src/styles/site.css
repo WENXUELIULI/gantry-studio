@@ -2890,7 +2890,7 @@
   min-height: 100cqh;
   display: flex;
   align-items: flex-end;
-  padding: calc(var(--nav-h) + 48px) 0 96px;
+  padding: calc(var(--nav-h) + 48px) var(--gutter) 96px;
 }
 .video-scene .hero--story .hero-inner { width: 100%; }
 .video-scene .hero--story .hero-copy { max-width: 820px; }

@@ -10,7 +10,6 @@ import {
   type ReactNode,
 } from 'react';
 import {
-  CircleHelp,
   Code2,
   Copy,
   Download,
@@ -27,6 +26,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useBuilderStore } from '../../store/builder';
 import { useProjectStore } from '../../store/project';
+import { HelpTip } from '../ui/HelpTip';
 import { LOCALES } from '../../i18n/locales';
 import {
   SECTION_LABELS,
@@ -200,18 +200,7 @@ function SelectField<T extends string>({
     <label className="field">
       <span className="field-label">
         {label}
-        {hint && (
-          <span
-            className="field-help"
-            tabIndex={0}
-            role="note"
-            aria-label={hint}
-            data-tooltip={hint}
-            title={hint}
-          >
-            <CircleHelp size={12} strokeWidth={1.8} aria-hidden="true" />
-          </span>
-        )}
+        {hint && <HelpTip text={hint} />}
       </span>
       <select
         value={value}

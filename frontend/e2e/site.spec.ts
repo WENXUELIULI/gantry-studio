@@ -337,6 +337,33 @@ test.describe('builder', () => {
       .toBeGreaterThan(offset - 80);
   });
 
+  test('syncs the left rail when the canvas scrolls', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+
+    const scroller = page.locator('.device-screen .site-scroll');
+    const offset = await scroller.evaluate((node) => {
+      const target = node.querySelector('[data-slot-id="products"]');
+      return target instanceof HTMLElement ? target.offsetTop : 0;
+    });
+    await scroller.evaluate((node, top) => node.scrollTo({ top }), offset + 24);
+
+    await expect(page.locator('.rail-section').nth(3)).toHaveClass(/is-selected/);
+  });
+
+  test('shows field explanations in a viewport-safe tooltip', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+
+    await page.locator('.inspector .field-help').first().hover();
+    const tooltip = page.locator('.field-tooltip');
+    await expect(tooltip).toBeVisible();
+    const box = await tooltip.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(1440);
+  });
+
   test('scrolls the canvas from a top navigation link', async ({ page }) => {
     await page.goto('/');
     await openTemplate(page);
@@ -352,8 +379,21 @@ test.describe('builder', () => {
     );
   });
 
-  test('keeps one film behind hero, numbers, capability and products', async ({ page }) => {
+  test('keeps the video-story hero copy inside the section gutter', async ({ page }) => {
     await page.goto('/');
+    await openTemplate(page, '铸造之夜');
+
+    const frame = page.locator('.device-screen').first();
+    const copy = page.locator('.device-screen .hero--story .hero-title');
+    await expect(copy).toBeVisible();
+    const frameBox = await frame.boundingBox();
+    const copyBox = await copy.boundingBox();
+    expect(frameBox).not.toBeNull();
+    expect(copyBox).not.toBeNull();
+    expect(copyBox!.x - frameBox!.x).toBeGreaterThan(18);
+  });
+
+  test('keeps one film behind hero, numbers, capability and products', async ({ page }) => {    await page.goto('/');
     await openTemplate(page, '铸造之夜');
 
     await expect(page.locator('.device-screen .video-scene')).toBeVisible();

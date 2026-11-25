@@ -281,6 +281,40 @@ function Canvas() {
     });
   }, [scrollRequest]);
 
+  useEffect(() => {
+    const scroller = document.querySelector<HTMLElement>(
+      '.device-screen .site-scroll',
+    );
+    if (!scroller) return;
+    let frame = 0;
+    const sync = () => {
+      frame = 0;
+      const slots = Array.from(
+        scroller.querySelectorAll<HTMLElement>('[data-slot-id]'),
+      );
+      if (!slots.length) return;
+      const line = scroller.scrollTop + 16;
+      let current = slots[0];
+      for (const slot of slots) {
+        if (slot.offsetTop <= line) current = slot;
+      }
+      const next = current.dataset.slotId;
+      if (next && next !== useBuilderStore.getState().selectedId) {
+        selectSection(next);
+      }
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(sync);
+    };
+    sync();
+    scroller.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      scroller.removeEventListener('scroll', onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [doc?.id, device, selectSection]);
+
   if (!doc) return null;
 
   return (

@@ -3631,13 +3631,11 @@ html[dir='rtl'] .field-select {
   outline: none;
 }
 
-.field-help::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + 8px);
-  z-index: 80;
-  width: 236px;
+.field-tooltip {
+  position: fixed;
+  z-index: 1000;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 32px));
   padding: 10px 12px;
   border: 1px solid var(--shell-ink);
   background: var(--shell-ink);
@@ -3649,21 +3647,16 @@ html[dir='rtl'] .field-select {
   letter-spacing: 0;
   text-align: left;
   white-space: normal;
-  opacity: 0;
-  transform: translateY(4px);
   pointer-events: none;
-  transition: opacity 160ms ease, transform 160ms ease;
+  box-shadow: 0 10px 30px rgba(23, 23, 21, 0.22);
+  animation: field-tooltip-in 140ms ease both;
 }
 
-.field-help:hover::after,
-.field-help:focus-visible::after {
-  opacity: 1;
-  transform: translateY(0);
+.field-tooltip.is-above {
+  transform: translateY(-100%);
 }
 
-@media (max-width: 760px) {
-  .field-help::after {
-    right: -8px;
-    width: min(220px, 70vw);
-  }
+@keyframes field-tooltip-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

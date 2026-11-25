@@ -12,7 +12,7 @@
 - 桌面/手机双视图、滚动视频、3–4 图拼贴、组件级样式、图片焦点/独立裁剪均可用。
 - 七语言 UI（zh-CN / en / ar / tr / he / fa / ur）与 RTL；生成站点可设置 locale，导出写入 lang/dir。
 - 登录、云端项目、多页编辑、PC → 手机接力、单页 HTML / 整站 ZIP 导出已打通。
-- 前端 146 个单元测试、22 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
+- 前端 146 个单元测试、25 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
 
 尚未完成：真实源码（React/Java）生成、在线支付、手机端编辑工作台。JSON 项目源文件当前是页面文档，不是生成出来的工程源码。
 
@@ -45,15 +45,15 @@ npx tsc --noEmit          # 通过
 npx vitest run            # 23 files, 146 tests passed
 npx playwright test       # 9 passed (35.6s)
 npm run lint              # 0 error, 0 warning
-npm run build             # 1663 modules
+npm run build             # 1665 modules
 ```
 
 前端构建体积：
 
 - 首屏 `index` 477.72 kB / gzip 159.41 kB
-- 按需 `Builder` 363.37 kB / gzip 106.19 kB，`Gallery` 15.67 kB / gzip 4.78 kB
+- 按需 `Builder` 364.54 kB / gzip 106.69 kB，`Gallery` 15.67 kB / gzip 4.78 kB
 - `ImageCropper` 3.27 kB / gzip 1.42 kB
-- CSS 103.03 kB / gzip 19.17 kB
+- CSS 102.95 kB / gzip 19.16 kB
 
 后端：
 
@@ -80,6 +80,7 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 - `screenshots/builder-site-nav.png`：站点导航编辑器、页面目标选择、字号与 select 样式
 - `screenshots/builder-cta-target.png`：询价按钮目标改为页面
 - `screenshots/builder-keyframes.png`、`builder-keyframe-active.png`：关键帧编辑与章节高亮
+- `screenshots/builder-video-story.png`：视频贯穿首屏与数字/能力/产品章节
 - `screenshots/builder-inline-sync.png`：画布标题编辑与右侧检查器实时同步
 - `screenshots/builder-tooltip.png`：字段悬浮解释（媒体类型/播放方式/关键帧操作）
 - `screenshots/footer-check.png`：页脚与其它区块共用 section gutter
