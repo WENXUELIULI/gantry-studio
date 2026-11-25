@@ -34,6 +34,11 @@ export function LocaleSwitcher({ compact = false, onChange }: LocaleSwitcherProp
 
   const handleChange = (value: string) => {
     const next = resolveLocale(value);
+    document.documentElement.classList.add('locale-switching');
+    window.setTimeout(
+      () => document.documentElement.classList.remove('locale-switching'),
+      260,
+    );
     void changeLocale(next);
     onChange?.(next);
     setOpen(false);

@@ -49,9 +49,9 @@ npm run build             # 1660 modules
 前端构建体积：
 
 - 首屏 `index` 456.92 kB / gzip 152.56 kB
-- 按需 `Builder` 341.98 kB / gzip 100.26 kB，`Gallery` 19.11 kB / gzip 6.42 kB
+- 按需 `Builder` 341.98 kB / gzip 100.25 kB，`Gallery` 19.11 kB / gzip 6.42 kB
 - `ImageCropper` 3.27 kB / gzip 1.42 kB
-- CSS 95.72 kB / gzip 17.77 kB
+- CSS 95.94 kB / gzip 17.86 kB
 
 后端：
 
