@@ -19,11 +19,24 @@ describe('LocaleSwitcher', () => {
         <LocaleSwitcher />
       </I18nextProvider>,
     );
-    const select = screen.getByLabelText('语言');
-    expect(select.querySelectorAll('option')).toHaveLength(7);
+    await user.click(screen.getByLabelText('语言'));
+    expect(screen.getAllByRole('option')).toHaveLength(7);
 
-    await user.selectOptions(select, 'ar');
+    await user.click(screen.getByRole('option', { name: /العربية/ }));
     expect(document.documentElement.dir).toBe('rtl');
     await waitFor(() => expect(screen.getByLabelText('اللغة')).toBeInTheDocument());
+  });
+
+  it('closes the menu with Escape without changing locale', async () => {
+    const user = userEvent.setup();
+    render(
+      <I18nextProvider i18n={i18n}>
+        <LocaleSwitcher />
+      </I18nextProvider>,
+    );
+    await user.click(screen.getByLabelText('语言'));
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('listbox')).toBeNull();
+    expect(i18n.language).toBe('zh-CN');
   });
 });

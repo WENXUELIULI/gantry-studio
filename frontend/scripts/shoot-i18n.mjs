@@ -8,7 +8,10 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, loc
 await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle' });
 await page.waitForTimeout(500);
 
-await page.locator('.locale-switcher select').first().selectOption('ar');
+await page.locator('.locale-trigger').first().click();
+await page.waitForTimeout(250);
+await page.screenshot({ path: `${out}/locale-menu.png` });
+await page.getByRole('option', { name: /العربية/ }).click();
 await page.waitForTimeout(500);
 await page.screenshot({ path: `${out}/gallery-ar.png` });
 

@@ -90,7 +90,8 @@ test.describe('template gallery', () => {
 
   test('switches to Arabic and mirrors the interface', async ({ page }) => {
     await page.goto('/');
-    await page.locator('.locale-switcher select').selectOption('ar');
+    await page.locator('.locale-trigger').click();
+    await page.getByRole('option', { name: /العربية/ }).click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('مواقع');
     await expect(page.locator('.template-card')).toHaveCount(30);

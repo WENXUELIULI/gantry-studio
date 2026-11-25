@@ -12,7 +12,7 @@
 - 桌面/手机双视图、滚动视频、3–4 图拼贴、组件级样式、图片焦点/独立裁剪均可用。
 - 七语言 UI（zh-CN / en / ar / tr / he / fa / ur）与 RTL；生成站点可设置 locale，导出写入 lang/dir。
 - 登录、云端项目、多页编辑、PC → 手机接力、单页 HTML / 整站 ZIP 导出已打通。
-- 前端 130 个单元测试、10 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
+- 前端 131 个单元测试、10 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
 
 尚未完成：真实源码（React/Java）生成、在线支付、手机端编辑工作台。JSON 项目源文件当前是页面文档，不是生成出来的工程源码。
 
@@ -40,7 +40,7 @@
 ```bash
 cd frontend
 npx tsc --noEmit          # 通过
-npx vitest run            # 22 files, 130 tests passed
+npx vitest run            # 22 files, 131 tests passed
 npx playwright test       # 9 passed (35.6s)
 npm run lint              # 0 error, 0 warning
 npm run build             # 1660 modules
@@ -49,9 +49,9 @@ npm run build             # 1660 modules
 前端构建体积：
 
 - 首屏 `index` 456.92 kB / gzip 152.56 kB
-- 按需 `Builder` 342.04 kB / gzip 100.27 kB，`Gallery` 19.11 kB / gzip 6.42 kB
+- 按需 `Builder` 341.98 kB / gzip 100.26 kB，`Gallery` 19.11 kB / gzip 6.42 kB
 - `ImageCropper` 3.27 kB / gzip 1.42 kB
-- CSS 94.08 kB / gzip 17.45 kB
+- CSS 95.72 kB / gzip 17.77 kB
 
 后端：
 
@@ -72,6 +72,7 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 - `screenshots/builder-export.png`：登录提示 + 单文件 HTML + 整站 ZIP + Free/Pro
 - `screenshots/auth-dialog.png`、`builder-pages.png`、`cloud-projects.png`
 - `screenshots/gallery-ar.png`、`builder-ar.png`：阿拉伯语 RTL 界面
+- `screenshots/locale-menu.png`：语言下拉菜单的固定列宽与统一对齐
 - `screenshots/preview-mobile.png`
 
 ## 5. 已知边界
