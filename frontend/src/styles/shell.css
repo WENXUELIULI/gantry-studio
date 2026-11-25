@@ -3656,6 +3656,43 @@ html[dir='rtl'] .field-select {
   transform: translateY(-100%);
 }
 
+/* Readability pass: content-tab action buttons */
+.inspector-group-head .mono {
+  font-size: 10px;
+}
+
+.inspector-group-head button,
+.crop-field-head button {
+  min-height: 30px;
+  padding: 6px 9px;
+  font-size: 11.5px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
+.inspector-group-head button {
+  font-family: var(--shell-body);
+  text-transform: none;
+}
+
+.crop-field .field > span,
+.crop-field .field > span em {
+  font-size: 11px;
+}
+
+.crop-field-head button {
+  text-decoration-thickness: 1px;
+}
+
+.nav-add {
+  min-height: 40px;
+  font-size: 13px;
+}
+
+.keyframe-row label span {
+  font-size: 10px;
+}
+
 @keyframes field-tooltip-in {
   from { opacity: 0; }
   to { opacity: 1; }

@@ -53,7 +53,7 @@ npm run build             # 1665 modules
 - 首屏 `index` 477.72 kB / gzip 159.41 kB
 - 按需 `Builder` 364.54 kB / gzip 106.69 kB，`Gallery` 15.67 kB / gzip 4.78 kB
 - `ImageCropper` 3.27 kB / gzip 1.42 kB
-- CSS 102.95 kB / gzip 19.16 kB
+- CSS 103.41 kB / gzip 19.24 kB
 
 后端：
 
