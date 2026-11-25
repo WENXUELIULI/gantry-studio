@@ -19,6 +19,7 @@ import {
   Upload,
 } from 'lucide-react';
 import { useBuilderStore } from '../../store/builder';
+import { useProjectStore } from '../../store/project';
 import {
   SECTION_LABELS,
   type MediaCrop,
@@ -36,6 +37,8 @@ import {
   siteToHtml,
   siteToJson,
 } from '../../lib/exportSite';
+import { downloadBlob, projectToZip } from '../../lib/exportProject';
+import { readSession } from '../../lib/api';
 import { documentStats } from '../../lib/site';
 import { clampCrop } from '../../lib/media';
 
@@ -1236,14 +1239,33 @@ function ThemePanel() {
 
 function ExportPanel() {
   const doc = useBuilderStore((state) => state.doc);
+  const pages = useProjectStore((state) => state.pages);
   const [status, setStatus] = useState<'idle' | 'working' | 'ok' | 'error'>(
     'idle',
   );
   const [message, setMessage] = useState('');
   const [plan, setPlan] = useState<PlanId>(() => readPlan());
+  const [session, setSession] = useState(() => readSession());
+  useEffect(() => {
+    const sync = () => setSession(readSession());
+    window.addEventListener('gantry:session', sync);
+    return () => window.removeEventListener('gantry:session', sync);
+  }, []);
   if (!doc) return null;
   const stats = documentStats(doc);
   const sourceUnlocked = canExportSource(plan);
+
+  const requireLogin = () => {
+    if (session) return true;
+    window.dispatchEvent(
+      new CustomEvent('gantry:auth', {
+        detail: { reason: '登录后即可生成并导出官网' },
+      }),
+    );
+    setStatus('error');
+    setMessage('请先登录，再生成或导出。');
+    return false;
+  };
 
   const unlockSource = () => {
     savePlan('pro');
@@ -1253,6 +1275,7 @@ function ExportPanel() {
   };
 
   const handleDownload = async () => {
+    if (!requireLogin()) return;
     setStatus('working');
     setMessage('正在内嵌图片与视频…');
     try {
@@ -1272,7 +1295,28 @@ function ExportPanel() {
     }
   };
 
+  const handleDownloadSite = async () => {
+    if (!requireLogin()) return;
+    setStatus('working');
+    setMessage('正在打包整站页面…');
+    try {
+      const latest = useProjectStore.getState();
+      latest.syncActive(doc);
+      const projectPages = latest.pages.length
+        ? latest.pages
+        : [{ key: 'home', title: doc.name, path: '/', document: doc, version: 0 }];
+      const { blob, fileName } = await projectToZip(doc.name, projectPages);
+      downloadBlob(blob, fileName);
+      setStatus('ok');
+      setMessage(`已打包 ${projectPages.length} 个页面（ZIP）。`);
+    } catch {
+      setStatus('error');
+      setMessage('整站打包失败，请重试。');
+    }
+  };
+
   const handleCopyHtml = async () => {
+    if (!requireLogin()) return;
     setStatus('working');
     setMessage('正在生成并复制…');
     try {
@@ -1294,6 +1338,21 @@ function ExportPanel() {
           <span className="mono">HTML / JSON / SINGLE FILE</span>
         </div>
       </div>
+
+      {!session && (
+        <div className="export-login-note">
+          <Lock size={13} />
+          <p>生成与导出需要登录，项目会同时保存到云端。</p>
+          <button
+            type="button"
+            onClick={() =>
+              window.dispatchEvent(new CustomEvent('gantry:auth'))
+            }
+          >
+            去登录
+          </button>
+        </div>
+      )}
 
       <div className="export-stats">
         <div className="export-stat">
@@ -1322,6 +1381,15 @@ function ExportPanel() {
           disabled={status === 'working'}
         >
           <span>下载单文件 HTML</span>
+          <Download size={13} />
+        </button>
+        <button
+          type="button"
+          className="primary"
+          onClick={handleDownloadSite}
+          disabled={status === 'working'}
+        >
+          <span>下载整站 ZIP · {pages.length || 1} 页</span>
           <Download size={13} />
         </button>
         <button

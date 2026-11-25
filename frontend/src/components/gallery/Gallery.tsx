@@ -24,6 +24,9 @@ import type {
 
 interface GalleryProps {
   onOpen: (templateId: string) => void;
+  user?: { displayName: string } | null;
+  onCloud?: () => void;
+  onAuth?: () => void;
 }
 
 const STEPS = [
@@ -118,7 +121,7 @@ function TemplateCard({
   );
 }
 
-export function Gallery({ onOpen }: GalleryProps) {
+export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
   const [market, setMarket] = useState<MarketId | 'all'>('all');
   const [industry, setIndustry] = useState<IndustryId | 'all'>('all');
   const [style, setStyle] = useState<StyleId | 'all'>('all');
@@ -172,10 +175,14 @@ export function Gallery({ onOpen }: GalleryProps) {
             <i aria-hidden="true" />
             {TEMPLATES.length} TEMPLATES ONLINE
           </span>
-          <a className="gallery-nav-cta" href="#templates">
-            开始构建
+          <button
+            type="button"
+            className="gallery-nav-cta gallery-nav-user"
+            onClick={user ? onCloud : onAuth}
+          >
+            {user ? user.displayName : '登录'}
             <ArrowRight size={14} strokeWidth={1.6} />
-          </a>
+          </button>
         </div>
       </header>
 

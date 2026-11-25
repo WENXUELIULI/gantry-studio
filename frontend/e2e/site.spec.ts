@@ -41,6 +41,16 @@ async function openTemplate(page: Page, name = '桁架精工') {
   await expect(page.locator('.device-screen .site-root')).toBeVisible();
 }
 
+async function register(page: Page) {
+  await page.getByRole('button', { name: '登录' }).click();
+  await page.getByRole('tab', { name: '注册' }).click();
+  await page.getByLabel('称呼').fill('导出测试');
+  await page.getByLabel('邮箱').fill(`export-${Date.now()}@gantry.test`);
+  await page.getByLabel('密码').fill('GantryDemo123!');
+  await page.getByRole('button', { name: '创建账户' }).click();
+  await expect(page.getByRole('button', { name: '导出测试' })).toBeVisible();
+}
+
 test.describe('template gallery', () => {
   test('shows thirty templates and filters by market, industry, style and search', async ({
     page,
@@ -91,10 +101,20 @@ test.describe('template gallery', () => {
 });
 
 test.describe('builder', () => {
+  test('requires login before generating or exporting', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+    await page.getByRole('button', { name: '导出' }).first().click();
+    await expect(page.getByText('生成与导出需要登录')).toBeVisible();
+    await page.getByRole('button', { name: '下载单文件 HTML' }).click();
+    await expect(page.getByRole('dialog', { name: '登录 GANTRY' })).toBeVisible();
+  });
+
   test('edits content, switches theme and device, previews and exports HTML', async ({
     page,
   }, testInfo) => {
     await page.goto('/');
+    await register(page);
     await openTemplate(page);
 
     const title = page.locator('.device-screen .hero-title[data-editable="true"]');

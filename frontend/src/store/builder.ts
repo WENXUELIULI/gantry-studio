@@ -1,4 +1,4 @@
-﻿import { create } from 'zustand';
+import { create } from 'zustand';
 import type {
   Device,
   SectionType,
@@ -25,6 +25,7 @@ interface BuilderState {
   future: SiteDocument[];
   savedAt: string | null;
   openTemplate: (templateId: string) => void;
+  replaceDocument: (doc: SiteDocument) => void;
   closeProject: () => void;
   selectSection: (id: string | null) => void;
   setDevice: (device: Device) => void;
@@ -134,6 +135,18 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
 
     closeProject: () => {
       set({ view: 'gallery', selectedId: null });
+    },
+
+    replaceDocument: (doc) => {
+      const savedAt = persist(doc);
+      set({
+        doc: { ...doc, updatedAt: savedAt },
+        view: 'builder',
+        selectedId: doc.sections[0]?.id ?? null,
+        history: [],
+        future: [],
+        savedAt,
+      });
     },
 
     selectSection: (id) => set({ selectedId: id }),

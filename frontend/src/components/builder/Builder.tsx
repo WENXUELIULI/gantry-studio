@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ChevronDown,
   ChevronUp,
+  Cloud,
   Download,
   Eye,
   EyeOff,
@@ -16,10 +17,57 @@ import {
   X,
 } from 'lucide-react';
 import { useBuilderStore } from '../../store/builder';
+import { useProjectStore } from '../../store/project';
+import { saveProjectToCloud } from '../../lib/cloudSave';
+import { readSession } from '../../lib/api';
 import { SiteRenderer } from '../site/SiteRenderer';
 import { Inspector, type InspectorTab } from './Inspector';
 import { SECTION_LABELS, SECTION_TYPES, type SectionType } from '../../types/site';
 import { documentStats } from '../../lib/site';
+
+function PageTabs() {
+  const pages = useProjectStore((state) => state.pages);
+  const activeKey = useProjectStore((state) => state.activeKey);
+  const switchPage = useProjectStore((state) => state.switchPage);
+  const addPage = useProjectStore((state) => state.addPage);
+  const syncActive = useProjectStore((state) => state.syncActive);
+  const doc = useBuilderStore((state) => state.doc);
+
+  if (!doc || pages.length === 0) return null;
+
+  return (
+    <div className="rail-pages">
+      {pages.map((page, index) => (
+        <button
+          type="button"
+          key={page.key}
+          className={activeKey === page.key ? 'is-active' : ''}
+          onClick={() => {
+            if (activeKey === page.key) return;
+            syncActive(doc);
+            switchPage(page.key);
+          }}
+        >
+          <span className="mono">{String(index + 1).padStart(2, '0')}</span>
+          <strong>{page.title}</strong>
+          <span className="mono">{page.path}</span>
+        </button>
+      ))}
+      <button
+        type="button"
+        className="rail-page-add"
+        aria-label="添加页面"
+        onClick={() => {
+          syncActive(doc);
+          addPage(doc);
+        }}
+      >
+        <Plus size={12} />
+        页面
+      </button>
+    </div>
+  );
+}
 
 function SectionRail() {
   const doc = useBuilderStore((state) => state.doc);
@@ -34,6 +82,7 @@ function SectionRail() {
 
   return (
     <aside className="rail">
+      <PageTabs />
       <div className="rail-head">
         <span className="mono">PAGE / 首页</span>
         <span className="mono">{String(doc.sections.length).padStart(2, '0')}</span>
@@ -294,6 +343,7 @@ function Topbar({
   const history = useBuilderStore((state) => state.history);
   const future = useBuilderStore((state) => state.future);
   const [name, setName] = useState(doc?.name ?? '');
+  const [cloudState, setCloudState] = useState<string | null>(null);
 
   useEffect(() => {
     setName(doc?.name ?? '');
@@ -312,6 +362,20 @@ function Topbar({
         minute: '2-digit',
       })}`
     : '未保存';
+
+  const saveCloud = async () => {
+    if (!readSession()) {
+      window.dispatchEvent(new Event('gantry:auth'));
+      return;
+    }
+    setCloudState('正在同步…');
+    try {
+      const result = await saveProjectToCloud();
+      setCloudState(`云端已保存 · ${result.pages} 页`);
+    } catch (cause) {
+      setCloudState(cause instanceof Error ? cause.message : '云端保存失败');
+    }
+  };
 
   return (
     <header className="builder-topbar">
@@ -350,7 +414,7 @@ function Topbar({
 
       <span className="topbar-status">
         <i />
-        {savedLabel}
+        {cloudState ?? savedLabel}
       </span>
 
       <span className="topbar-spacer" />
@@ -383,6 +447,10 @@ function Topbar({
         </button>
       </div>
 
+      <button type="button" className="topbar-action" onClick={() => void saveCloud()}>
+        <Cloud size={13} />
+        云端
+      </button>
       <button type="button" className="topbar-action" onClick={onPreview}>
         <Eye size={13} />
         预览

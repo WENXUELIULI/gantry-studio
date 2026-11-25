@@ -1,7 +1,7 @@
 import { chromium } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 
-const out = 'E:/asd/gantry-studio/screenshots';
+const out = 'E:/asd/gantry-studio/frontend/screenshots';
 mkdirSync(out, { recursive: true });
 
 const browser = await chromium.launch();

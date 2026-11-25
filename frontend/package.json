@@ -21,6 +21,7 @@
     "@fontsource-variable/archivo": "^5.2.8",
     "@fontsource-variable/newsreader": "^5.2.8",
     "@fontsource/ibm-plex-mono": "^5.2.7",
+    "fflate": "^0.8.3",
     "lucide-react": "^0.468.0",
     "motion": "^12.23.12",
     "react": "^19.2.0",

@@ -37,8 +37,8 @@ GANTRY 不是一个「套模板」的建站页面，而是一套把官网拆成*
 ```bash
 npm install
 npm run dev        # http://127.0.0.1:5174
-npm run test       # 112 个单元测试
-npm run test:e2e   # 6 条 Playwright 用例
+npm run test       # 113 个单元测试
+npm run test:e2e   # 8 条 Playwright 用例
 npm run build      # 类型检查 + 生产构建
 npm run lint
 ```
@@ -46,13 +46,14 @@ npm run lint
 > 本机 npm 需要把 cache 指到可写目录，例如：
 > `npm_config_cache=C:\Users\Assassin\OneDrive\文档\deepseek-harness\default-workspace\.npm-cache`
 
-## 五个可以立刻试的交互
+## 六个可以立刻试的交互
 
 1. **筛选模板**：在模板库先按「国际市场」切到 10 套英文模板，再按「玻璃与器皿」找到熔光玻璃与 LUMEN GLASS；搜 `TRS-01` 回到桁架精工。
 2. **滚动视频**：打开「桁架精工」，在画布里向下滚动。首屏视频的 `currentTime` 跟随滚动位置，不是自动播放。
 3. **就地改字**：点首屏大标题，直接改成你的产品主张；`Esc` 取消，失焦保存。
 4. **换主题**：右侧「主题」里点「熔融玻璃」，纸张、油墨、强调色、字体一起变，但八段结构不变。
-5. **导出代码**：右侧「导出」→「下载单文件 HTML」。用浏览器直接打开，图片、视频、响应式与移动菜单都在文件里。
+5. **生成代码**：右侧「导出」→「下载单文件 HTML」或「下载整站 ZIP」。生成要求先登录；登录后项目同时保存到云端。
+6. **跨设备接力**：注册后打开模板、添加页面、点「云端」。回到模板库点用户名，从云端项目重新打开，两个页面与内容一起回来。
 
 ## 模板矩阵
 
