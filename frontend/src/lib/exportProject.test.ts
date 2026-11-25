@@ -42,6 +42,11 @@ describe('projectToZip', () => {
               pageKey: 'home',
             },
           ],
+          ctaTarget: {
+            href: '/',
+            kind: 'page',
+            pageKey: 'home',
+          },
         },
       },
     ] as never;
@@ -61,6 +66,10 @@ describe('projectToZip', () => {
     expect(siteToHtml).toHaveBeenCalledTimes(2);
     expect(
       (siteToHtml.mock.calls[1][0] as { nav: { href: string }[] }).nav[0].href,
+    ).toBe('/index.html');
+    expect(
+      (siteToHtml.mock.calls[1][0] as { ctaTarget: { href: string } }).ctaTarget
+        .href,
     ).toBe('/index.html');
   });
 });

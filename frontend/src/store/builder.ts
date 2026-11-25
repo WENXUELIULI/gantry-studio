@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type {
   Device,
   NavItem,
+  NavTarget,
   SectionType,
   SiteDocument,
   SiteSection,
@@ -32,11 +33,15 @@ interface BuilderState {
   history: SiteDocument[];
   future: SiteDocument[];
   savedAt: string | null;
+  editSectionId: string | null;
+  editBaseline: SiteDocument | null;
   openTemplate: (templateId: string) => void;
   replaceDocument: (doc: SiteDocument) => void;
   closeProject: () => void;
   selectSection: (id: string | null) => void;
   revealSection: (id: string) => void;
+  beginSectionEdit: (id: string) => void;
+  endSectionEdit: () => void;
   setDevice: (device: Device) => void;
   setZoom: (zoom: number) => void;
   updateSection: (
@@ -45,6 +50,7 @@ interface BuilderState {
   ) => void;
   updateTheme: (patch: Partial<Theme>) => void;
   updateNav: (nav: NavItem[]) => void;
+  setCtaTarget: (target: NavTarget) => void;
   setDocumentName: (name: string) => void;
   setDocumentLocale: (locale: LocaleCode) => void;
   moveSection: (id: string, direction: -1 | 1) => void;
@@ -97,25 +103,29 @@ export function clearDraft(): void {
 const initialDoc = loadDraft();
 
 export const useBuilderStore = create<BuilderState>()((set, get) => {
-  const commit = (next: SiteDocument) => {
+  const commit = (next: SiteDocument, pushHistory = true) => {
     const current = get().doc;
-    const history = current
-      ? [...get().history, structuredClone(current)].slice(-30)
-      : get().history;
+    const history =
+      pushHistory && current
+        ? [...get().history, structuredClone(current)].slice(-30)
+        : get().history;
     const savedAt = persist(next);
     set({
       doc: { ...next, updatedAt: savedAt },
       history,
-      future: [],
+      future: pushHistory ? [] : get().future,
       savedAt,
     });
   };
 
-  const withDoc = (recipe: (doc: SiteDocument) => SiteDocument | null) => {
+  const withDoc = (
+    recipe: (doc: SiteDocument) => SiteDocument | null,
+    pushHistory = true,
+  ) => {
     const current = get().doc;
     if (!current) return;
     const next = recipe(structuredClone(current));
-    if (next) commit(next);
+    if (next) commit(next, pushHistory);
   };
 
   return {
@@ -128,6 +138,8 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
     history: [],
     future: [],
     savedAt: initialDoc?.updatedAt ?? null,
+    editSectionId: null,
+    editBaseline: null,
 
     openTemplate: (templateId) => {
       const template = TEMPLATE_BY_ID[templateId];
@@ -143,11 +155,19 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
         history: [],
         future: [],
         savedAt,
+        editSectionId: null,
+        editBaseline: null,
       });
     },
 
     closeProject: () => {
-      set({ view: 'gallery', selectedId: null, scrollRequest: null });
+      set({
+        view: 'gallery',
+        selectedId: null,
+        scrollRequest: null,
+        editSectionId: null,
+        editBaseline: null,
+      });
     },
 
     replaceDocument: (doc) => {
@@ -160,6 +180,8 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
         history: [],
         future: [],
         savedAt,
+        editSectionId: null,
+        editBaseline: null,
       });
     },
 
@@ -171,12 +193,38 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
         scrollRequest: { id, token: (state.scrollRequest?.token ?? 0) + 1 },
       })),
 
+    beginSectionEdit: (id) => {
+      const state = get();
+      if (!state.doc || state.editSectionId === id) return;
+      if (state.editSectionId) get().endSectionEdit();
+      set({
+        editSectionId: id,
+        editBaseline: structuredClone(get().doc),
+      });
+    },
+
+    endSectionEdit: () => {
+      const { editBaseline, doc, history, editSectionId } = get();
+      if (!editSectionId || !editBaseline || !doc) return;
+      const changed =
+        JSON.stringify(editBaseline) !== JSON.stringify(doc);
+      set({
+        editSectionId: null,
+        editBaseline: null,
+        history: changed
+          ? [...history, editBaseline].slice(-30)
+          : history,
+        future: changed ? [] : get().future,
+      });
+    },
+
     setDevice: (device) => set({ device }),
 
     setZoom: (zoom) =>
       set({ zoom: Math.min(1, Math.max(0.35, Math.round(zoom * 100) / 100)) }),
 
     updateSection: (id, recipe) => {
+      const editing = get().editSectionId === id;
       withDoc((doc) => {
         const index = doc.sections.findIndex((section) => section.id === id);
         if (index < 0) return null;
@@ -190,7 +238,7 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
         const sections = [...doc.sections];
         sections[index] = nextSection;
         return { ...doc, sections };
-      });
+      }, !editing);
     },
 
     updateTheme: (patch) => {
@@ -199,6 +247,10 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
 
     updateNav: (nav) => {
       withDoc((doc) => ({ ...doc, nav }));
+    },
+
+    setCtaTarget: (target) => {
+      withDoc((doc) => ({ ...doc, ctaTarget: target }));
     },
 
     setDocumentName: (name) => {
@@ -316,6 +368,8 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
         future: [],
         savedAt: null,
         device: 'desktop',
+        editSectionId: null,
+        editBaseline: null,
       });
     },
   };

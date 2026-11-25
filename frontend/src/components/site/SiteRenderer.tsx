@@ -107,7 +107,12 @@ export function SiteRenderer({
       <a className="skip-link" href="#main">跳到主要内容</a>
       <div className="site-scroll" data-site-scroll>
         <div id="top" />
-        <SiteNav doc={doc} onNavigatePage={onNavigatePage} />
+        <SiteNav
+          doc={doc}
+          editable={editable}
+          onNavigatePage={onNavigatePage}
+          onNavigateSection={onSelect}
+        />
         <main id="main">
           {doc.sections.map((section, index) => (
             <SectionSlot

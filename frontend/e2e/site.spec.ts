@@ -88,8 +88,7 @@ test.describe('template gallery', () => {
     await expect(page.locator('.template-card')).toHaveCount(30);
   });
 
-  test('switches to Arabic and mirrors the interface', async ({ page }) => {
-    await page.goto('/');
+  test('switches to Arabic and mirrors the interface', async ({ page }) => {    await page.goto('/');
     await page.locator('.locale-trigger').click();
     await page.getByRole('option', { name: /العربية/ }).click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
@@ -196,6 +195,63 @@ test.describe('builder', () => {
     await expect(page.locator('.rail-pages button.is-active')).toContainText(
       '新页面 2',
     );
+  });
+
+  test('updates the canvas while typing in the inspector', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+    await page.locator('.rail-section').nth(2).click();
+
+    const title = page
+      .locator('.inspector .field')
+      .filter({ hasText: '标题' })
+      .locator('input')
+      .first();
+    await title.fill('实时同步的标题');
+
+    await expect(
+      page.locator('.device-screen .capability-title').first(),
+    ).toHaveText('实时同步的标题');
+  });
+
+  test('routes the inquiry CTA to a configured page instead of a section', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await openTemplate(page);
+    await page.getByRole('button', { name: '添加页面' }).click();
+    await page.locator('.rail-pages button').first().click();
+
+    await page.getByRole('button', { name: '站点' }).click();
+    const target = page.getByLabel('询价按钮目标');
+    const option = target
+      .locator('option')
+      .filter({ hasText: '新页面 2' })
+      .first();
+    await target.selectOption((await option.getAttribute('value')) ?? '');
+
+    await page.locator('.device-screen .site-nav-cta').click();
+    await expect(page.locator('.rail-pages button.is-active')).toContainText(
+      '新页面 2',
+    );
+  });
+
+  test('keeps the language menu above the canvas navigation', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+
+    await page.locator('.builder-topbar .locale-trigger').click();
+    const menu = page.locator('.builder-topbar .locale-menu');
+    await expect(menu).toBeVisible();
+    const box = await menu.boundingBox();
+    expect(box).toBeTruthy();
+
+    const hitMenu = await page.evaluate(
+      ({ x, y }) => Boolean(document.elementFromPoint(x, y)?.closest('.locale-menu')),
+      { x: box!.x + box!.width / 2, y: box!.y + 24 },
+    );
+    expect(hitMenu).toBe(true);
+    await page.keyboard.press('Escape');
   });
 
   test('scrolls the canvas to the section selected in the rail', async ({ page }) => {

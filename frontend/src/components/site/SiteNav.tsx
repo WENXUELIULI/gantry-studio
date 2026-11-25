@@ -4,16 +4,21 @@ import { siteChrome } from '../../i18n/siteStrings';
 
 export function SiteNav({
   doc,
+  editable = false,
   onNavigatePage,
+  onNavigateSection,
 }: {
   doc: SiteDocument;
+  editable?: boolean;
   onNavigatePage?: (path: string) => void;
+  onNavigateSection?: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const locale = doc.locale ?? (doc.market === 'global' ? 'en' : 'zh-CN');
   const chrome = siteChrome(locale);
   const code = locale === 'zh-CN' ? 'CN' : locale.split('-')[0].toUpperCase();
   const nav = doc.nav;
+  const cta = doc.ctaTarget ?? { href: '#cta', kind: 'section' as const };
   const navLabel = (item: (typeof nav)[number]) => {
     if (!item.labelKey?.startsWith('nav.')) return item.label;
     const index = Number(item.labelKey.slice('nav.'.length));
@@ -21,10 +26,16 @@ export function SiteNav({
   };
 
   const follow = (event: MouseEvent<HTMLAnchorElement>, href: string, kind?: string) => {
-    if (kind !== 'page' || !onNavigatePage) return;
+    if (kind === 'page' && onNavigatePage) {
+      event.preventDefault();
+      setOpen(false);
+      onNavigatePage(href);
+      return;
+    }
+    if (!editable) return;
     event.preventDefault();
     setOpen(false);
-    onNavigatePage(href);
+    if (kind === 'section') onNavigateSection?.(href.replace(/^#/, ''));
   };
 
   return (
@@ -60,7 +71,11 @@ export function SiteNav({
           <i aria-hidden="true" />
           {chrome.status}
         </span>
-        <a className="site-nav-cta" href="#cta">
+        <a
+          className="site-nav-cta"
+          href={cta.href}
+          onClick={(event) => follow(event, cta.href, cta.kind)}
+        >
           {chrome.cta}
           <span aria-hidden="true">↗</span>
         </a>
@@ -90,7 +105,13 @@ export function SiteNav({
             {navLabel(item)}
           </a>
         ))}
-        <a href="#cta" onClick={() => setOpen(false)}>
+        <a
+          href={cta.href}
+          onClick={(event) => {
+            follow(event, cta.href, cta.kind);
+            setOpen(false);
+          }}
+        >
           <span className="mono">
             {String(nav.length + 1).padStart(2, '0')}
           </span>

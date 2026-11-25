@@ -33,6 +33,10 @@ export async function projectToZip(
           ? { ...item, href: exportedHref(item.href) }
           : item,
       ),
+      ctaTarget:
+        document.ctaTarget?.kind === 'page'
+          ? { ...document.ctaTarget, href: exportedHref(document.ctaTarget.href) }
+          : document.ctaTarget,
     };
     const html = await siteToHtml(withStaticLinks);
     const file = pageFile(page.path);

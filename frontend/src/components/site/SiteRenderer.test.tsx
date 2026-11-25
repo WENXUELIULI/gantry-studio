@@ -174,6 +174,28 @@ describe('SiteRenderer', () => {
     expect(menu).toHaveAttribute('hidden');
   });
 
+  it('routes a configured inquiry CTA to another page', () => {
+    const doc = makeDoc();
+    doc.ctaTarget = { href: '/products', kind: 'page', pageKey: 'products' };
+    const onNavigatePage = vi.fn();
+    const { container } = render(
+      <SiteRenderer doc={doc} onNavigatePage={onNavigatePage} />,
+    );
+    fireEvent.click(container.querySelector('.site-nav-cta')!);
+    expect(onNavigatePage).toHaveBeenCalledWith('/products');
+  });
+
+  it('selects the CTA target instead of scrolling while editing', () => {
+    const doc = makeDoc();
+    doc.ctaTarget = { href: '#products', kind: 'section' };
+    const onSelect = vi.fn();
+    const { container } = render(
+      <SiteRenderer doc={doc} editable onSelect={onSelect} />,
+    );
+    fireEvent.click(container.querySelector('.site-nav-cta')!);
+    expect(onSelect).toHaveBeenCalledWith('products');
+  });
+
   it('uses the requested device and dark theme flags', () => {
     const doc = makeDoc();
     doc.theme.dark = true;

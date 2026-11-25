@@ -1,0 +1,15 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.addInitScript(() => localStorage.setItem('gantry:locale:v1', 'zh-CN'));
+await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle' });
+await page.getByRole('button', { name: /使用(此)?模板 桁架精工/ }).click();
+await page.waitForSelector('.builder');
+await page.getByRole('button', { name: '添加页面' }).click();
+await page.locator('.rail-pages button').first().click();
+await page.getByRole('button', { name: '站点' }).click();
+await page.getByLabel('询价按钮目标').scrollIntoViewIfNeeded();
+await page.waitForTimeout(400);
+await page.screenshot({ path: 'E:/asd/gantry-studio/frontend/screenshots/builder-cta-target.png' });
+await browser.close();
+console.log('cta screenshot done');

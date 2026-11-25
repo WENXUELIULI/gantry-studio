@@ -52,6 +52,7 @@ export function createDocumentFromTemplate(
         kind: 'section' as const,
         labelKey: `nav.${index}`,
       })),
+    ctaTarget: { href: '#cta', kind: 'section' as const },
     sections: cloneSections(template.sections),
     updatedAt: new Date().toISOString(),
   };

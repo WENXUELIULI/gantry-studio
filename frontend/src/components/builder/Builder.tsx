@@ -343,6 +343,8 @@ function PreviewModal({ onClose }: { onClose: () => void }) {
   const doc = useBuilderStore((state) => state.doc);
   const device = useBuilderStore((state) => state.device);
   const setDevice = useBuilderStore((state) => state.setDevice);
+  const pages = useProjectStore((state) => state.pages);
+  const switchPage = useProjectStore((state) => state.switchPage);
 
   useEffect(() => {
     const handle = (event: KeyboardEvent) => {
@@ -383,7 +385,15 @@ function PreviewModal({ onClose }: { onClose: () => void }) {
       </div>
       <div className="preview-body">
         <div className="preview-frame" data-device={device}>
-          <SiteRenderer doc={doc} device={device} editable={false} />
+          <SiteRenderer
+            doc={doc}
+            device={device}
+            editable={false}
+            onNavigatePage={(path) => {
+              const page = pages.find((item) => item.path === path);
+              if (page) switchPage(page.key);
+            }}
+          />
         </div>
       </div>
     </div>

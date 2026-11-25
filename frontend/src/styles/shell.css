@@ -1289,7 +1289,8 @@ a {
 }
 
 .builder-topbar {
-  z-index: 40;
+  position: relative;
+  z-index: 200;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -3254,7 +3255,7 @@ a {
   border: 1px solid var(--shell-line);
   background: transparent;
   color: var(--shell-ink);
-  z-index: 40;
+  z-index: 201;
 }
 .locale-switcher > svg { width: 13px; height: 13px; opacity: 0.7; flex: 0 0 auto; }
 .locale-trigger {
@@ -3289,6 +3290,7 @@ a {
 
 .locale-menu {
   position: absolute;
+  z-index: 300;
   top: calc(100% + 6px);
   right: 0;
   width: 224px;

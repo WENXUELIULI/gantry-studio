@@ -65,6 +65,18 @@ describe('builder store', () => {
     expect(useBuilderStore.getState().history).toHaveLength(1);
   });
 
+  it('updates the CTA target', () => {
+    openTruss();
+    useBuilderStore
+      .getState()
+      .setCtaTarget({ href: '/products', kind: 'page', pageKey: 'products' });
+    expect(useBuilderStore.getState().doc?.ctaTarget).toEqual({
+      href: '/products',
+      kind: 'page',
+      pageKey: 'products',
+    });
+  });
+
   it('updates the theme and document name', () => {
     openTruss();
     useBuilderStore.getState().updateTheme({ accent: '#123456' });
@@ -147,6 +159,29 @@ describe('builder store', () => {
     useBuilderStore.getState().redo();
     expect(heroOf(useBuilderStore.getState().doc as SiteDocument).title).toBe(
       '改动后',
+    );
+  });
+
+  it('coalesces live text edits into one undo step', () => {
+    const doc = openTruss();
+    const hero = heroOf(doc);
+    useBuilderStore.getState().beginSectionEdit(hero.id);
+    for (const title of ['改', '改动', '改动后']) {
+      useBuilderStore.getState().updateSection(hero.id, (section) => ({
+        ...section,
+        title,
+      }));
+    }
+    expect(useBuilderStore.getState().history).toHaveLength(0);
+    expect(heroOf(useBuilderStore.getState().doc as SiteDocument).title).toBe(
+      '改动后',
+    );
+
+    useBuilderStore.getState().endSectionEdit();
+    expect(useBuilderStore.getState().history).toHaveLength(1);
+    useBuilderStore.getState().undo();
+    expect(heroOf(useBuilderStore.getState().doc as SiteDocument).title).toBe(
+      hero.title,
     );
   });
 

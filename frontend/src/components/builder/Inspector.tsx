@@ -1,7 +1,10 @@
 import {
+  createContext,
   lazy,
   Suspense,
+  useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -66,6 +69,34 @@ const SANS = "'Archivo Variable', 'PingFang SC', 'Microsoft YaHei', sans-serif";
 const SERIF = "'Newsreader Variable', 'Songti SC', 'STSong', 'SimSun', serif";
 const MONO = "'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace";
 
+const SectionEditContext = createContext<{
+  begin: () => void;
+  end: () => void;
+} | null>(null);
+
+function SectionEditProvider({
+  sectionId,
+  children,
+}: {
+  sectionId: string;
+  children: ReactNode;
+}) {
+  const beginSectionEdit = useBuilderStore((state) => state.beginSectionEdit);
+  const endSectionEdit = useBuilderStore((state) => state.endSectionEdit);
+  const value = useMemo(
+    () => ({
+      begin: () => beginSectionEdit(sectionId),
+      end: () => endSectionEdit(),
+    }),
+    [beginSectionEdit, endSectionEdit, sectionId],
+  );
+  return (
+    <SectionEditContext.Provider value={value}>
+      {children}
+    </SectionEditContext.Provider>
+  );
+}
+
 function TextField({
   label,
   value,
@@ -86,12 +117,21 @@ function TextField({
   hint?: string;
 }) {
   const [draft, setDraft] = useState(value);
+  const focused = useRef(false);
+  const edit = useContext(SectionEditContext);
 
   useEffect(() => {
-    setDraft(value);
+    if (!focused.current) setDraft(value);
   }, [value]);
 
+  const begin = () => {
+    focused.current = true;
+    edit?.begin();
+  };
+
   const commit = () => {
+    focused.current = false;
+    edit?.end();
     const next = draft.trim();
     if (next === value) return;
     if (!next && !allowEmpty) {
@@ -99,6 +139,12 @@ function TextField({
       return;
     }
     onCommit(next);
+  };
+
+  const change = (next: string) => {
+    setDraft(next);
+    if (!next.trim() && !allowEmpty) return;
+    onCommit(next.trim());
   };
 
   return (
@@ -112,14 +158,16 @@ function TextField({
           value={draft}
           rows={rows}
           placeholder={placeholder}
-          onChange={(event) => setDraft(event.target.value)}
+          onChange={(event) => change(event.target.value)}
+          onFocus={begin}
           onBlur={commit}
         />
       ) : (
         <input
           value={draft}
           placeholder={placeholder}
-          onChange={(event) => setDraft(event.target.value)}
+          onChange={(event) => change(event.target.value)}
+          onFocus={begin}
           onBlur={commit}
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
@@ -964,7 +1012,8 @@ function ContentPanel({
         </div>
       </div>
 
-      {section.type !== 'hero' && (
+      <SectionEditProvider sectionId={section.id}>
+        {section.type !== 'hero' && (
         <>
           <TextField
             label="栏目标签 / EYEBROW"
@@ -1033,6 +1082,7 @@ function ContentPanel({
         当前文档：{doc.sections.length} 个区块 · {doc.theme.name} 主题。
         所有修改自动保存到本地浏览器。
       </div>
+      </SectionEditProvider>
     </>
   );
 }
@@ -1510,6 +1560,7 @@ function EmptyPanel() {
 function SitePanel() {
   const doc = useBuilderStore((state) => state.doc);
   const updateNav = useBuilderStore((state) => state.updateNav);
+  const setCtaTarget = useBuilderStore((state) => state.setCtaTarget);
   const pages = useProjectStore((state) => state.pages);
   if (!doc) return null;
 
@@ -1528,6 +1579,40 @@ function SitePanel() {
     item.kind === 'page'
       ? `page:${item.pageKey ?? item.href}`
       : `section:${item.href.replace(/^#/, '')}`;
+
+  const cta = doc.ctaTarget ?? { href: '#cta', kind: 'section' as const };
+  const ctaValue =
+    cta.kind === 'page'
+      ? `page:${cta.pageKey ?? ''}`
+      : cta.kind === 'url'
+        ? 'url'
+        : `section:${cta.href.replace(/^#/, '')}`;
+  const ctaOptions = [
+    ...targets,
+    { value: 'url', label: '外部链接 · URL' },
+  ];
+  if (!ctaOptions.some((option) => option.value === ctaValue)) {
+    ctaOptions.push({ value: ctaValue, label: `# ${cta.href}` });
+  }
+
+  const changeCtaTarget = (value: string) => {
+    if (value === 'url') {
+      setCtaTarget({ href: 'https://', kind: 'url' });
+      return;
+    }
+    if (value.startsWith('page:')) {
+      const key = value.slice('page:'.length);
+      const page = pages.find((candidate) => candidate.key === key);
+      if (page) {
+        setCtaTarget({ href: page.path, kind: 'page', pageKey: page.key });
+      }
+      return;
+    }
+    const id = value.slice('section:'.length);
+    if (doc.sections.some((section) => section.id === id)) {
+      setCtaTarget({ href: `#${id}`, kind: 'section' });
+    }
+  };
 
   const patch = (index: number, next: Partial<NavItem>) =>
     updateNav(
@@ -1638,6 +1723,26 @@ function SitePanel() {
           <Plus size={13} />
           添加导航链接
         </button>
+        <div className="nav-editor-row">
+          <div className="nav-editor-head">
+            <span className="mono">INQUIRY CTA</span>
+          </div>
+          <SelectField
+            label="询价按钮目标"
+            value={ctaValue}
+            options={ctaOptions}
+            onChange={changeCtaTarget}
+          />
+          {cta.kind === 'url' ? (
+            <TextField
+              label="外部链接"
+              value={cta.href}
+              onCommit={(href) =>
+                setCtaTarget({ href: href.trim() || 'https://', kind: 'url' })
+              }
+            />
+          ) : null}
+        </div>
         <div className="nav-page-note">
           <Link2 size={13} />
           <span>

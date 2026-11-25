@@ -122,11 +122,14 @@ export interface MediaRef {
   crop?: MediaCrop;
 }
 
-export interface NavItem {
-  label: string;
+export interface NavTarget {
   href: string;
   kind?: 'section' | 'page' | 'url';
   pageKey?: string;
+}
+
+export interface NavItem extends NavTarget {
+  label: string;
   /** Localized slot for the four generated section links. */
   labelKey?: string;
 }
@@ -266,6 +269,7 @@ export interface SiteDocument {
   style: StyleId;
   theme: Theme;
   nav: NavItem[];
+  ctaTarget?: NavTarget;
   sections: SiteSection[];
   updatedAt: string;
 }

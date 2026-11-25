@@ -15,6 +15,8 @@ function openProject() {
     history: [],
     future: [],
     savedAt: null,
+    editSectionId: null,
+    editBaseline: null,
   });
   useBuilderStore.getState().openTemplate('truss-precision');
   return useBuilderStore.getState().doc;
@@ -64,6 +66,25 @@ describe('Inspector', () => {
     expect(useBuilderStore.getState().doc?.sections[1].title).toBe(
       '新的数字标题',
     );
+  });
+
+  it('previews title edits before blur and coalesces undo history', () => {
+    select('metrics');
+    const original = useBuilderStore.getState().doc?.sections[1].title;
+    render(<Inspector tab="content" onTab={vi.fn()} />);
+    const title = screen.getByLabelText('标题 / TITLE');
+
+    fireEvent.focus(title);
+    fireEvent.change(title, { target: { value: '实时' } });
+    expect(useBuilderStore.getState().doc?.sections[1].title).toBe('实时');
+    fireEvent.change(title, { target: { value: '实时联动' } });
+    expect(useBuilderStore.getState().doc?.sections[1].title).toBe('实时联动');
+    expect(useBuilderStore.getState().history).toHaveLength(0);
+
+    fireEvent.blur(title);
+    expect(useBuilderStore.getState().history).toHaveLength(1);
+    act(() => useBuilderStore.getState().undo());
+    expect(useBuilderStore.getState().doc?.sections[1].title).toBe(original);
   });
 
   it('duplicates and removes a section from the header actions', () => {
