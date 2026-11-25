@@ -219,6 +219,28 @@ test.describe('builder', () => {
       .toBeGreaterThan(offset - 80);
   });
 
+  test('keeps footer copy aligned with the section gutter', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+
+    const spacing = await page
+      .locator('.device-screen .site-section--footer .section-inner')
+      .evaluate((node) => {
+        const section = node.closest('.site-section');
+        if (!(section instanceof HTMLElement)) return null;
+        const brand = node.querySelector('.footer-brand');
+        if (!(brand instanceof HTMLElement)) return null;
+        return {
+          paddingLeft: Number.parseFloat(getComputedStyle(node).paddingLeft),
+          offset: brand.getBoundingClientRect().left - section.getBoundingClientRect().left,
+        };
+      });
+
+    expect(spacing).not.toBeNull();
+    expect(spacing!.paddingLeft).toBeGreaterThan(10);
+    expect(spacing!.offset).toBeGreaterThan(10);
+  });
+
   test('scroll position drives the hero video timeline', async ({ page }) => {    await page.goto('/');
     await openTemplate(page);
 
