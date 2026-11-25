@@ -19,7 +19,7 @@ await page.screenshot({ path: `${out}/builder-ar.png` });
 
 await page.locator('.inspector-tabs button').nth(1).click();
 await page.waitForTimeout(300);
-const localeSelect = page.getByLabel('站点语言 / SITE LOCALE');
+const localeSelect = page.getByLabel('站点语言');
 if (await localeSelect.count()) {
   await localeSelect.selectOption('ar');
   await page.waitForTimeout(500);
