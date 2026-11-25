@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type {
   Device,
+  NavItem,
   SectionType,
   SiteDocument,
   SiteSection,
@@ -43,6 +44,7 @@ interface BuilderState {
     recipe: (section: SiteSection) => SiteSection,
   ) => void;
   updateTheme: (patch: Partial<Theme>) => void;
+  updateNav: (nav: NavItem[]) => void;
   setDocumentName: (name: string) => void;
   setDocumentLocale: (locale: LocaleCode) => void;
   moveSection: (id: string, direction: -1 | 1) => void;
@@ -193,6 +195,10 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
 
     updateTheme: (patch) => {
       withDoc((doc) => ({ ...doc, theme: { ...doc.theme, ...patch } }));
+    },
+
+    updateNav: (nav) => {
+      withDoc((doc) => ({ ...doc, nav }));
     },
 
     setDocumentName: (name) => {

@@ -37,8 +37,8 @@ GANTRY 不是一个「套模板」的建站页面，而是一套把官网拆成*
 ```bash
 npm install
 npm run dev        # http://127.0.0.1:5174
-npm run test       # 131 个单元测试
-npm run test:e2e   # 10 条 Playwright 用例
+npm run test       # 133 个单元测试
+npm run test:e2e   # 11 条 Playwright 用例
 npm run build      # 类型检查 + 生产构建
 npm run lint
 ```
@@ -117,9 +117,9 @@ scripts/         截图脚本
 ## 已验证
 
 - `npx tsc --noEmit` 通过。
-- `npx vitest run`：22 个测试文件，131 个测试通过。
-- `npx playwright test`：10 条用例通过（30 套模板、市场/行业/风格筛选、手机无横向溢出、登录闸门、编辑/主题/设备/预览/导出、滚动视频、独立裁剪、30 套模板 smoke、云端多页往返）。
-- `npm run build` 通过（1660 模块；首屏 `index` 456.92 kB / gzip 152.56 kB；按需 `Builder` 341.98 kB / `Gallery` 19.11 kB；CSS 95.94 kB / gzip 17.86 kB）。
+- `npx vitest run`：23 个测试文件，133 个测试通过。
+- `npx playwright test`：11 条用例通过（30 套模板、市场/行业/风格筛选、手机无横向溢出、登录闸门、编辑/主题/设备/预览/导出、滚动视频、独立裁剪、30 套模板 smoke、云端多页往返、导航切页）。
+- `npm run build` 通过（1660 模块；首屏 `index` 457.86 kB / gzip 152.88 kB；按需 `Builder` 345.44 kB / `Gallery` 19.11 kB；CSS 98.36 kB / gzip 18.39 kB）。
 - `npm run lint` 0 error / 0 warning。
 - 导出 HTML 已在 Playwright 里用 `file://` 实际打开，标题与 8 个区块均存在。
 - 云端流程已用 Playwright 注册账号、创建两页、保存、从云端重开并验证页面标题。

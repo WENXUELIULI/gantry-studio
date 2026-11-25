@@ -176,6 +176,28 @@ test.describe('builder', () => {
     await exported.close();
   });
 
+  test('adds a page to navigation and opens it from the site canvas', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await openTemplate(page);
+
+    await page.getByRole('button', { name: '添加页面' }).click();
+    await expect(page.locator('.rail-pages button.is-active')).toContainText(
+      '新页面 2',
+    );
+
+    await page.locator('.rail-pages button').first().click();
+    const pageLink = page
+      .locator('.device-screen .site-links a')
+      .filter({ hasText: '新页面 2' });
+    await expect(pageLink).toBeVisible();
+    await pageLink.click();
+    await expect(page.locator('.rail-pages button.is-active')).toContainText(
+      '新页面 2',
+    );
+  });
+
   test('scrolls the canvas to the section selected in the rail', async ({ page }) => {
     await page.goto('/');
     await openTemplate(page);

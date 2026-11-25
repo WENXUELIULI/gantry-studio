@@ -125,6 +125,10 @@ export interface MediaRef {
 export interface NavItem {
   label: string;
   href: string;
+  kind?: 'section' | 'page' | 'url';
+  pageKey?: string;
+  /** Localized slot for the four generated section links. */
+  labelKey?: string;
 }
 
 export interface Metric {

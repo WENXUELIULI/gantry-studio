@@ -27,7 +27,7 @@
 - 模板：30 套（国内 20 + 国际 10），13 个行业，11 种风格，18 套主题，2 个市场。
 - 首屏：6 种叙事（video-scrub / image-collage / split-editorial / full-bleed / kinetic-type / product-stage）。
 - 页面区块：8 类；编辑器支持就地改字、上下移动、显隐、复制、删除、撤销/重做、桌面/手机视图、主题切换、组件级样式、图片焦点/独立裁剪、多页、云端保存、HTML/ZIP/JSON 导出。
-- 质量：131 个 Vitest 测试、10 条 Playwright 用例、4 条后端 Spring Boot 测试、`tsc`、`lint`、`build` 全通过。
+- 质量：133 个 Vitest 测试、11 条 Playwright 用例、4 条后端 Spring Boot 测试、`tsc`、`lint`、`build` 全通过。
 - 已知边界：生成物是静态 HTML/ZIP，不是可二次开发的 React 工程源码；云端保存是显式按钮；支付与真实源码生成未接；手机端只用于查看/预览。
 
 ## 2. v2 范围
@@ -623,7 +623,7 @@ export interface PaymentProvider {
 
 **Task 0.1 记录基线**
 - 文件：`docs/ADR/0001-baseline.md`
-- 内容：当前 30 套模板、131 单测、10 E2E、构建体积、已知边界。
+- 内容：当前 30 套模板、133 单测、11 E2E、构建体积、已知边界。
 - 命令：`npx tsc --noEmit && npx vitest run && npx playwright test && npm run build`。
 - 验收：四项输出贴进 ADR；后续任何回归可对比。
 

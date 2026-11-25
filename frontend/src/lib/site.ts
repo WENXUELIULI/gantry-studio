@@ -46,9 +46,11 @@ export function createDocumentFromTemplate(
     nav: template.sections
       .filter((section) => section.type !== 'footer' && section.type !== 'hero')
       .slice(0, 4)
-      .map((section) => ({
+      .map((section, index) => ({
         label: labels[section.type] ?? section.eyebrow,
         href: `#${section.id}`,
+        kind: 'section' as const,
+        labelKey: `nav.${index}`,
       })),
     sections: cloneSections(template.sections),
     updatedAt: new Date().toISOString(),

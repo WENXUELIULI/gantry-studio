@@ -18,6 +18,7 @@ interface SiteRendererProps {
     field: 'eyebrow' | 'title' | 'body',
     value: string,
   ) => void;
+  onNavigatePage?: (path: string) => void;
 }
 
 function isInteractive(target: EventTarget | null): boolean {
@@ -91,6 +92,7 @@ export function SiteRenderer({
   selectedId,
   onSelect,
   onEditSection,
+  onNavigatePage,
 }: SiteRendererProps) {
   const locale = doc.locale ?? (doc.market === 'global' ? 'en' : 'zh-CN');
   return (
@@ -105,7 +107,7 @@ export function SiteRenderer({
       <a className="skip-link" href="#main">跳到主要内容</a>
       <div className="site-scroll" data-site-scroll>
         <div id="top" />
-        <SiteNav doc={doc} />
+        <SiteNav doc={doc} onNavigatePage={onNavigatePage} />
         <main id="main">
           {doc.sections.map((section, index) => (
             <SectionSlot

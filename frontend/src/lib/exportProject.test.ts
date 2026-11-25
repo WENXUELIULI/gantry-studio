@@ -32,7 +32,17 @@ describe('projectToZip', () => {
         title: '产品',
         path: '/products',
         version: 0,
-        document: { name: '产品' },
+        document: {
+          name: '产品',
+          nav: [
+            {
+              label: '首页',
+              href: '/',
+              kind: 'page',
+              pageKey: 'home',
+            },
+          ],
+        },
       },
     ] as never;
 
@@ -49,5 +59,8 @@ describe('projectToZip', () => {
     expect(strFromU8(files['products/index.html'])).toContain('产品');
     expect(JSON.parse(strFromU8(files['project.json'])).pages).toHaveLength(2);
     expect(siteToHtml).toHaveBeenCalledTimes(2);
+    expect(
+      (siteToHtml.mock.calls[1][0] as { nav: { href: string }[] }).nav[0].href,
+    ).toBe('/index.html');
   });
 });

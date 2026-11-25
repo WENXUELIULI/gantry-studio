@@ -11,9 +11,11 @@ import {
   Copy,
   Download,
   Layers,
+  Link2,
   Lock,
   Palette,
   Plus,
+  Settings2,
   Sparkles,
   Trash2,
   Upload,
@@ -25,6 +27,7 @@ import { LOCALES } from '../../i18n/locales';
 import {
   SECTION_LABELS,
   type MediaCrop,
+  type NavItem,
   type Product,
   type SiteDocument,
   type SiteSection,
@@ -57,7 +60,7 @@ import {
   type StyleControl,
 } from '../../lib/sectionStyles';
 
-export type InspectorTab = 'content' | 'theme' | 'export';
+export type InspectorTab = 'content' | 'site' | 'theme' | 'export';
 
 const SANS = "'Archivo Variable', 'PingFang SC', 'Microsoft YaHei', sans-serif";
 const SERIF = "'Newsreader Variable', 'Songti SC', 'STSong', 'SimSun', serif";
@@ -1504,6 +1507,148 @@ function EmptyPanel() {
   );
 }
 
+function SitePanel() {
+  const doc = useBuilderStore((state) => state.doc);
+  const updateNav = useBuilderStore((state) => state.updateNav);
+  const pages = useProjectStore((state) => state.pages);
+  if (!doc) return null;
+
+  const targets = [
+    ...doc.sections.map((section) => ({
+      value: `section:${section.id}`,
+      label: `# ${SECTION_LABELS[section.type]} · ${section.id}`,
+    })),
+    ...pages.map((page) => ({
+      value: `page:${page.key}`,
+      label: `页面 · ${page.title} (${page.path})`,
+    })),
+  ];
+
+  const currentTarget = (item: NavItem) =>
+    item.kind === 'page'
+      ? `page:${item.pageKey ?? item.href}`
+      : `section:${item.href.replace(/^#/, '')}`;
+
+  const patch = (index: number, next: Partial<NavItem>) =>
+    updateNav(
+      doc.nav.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, ...next } : item,
+      ),
+    );
+
+  const changeTarget = (index: number, value: string) => {
+    if (value.startsWith('page:')) {
+      const key = value.slice('page:'.length);
+      const page = pages.find((candidate) => candidate.key === key);
+      if (!page) return;
+      patch(index, {
+        href: page.path,
+        kind: 'page',
+        pageKey: page.key,
+        labelKey: undefined,
+      });
+      return;
+    }
+    const id = value.slice('section:'.length);
+    const section = doc.sections.find((candidate) => candidate.id === id);
+    patch(index, {
+      href: `#${id}`,
+      kind: 'section',
+      pageKey: undefined,
+      labelKey: undefined,
+      label: section ? SECTION_LABELS[section.type] : doc.nav[index].label,
+    });
+  };
+
+  return (
+    <div>
+      <div className="inspector-head">
+        <div>
+          <span className="mono">SITE / NAVIGATION</span>
+          <h2>站点导航</h2>
+        </div>
+      </div>
+      <div className="inspector-body">
+        <p className="style-hint">
+          新增页面会自动加入所有页面的导航。也可以把现有链接指向某个页面；画布内点击链接会直接切换页面。
+        </p>
+        <div className="nav-editor">
+          {doc.nav.map((item, index) => {
+            const target = currentTarget(item);
+            return (
+              <div className="nav-editor-row" key={`${item.href}-${index}`}>
+                <div className="nav-editor-head">
+                  <span className="mono">LINK {String(index + 1).padStart(2, '0')}</span>
+                  <button
+                    type="button"
+                    aria-label={`删除导航 ${item.label}`}
+                    onClick={() =>
+                      updateNav(doc.nav.filter((_, itemIndex) => itemIndex !== index))
+                    }
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+                <TextField
+                  label="链接文字"
+                  value={item.label}
+                  onCommit={(label) =>
+                    patch(index, {
+                      label: label.trim() || item.label,
+                      labelKey: undefined,
+                    })
+                  }
+                />
+                <SelectField
+                  label="链接目标"
+                  value={target}
+                  options={
+                    targets.some((option) => option.value === target)
+                      ? targets
+                      : [
+                          ...targets,
+                          {
+                            value: target,
+                            label: item.kind === 'page' ? `页面 · ${item.href}` : `# ${item.href}`,
+                          },
+                        ]
+                  }
+                  onChange={(value) => changeTarget(index, value)}
+                />
+              </div>
+            );
+          })}
+        </div>
+        <button
+          type="button"
+          className="button button--ghost nav-add"
+          onClick={() =>
+            updateNav([
+              ...doc.nav,
+              {
+                label: '新链接',
+                href: doc.sections.find((section) => section.type !== 'hero')?.id
+                  ? `#${doc.sections.find((section) => section.type !== 'hero')!.id}`
+                  : '#main',
+                kind: 'section',
+              },
+            ])
+          }
+        >
+          <Plus size={13} />
+          添加导航链接
+        </button>
+        <div className="nav-page-note">
+          <Link2 size={13} />
+          <span>
+            页面共 {pages.length} 个。路径在「页面设置」中修改，导航链接会自动跟随。
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Inspector({
   tab,
   onTab,
@@ -1534,6 +1679,14 @@ export function Inspector({
         </button>
         <button
           type="button"
+          className={tab === 'site' ? 'is-active' : ''}
+          onClick={() => onTab('site')}
+        >
+          <Settings2 size={12} />
+          {t('builder.siteTab')}
+        </button>
+        <button
+          type="button"
           className={tab === 'theme' ? 'is-active' : ''}
           onClick={() => onTab('theme')}
         >
@@ -1556,6 +1709,7 @@ export function Inspector({
           ) : (
             <EmptyPanel />
           ))}
+        {tab === 'site' && <SitePanel />}
         {tab === 'theme' && <ThemePanel />}
         {tab === 'export' && <ExportPanel />}
       </div>

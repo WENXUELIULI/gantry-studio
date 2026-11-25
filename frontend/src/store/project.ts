@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { SiteDocument } from '../types/site';
+import type { NavItem, SiteDocument } from '../types/site';
 import type { PageDetail, ProjectDetail } from '../lib/api';
 import { useBuilderStore } from './builder';
 
@@ -43,6 +43,46 @@ function normalizePath(path: string): string {
   const trimmed = path.trim();
   if (!trimmed || trimmed === '/') return '/';
   return `/${trimmed.replace(/^\/+|\/+$/g, '')}`;
+}
+
+function pageLink(page: Pick<ProjectPage, 'key' | 'title' | 'path'>): NavItem {
+  return {
+    label: page.title,
+    href: page.path,
+    kind: 'page',
+    pageKey: page.key,
+  };
+}
+
+function withPageLink(doc: SiteDocument, link: NavItem): SiteDocument {
+  if (doc.nav.some((item) => item.pageKey === link.pageKey)) return doc;
+  return { ...doc, nav: [...doc.nav, link] };
+}
+
+function withUpdatedPageLink(
+  doc: SiteDocument,
+  pageKey: string,
+  patch: { title?: string; path?: string },
+): SiteDocument {
+  return {
+    ...doc,
+    nav: doc.nav.map((item) =>
+      item.pageKey === pageKey
+        ? {
+            ...item,
+            label: patch.title ?? item.label,
+            href: patch.path ?? item.href,
+          }
+        : item,
+    ),
+  };
+}
+
+function withoutPageLink(doc: SiteDocument, pageKey: string): SiteDocument {
+  return {
+    ...doc,
+    nav: doc.nav.filter((item) => item.pageKey !== pageKey),
+  };
 }
 
 export const useProjectStore = create<ProjectState>()((set, get) => ({
@@ -130,31 +170,47 @@ export const useProjectStore = create<ProjectState>()((set, get) => ({
       },
       version: 0,
     };
-    set({ pages: [...pages, next], activeKey: next.key, dirty: true });
-    useBuilderStore.getState().replaceDocument(next.document);
+    const link = pageLink(next);
+    const nextPages = [...pages, next].map((page) => ({
+      ...page,
+      document: withPageLink(page.document, link),
+    }));
+    set({ pages: nextPages, activeKey: next.key, dirty: true });
+    const active = nextPages.find((page) => page.key === next.key);
+    if (active) useBuilderStore.getState().replaceDocument(active.document);
   },
 
   removePage: (key) => {
-    const pages = get().pages.filter((page) => page.key !== key);
+    const pages = get()
+      .pages.filter((page) => page.key !== key)
+      .map((page) => ({
+        ...page,
+        document: withoutPageLink(page.document, key),
+      }));
     if (!pages.length) return;
     const nextActive =
       get().activeKey === key ? pages[0].key : get().activeKey;
     set({ pages, activeKey: nextActive, dirty: true });
+    const active = pages.find((page) => page.key === nextActive);
+    if (active) useBuilderStore.getState().replaceDocument(active.document);
   },
 
   updatePageMeta: (key, patch) => {
-    set({
-      pages: get().pages.map((page) =>
-        page.key === key
-          ? {
-              ...page,
-              ...patch,
-              path: patch.path ? normalizePath(patch.path) : page.path,
-            }
-          : page,
-      ),
-      dirty: true,
+    const title = patch.title?.trim() || undefined;
+    const path = patch.path ? normalizePath(patch.path) : undefined;
+    const pages = get().pages.map((page) => {
+      const next = page.key === key ? { ...page, ...patch, title: title ?? page.title, path: path ?? page.path } : page;
+      return {
+        ...next,
+        document: withUpdatedPageLink(next.document, key, {
+          title: title ?? next.title,
+          path: path ?? next.path,
+        }),
+      };
     });
+    set({ pages, dirty: true });
+    const active = pages.find((page) => page.key === get().activeKey);
+    if (active) useBuilderStore.getState().replaceDocument(active.document);
   },
 
   markSaved: (pages, projectId, projectName) =>

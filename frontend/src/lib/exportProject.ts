@@ -8,6 +8,11 @@ function pageFile(path: string): string {
   return clean ? `${clean}/index.html` : 'index.html';
 }
 
+function exportedHref(href: string): string {
+  const clean = href.split(/[?#]/)[0].replace(/^\/+|\/+$/g, '');
+  return clean ? `/${clean}/index.html` : '/index.html';
+}
+
 export async function projectToZip(
   projectName: string,
   pages: ProjectPage[],
@@ -20,7 +25,16 @@ export async function projectToZip(
   };
 
   for (const page of pages) {
-    const html = await siteToHtml(page.document as SiteDocument);
+    const document = page.document as SiteDocument;
+    const withStaticLinks: SiteDocument = {
+      ...document,
+      nav: (document.nav ?? []).map((item) =>
+        item.kind === 'page'
+          ? { ...item, href: exportedHref(item.href) }
+          : item,
+      ),
+    };
+    const html = await siteToHtml(withStaticLinks);
     const file = pageFile(page.path);
     files[file] = strToU8(html);
     manifest.pages.push({ title: page.title, path: page.path, file });

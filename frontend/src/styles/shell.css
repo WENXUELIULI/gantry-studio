@@ -3379,3 +3379,175 @@ html[dir='rtl'] .rail-section { text-align: right; }
   font-size: 12px;
 }
 html[dir='rtl'] .field-select { direction: rtl; }
+
+/* Readability pass: editor chrome and inspector controls */
+.gallery-links a,
+.gallery-nav-user {
+  font-size: 13px;
+}
+
+.gallery-status,
+.gallery-index,
+.template-spec,
+.template-tags span {
+  font-size: 11px;
+}
+
+.template-title-row h3 {
+  font-size: 26px;
+}
+
+.template-lead {
+  font-size: 14px;
+}
+
+.rail-head .mono,
+.rail-stat .mono {
+  font-size: 10px;
+}
+
+.rail-page strong {
+  font-size: 13px;
+}
+
+.rail-page span,
+.rail-page .mono {
+  font-size: 10px;
+}
+
+.rail-section-text strong {
+  font-size: 13px;
+}
+
+.rail-section-text span {
+  font-size: 10px;
+}
+
+.rail-section-index,
+.rail-section-actions button {
+  font-size: 11px;
+}
+
+.inspector-tabs button {
+  font-size: 12px;
+}
+
+.inspector-head .mono,
+.field > span,
+.field-label,
+.style-hint,
+.item-card-head .mono {
+  font-size: 11px;
+}
+
+.field input,
+.field textarea,
+.field select,
+.field-select {
+  min-height: 40px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.field textarea {
+  min-height: 76px;
+}
+
+.field select,
+.field-select {
+  appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23171715' stroke-width='1.4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 12px) center;
+}
+
+html[dir='rtl'] .field select,
+html[dir='rtl'] .field-select {
+  padding-right: 10px;
+  padding-left: 34px;
+  background-position: 12px center;
+}
+
+.field input:focus-visible,
+.field textarea:focus-visible,
+.field select:focus-visible,
+.field-select:focus-visible {
+  outline: 2px solid var(--shell-accent);
+  outline-offset: 1px;
+  border-color: var(--shell-accent);
+}
+
+.nav-editor {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.nav-editor-row {
+  display: grid;
+  gap: 9px;
+  padding: 11px;
+  border: 1px solid var(--shell-line);
+  background: #fffdf8;
+}
+
+.nav-editor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #8b8578;
+  font-size: 11px;
+}
+
+.nav-editor-head button {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--shell-line);
+  background: transparent;
+  color: #7d776b;
+  cursor: pointer;
+}
+
+.nav-editor-head button:hover {
+  border-color: #a5261a;
+  color: #a5261a;
+}
+
+.nav-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  margin-top: 12px;
+  padding: 0 12px;
+  border: 1px solid var(--shell-line);
+  background: transparent;
+  color: var(--shell-ink);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.nav-add:hover {
+  border-color: var(--shell-ink);
+}
+
+.nav-page-note {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--shell-line);
+  color: #777166;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.nav-page-note svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--shell-accent);
+}

@@ -240,6 +240,8 @@ function Canvas() {
   const zoom = useBuilderStore((state) => state.zoom);
   const selectedId = useBuilderStore((state) => state.selectedId);
   const scrollRequest = useBuilderStore((state) => state.scrollRequest);
+  const pages = useProjectStore((state) => state.pages);
+  const switchPage = useProjectStore((state) => state.switchPage);
   const selectSection = useBuilderStore((state) => state.selectSection);
   const setZoom = useBuilderStore((state) => state.setZoom);
   const updateSection = useBuilderStore((state) => state.updateSection);
@@ -321,6 +323,10 @@ function Canvas() {
               editable
               selectedId={selectedId}
               onSelect={selectSection}
+              onNavigatePage={(path) => {
+                const page = pages.find((item) => item.path === path);
+                if (page) switchPage(page.key);
+              }}
               onEditSection={(id, field, value) => {
                 updateSection(id, (section) => ({ ...section, [field]: value }) as typeof section);
               }}
