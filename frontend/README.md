@@ -100,40 +100,39 @@ src/
     site/        站点渲染器：6 种首屏 + 8 类区块
     editor/      可编辑文本
   data/          分类、主题、模板内容（30 套）
-  lib/           滚动进度、区块工厂、SectionStyle、主题 token、图片焦点、HTML 导出
-  store/         Zustand 编辑器状态
+  lib/           滚动进度、区块工厂、SectionStyle、主题 token、图片焦点、HTML/ZIP 导出、API 客户端
+  store/         Zustand 编辑器状态 + 云端项目/多页状态
   styles/        shell.css（产品壳）+ site.css（站点主题引擎）
 e2e/             Playwright 端到端
 scripts/         截图脚本
-docs/            工作流与验收文档
 ```
 
 ## 工作流
 
-- 第一步已完成：30 套模板、市场筛选、桌面/手机编辑器、组件级样式、图片焦点与独立裁剪、HTML/项目源文件导出、112 单测 + 6 E2E。
-- 第二步已完成：[docs/WORKFLOW.md](docs/WORKFLOW.md) 定义 30 套模板、组件级样式、图片裁剪、主题 token、源码导出鉴权与会员/支付边界。
-- 第三步已落地 Phase 1–3 的前端部分：主题 token、SectionStyle、媒体焦点、30 套模板；后端登录/支付/源码导出鉴权仍按 Phase 5 执行。
-- 第四步前端验收记录：[docs/ACCEPTANCE.md](docs/ACCEPTANCE.md)。
+- 第一步已完成：30 套模板、市场筛选、桌面/手机编辑器、组件级样式、图片焦点与独立裁剪、HTML/项目源文件导出。
+- 第二步已完成：[工作流文档](../docs/WORKFLOW.md) 定义 30 套模板、组件级样式、图片裁剪、主题 token、源码导出鉴权与会员/支付边界。
+- 第三步已落地 Phase 1–4：主题 token、SectionStyle、媒体焦点、30 套模板、登录与云端项目、多页编辑、HTML/ZIP 导出、登录闸门。
+- 第四步前端验收记录：[验收文档](../docs/ACCEPTANCE.md)。
 
 ## 已验证
 
 - `npx tsc --noEmit` 通过。
-- `npx vitest run`：15 个测试文件，112 个测试通过。
-- `npx playwright test`：6 条用例通过（30 套模板、市场/行业/风格筛选、手机无横向溢出、编辑/主题/设备/预览/导出、滚动视频、独立裁剪、30 套模板 smoke）。
-- `npm run build` 通过（1622 模块；首屏 `index` 350.78 kB / gzip 116.85 kB；按需 `Builder` 323.84 kB / `Gallery` 19.35 kB；CSS 87.96 kB / gzip 16.27 kB）。
+- `npx vitest run`：16 个测试文件，113 个测试通过。
+- `npx playwright test`：8 条用例通过（30 套模板、市场/行业/风格筛选、手机无横向溢出、登录闸门、编辑/主题/设备/预览/导出、滚动视频、独立裁剪、30 套模板 smoke、云端多页往返）。
+- `npm run build` 通过（1629 模块；首屏 `index` 361.16 kB / gzip 120.80 kB；按需 `Builder` 338.01 kB / `Gallery` 19.22 kB；CSS 92.27 kB / gzip 17.10 kB）。
 - `npm run lint` 0 error / 0 warning。
 - 导出 HTML 已在 Playwright 里用 `file://` 实际打开，标题与 8 个区块均存在。
+- 云端流程已用 Playwright 注册账号、创建两页、保存、从云端重开并验证页面标题。
 
 ## 当前边界
 
-- 单页官网；多页、博客、产品详情页在下一阶段。
+- 多页编辑与整站 ZIP 已可用；单页 HTML 仍是主要交付物。
 - 国际模板已有英文文案与英文导航；更细的本地化（货币、地址格式、合规文案）在下一阶段。
 - 图片可调焦点与缩放，也有独立裁剪弹窗；还没有压缩质量与格式选择。
-- 导出是单文件 HTML；React 源码导出、会员鉴权、在线支付尚未接入。
+- 导出为 HTML / 整站 ZIP / 项目 JSON；React 源码生成、支付仍未接入。
 - 编辑器定位是桌面工作台；手机视图用于预览成品，不是手机端编辑器。
+- 需要先运行 `backend` 的 Spring Boot 服务，登录、云端保存与云端项目才能工作。
 
 ## 下一步
 
-第二步工作流已写入 [docs/WORKFLOW.md](docs/WORKFLOW.md)：30 套模板矩阵、组件级样式控制、图片裁剪/焦点、主题 token、HTML/源码导出、会员与支付边界、分阶段任务与质量门禁。
-
-当前已交付前端可交互版本（30 套模板 / 18 主题 / 112 单测 / 6 E2E）。下一步按文档 Phase 5 接入登录、项目云存储、源码导出鉴权与会员支付；Phase 6 做全量视觉回归与验收报告。
+后端已落在 `backend/`：Spring Boot 3.5.6、JWT、项目/页面、乐观锁、HTML/JSON 导出。下一步按 [工作流文档](../docs/WORKFLOW.md) Phase 5 接入真实源码生成、支付与生产部署；Phase 6 做全量视觉回归与最终验收。
