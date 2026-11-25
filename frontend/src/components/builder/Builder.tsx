@@ -25,6 +25,7 @@ import { SiteRenderer } from '../site/SiteRenderer';
 import { Inspector, type InspectorTab } from './Inspector';
 import { SECTION_LABELS, SECTION_TYPES, type SectionType } from '../../types/site';
 import { documentStats } from '../../lib/site';
+import { prefersReducedMotion } from '../../lib/scroll';
 import { LocaleSwitcher } from '../i18n/LocaleSwitcher';
 
 function PageTabs() {
@@ -113,7 +114,7 @@ function PageTabs() {
 function SectionRail() {
   const doc = useBuilderStore((state) => state.doc);
   const selectedId = useBuilderStore((state) => state.selectedId);
-  const selectSection = useBuilderStore((state) => state.selectSection);
+  const revealSection = useBuilderStore((state) => state.revealSection);
   const moveSection = useBuilderStore((state) => state.moveSection);
   const toggleSection = useBuilderStore((state) => state.toggleSection);
   const addSection = useBuilderStore((state) => state.addSection);
@@ -141,11 +142,11 @@ function SectionRail() {
             tabIndex={0}
             className={`rail-section ${selectedId === section.id ? 'is-selected' : ''} ${section.visible ? '' : 'is-hidden'}`}
             key={section.id}
-            onClick={() => selectSection(section.id)}
+            onClick={() => revealSection(section.id)}
             onKeyDown={(event) => {
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-                selectSection(section.id);
+                revealSection(section.id);
               }
             }}
           >
@@ -238,6 +239,7 @@ function Canvas() {
   const device = useBuilderStore((state) => state.device);
   const zoom = useBuilderStore((state) => state.zoom);
   const selectedId = useBuilderStore((state) => state.selectedId);
+  const scrollRequest = useBuilderStore((state) => state.scrollRequest);
   const selectSection = useBuilderStore((state) => state.selectSection);
   const setZoom = useBuilderStore((state) => state.setZoom);
   const updateSection = useBuilderStore((state) => state.updateSection);
@@ -257,6 +259,22 @@ function Canvas() {
     observer.observe(stage);
     return () => observer.disconnect();
   }, [device, setZoom]);
+
+  useEffect(() => {
+    if (!scrollRequest) return;
+    const scroller = document.querySelector<HTMLElement>(
+      '.device-screen .site-scroll',
+    );
+    if (!scroller) return;
+    const target = scroller.querySelector<HTMLElement>(
+      `[data-slot-id="${scrollRequest.id}"]`,
+    );
+    if (!target) return;
+    scroller.scrollTo({
+      top: Math.max(0, target.offsetTop - 12),
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+    });
+  }, [scrollRequest]);
 
   if (!doc) return null;
 

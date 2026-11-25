@@ -175,8 +175,28 @@ test.describe('builder', () => {
     await exported.close();
   });
 
-  test('scroll position drives the hero video timeline', async ({ page }) => {
+  test('scrolls the canvas to the section selected in the rail', async ({ page }) => {
     await page.goto('/');
+    await openTemplate(page);
+
+    const scroller = page.locator('.device-screen .site-scroll');
+    await page.locator('.rail-section').nth(3).click();
+
+    await expect
+      .poll(() => scroller.evaluate((node) => node.scrollTop))
+      .toBeGreaterThan(100);
+
+    const offset = await scroller.evaluate((node) => {
+      const target = node.querySelector('[data-slot-id="products"]');
+      return target instanceof HTMLElement ? target.offsetTop : -1;
+    });
+    expect(offset).toBeGreaterThan(0);
+    await expect
+      .poll(() => scroller.evaluate((node) => node.scrollTop))
+      .toBeGreaterThan(offset - 80);
+  });
+
+  test('scroll position drives the hero video timeline', async ({ page }) => {    await page.goto('/');
     await openTemplate(page);
 
     const video = page.locator('.device-screen video').first();

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { Builder } from './Builder';
 import { useBuilderStore } from '../../store/builder';
@@ -33,6 +33,23 @@ describe('Builder', () => {
     expect(container.querySelector('.device-shell')).toHaveAttribute(
       'data-device',
       'mobile',
+    );
+  });
+
+  it('scrolls the canvas to a section selected from the rail', () => {
+    const { container } = render(<Builder />);
+    const scroller = container.querySelector(
+      '.device-screen .site-scroll',
+    ) as HTMLElement;
+    const scrollTo = vi.spyOn(scroller, 'scrollTo');
+    const railSections = container.querySelectorAll('.rail-section');
+    fireEvent.click(railSections[3]);
+
+    expect(scrollTo).toHaveBeenCalledWith(
+      expect.objectContaining({ behavior: 'smooth' }),
+    );
+    expect(useBuilderStore.getState().selectedId).toBe(
+      useBuilderStore.getState().doc?.sections[3].id,
     );
   });
 

@@ -16,10 +16,16 @@ export const STORAGE_KEY = 'gantry:site:v1';
 
 export type AppView = 'gallery' | 'builder';
 
+export interface SectionScrollRequest {
+  id: string;
+  token: number;
+}
+
 interface BuilderState {
   doc: SiteDocument | null;
   view: AppView;
   selectedId: string | null;
+  scrollRequest: SectionScrollRequest | null;
   device: Device;
   zoom: number;
   history: SiteDocument[];
@@ -29,6 +35,7 @@ interface BuilderState {
   replaceDocument: (doc: SiteDocument) => void;
   closeProject: () => void;
   selectSection: (id: string | null) => void;
+  revealSection: (id: string) => void;
   setDevice: (device: Device) => void;
   setZoom: (zoom: number) => void;
   updateSection: (
@@ -113,6 +120,7 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
     doc: initialDoc,
     view: initialDoc ? 'builder' : 'gallery',
     selectedId: initialDoc?.sections[0]?.id ?? null,
+    scrollRequest: null,
     device: 'desktop',
     zoom: 0.72,
     history: [],
@@ -128,6 +136,7 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
         doc: { ...doc, updatedAt: savedAt },
         view: 'builder',
         selectedId: doc.sections[0]?.id ?? null,
+        scrollRequest: null,
         device: 'desktop',
         history: [],
         future: [],
@@ -136,7 +145,7 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
     },
 
     closeProject: () => {
-      set({ view: 'gallery', selectedId: null });
+      set({ view: 'gallery', selectedId: null, scrollRequest: null });
     },
 
     replaceDocument: (doc) => {
@@ -145,6 +154,7 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
         doc: { ...doc, updatedAt: savedAt },
         view: 'builder',
         selectedId: doc.sections[0]?.id ?? null,
+        scrollRequest: null,
         history: [],
         future: [],
         savedAt,
@@ -152,6 +162,12 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
     },
 
     selectSection: (id) => set({ selectedId: id }),
+
+    revealSection: (id) =>
+      set((state) => ({
+        selectedId: id,
+        scrollRequest: { id, token: (state.scrollRequest?.token ?? 0) + 1 },
+      })),
 
     setDevice: (device) => set({ device }),
 
