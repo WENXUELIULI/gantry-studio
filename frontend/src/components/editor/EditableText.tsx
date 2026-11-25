@@ -1,4 +1,10 @@
-import { useEffect, useRef } from 'react';
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { InlineEditContext } from './inlineEdit';
 
 interface EditableTextProps {
   as?: 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div';
@@ -22,15 +28,16 @@ export function EditableText({
   onCommit,
 }: EditableTextProps) {
   const ref = useRef<HTMLElement | null>(null);
+  const focused = useRef(false);
+  const startValue = useRef(value);
+  const [rendered, setRendered] = useState(value);
+  const edit = useContext(InlineEditContext);
 
   useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    if (document.activeElement === node) return;
-    if (readText(node) === value) return;
-    if (typeof node.innerText === 'string') node.innerText = value;
-    else node.textContent = value;
-  }, [value]);
+    if (focused.current) return;
+    setRendered(value);
+    if (editable && ref.current) ref.current.textContent = value;
+  }, [editable, value]);
 
   const Tag = as;
 
@@ -44,8 +51,21 @@ export function EditableText({
       role={editable ? 'textbox' : undefined}
       aria-multiline={editable ? multiline : undefined}
       data-editable={editable ? 'true' : undefined}
+      onFocus={() => {
+        if (!editable) return;
+        focused.current = true;
+        startValue.current = value;
+        edit?.begin();
+      }}
+      onInput={(event) => {
+        if (!editable || !onCommit) return;
+        const next = readText(event.currentTarget).replace(/\u00a0/g, ' ').trim();
+        if (!next) return;
+        if (next !== value) onCommit(next);
+      }}
       onBlur={(event) => {
         if (!editable || !onCommit) return;
+        focused.current = false;
         const next = readText(event.currentTarget).replace(/\u00a0/g, ' ').trim();
         if (next && next !== value) onCommit(next);
         else {
@@ -55,6 +75,8 @@ export function EditableText({
             event.currentTarget.textContent = value;
           }
         }
+        setRendered(next || value);
+        edit?.end();
       }}
       onKeyDown={(event) => {
         if (!editable) return;
@@ -63,16 +85,20 @@ export function EditableText({
           event.currentTarget.blur();
         }
         if (event.key === 'Escape') {
+          if (onCommit && startValue.current !== value) onCommit(startValue.current);
+          setRendered(startValue.current);
           if (typeof event.currentTarget.innerText === 'string') {
-            event.currentTarget.innerText = value;
+            event.currentTarget.innerText = startValue.current;
           } else {
-            event.currentTarget.textContent = value;
+            event.currentTarget.textContent = startValue.current;
           }
+          focused.current = false;
+          edit?.end();
           event.currentTarget.blur();
         }
       }}
     >
-      {value}
+      {editable ? null : rendered}
     </Tag>
   );
 }

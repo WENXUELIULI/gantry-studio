@@ -6,6 +6,7 @@ import { resolveSectionStyle, styleVars } from '../../lib/sectionStyles';
 import { Hero } from './Heroes';
 import { Section } from './Sections';
 import { SiteNav } from './SiteNav';
+import { InlineEditContext } from '../editor/inlineEdit';
 
 interface SiteRendererProps {
   doc: SiteDocument;
@@ -13,11 +14,9 @@ interface SiteRendererProps {
   editable?: boolean;
   selectedId?: string | null;
   onSelect?: (id: string) => void;
-  onEditSection?: (
-    id: string,
-    field: 'eyebrow' | 'title' | 'body',
-    value: string,
-  ) => void;
+  onEditSection?: (id: string, field: string, value: unknown) => void;
+  onEditStart?: (id: string) => void;
+  onEditEnd?: () => void;
   onNavigatePage?: (path: string) => void;
 }
 
@@ -33,6 +32,8 @@ function SectionSlot({
   selectedId,
   onSelect,
   onEditSection,
+  onEditStart,
+  onEditEnd,
 }: {
   section: SiteSection;
   index: number;
@@ -40,6 +41,8 @@ function SectionSlot({
   selectedId?: string | null;
   onSelect?: (id: string) => void;
   onEditSection?: SiteRendererProps['onEditSection'];
+  onEditStart?: (id: string) => void;
+  onEditEnd?: () => void;
 }) {
   if (!section.visible && !editable) return null;
 
@@ -53,9 +56,13 @@ function SectionSlot({
 
   const edit =
     editable && onEditSection
-      ? (field: 'eyebrow' | 'title' | 'body', value: string) =>
-          onEditSection(section.id, field, value)
+      ? (field: string, value: unknown) => onEditSection(section.id, field, value)
       : undefined;
+
+  const inlineEdit =
+    editable && onEditStart && onEditEnd
+      ? { begin: () => onEditStart(section.id), end: onEditEnd }
+      : null;
 
   return (
     <div
@@ -72,9 +79,13 @@ function SectionSlot({
       onClick={handleClick}
     >
       {section.type === 'hero' ? (
-        <Hero section={section} editable={editable} onEdit={edit} />
+        <InlineEditContext.Provider value={inlineEdit}>
+          <Hero section={section} editable={editable} onEdit={edit} />
+        </InlineEditContext.Provider>
       ) : (
-        <Section section={section} index={index} editable={editable} onEdit={edit} />
+        <InlineEditContext.Provider value={inlineEdit}>
+          <Section section={section} index={index} editable={editable} onEdit={edit} />
+        </InlineEditContext.Provider>
       )}
       {editable && (
         <span className="slot-label mono" aria-hidden="true">
@@ -92,6 +103,8 @@ export function SiteRenderer({
   selectedId,
   onSelect,
   onEditSection,
+  onEditStart,
+  onEditEnd,
   onNavigatePage,
 }: SiteRendererProps) {
   const locale = doc.locale ?? (doc.market === 'global' ? 'en' : 'zh-CN');
@@ -123,6 +136,8 @@ export function SiteRenderer({
               selectedId={selectedId}
               onSelect={onSelect}
               onEditSection={onEditSection}
+              onEditStart={onEditStart}
+              onEditEnd={onEditEnd}
             />
           ))}
         </main>

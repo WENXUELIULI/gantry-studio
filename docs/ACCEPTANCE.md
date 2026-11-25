@@ -12,7 +12,7 @@
 - 桌面/手机双视图、滚动视频、3–4 图拼贴、组件级样式、图片焦点/独立裁剪均可用。
 - 七语言 UI（zh-CN / en / ar / tr / he / fa / ur）与 RTL；生成站点可设置 locale，导出写入 lang/dir。
 - 登录、云端项目、多页编辑、PC → 手机接力、单页 HTML / 整站 ZIP 导出已打通。
-- 前端 138 个单元测试、15 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
+- 前端 138 个单元测试、16 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
 
 尚未完成：真实源码（React/Java）生成、在线支付、手机端编辑工作台。JSON 项目源文件当前是页面文档，不是生成出来的工程源码。
 
@@ -43,13 +43,13 @@ npx tsc --noEmit          # 通过
 npx vitest run            # 23 files, 138 tests passed
 npx playwright test       # 9 passed (35.6s)
 npm run lint              # 0 error, 0 warning
-npm run build             # 1660 modules
+npm run build             # 1661 modules
 ```
 
 前端构建体积：
 
 - 首屏 `index` 458.60 kB / gzip 153.12 kB
-- 按需 `Builder` 347.20 kB / gzip 101.95 kB，`Gallery` 19.11 kB / gzip 6.42 kB
+- 按需 `Builder` 348.07 kB / gzip 102.15 kB，`Gallery` 19.11 kB / gzip 6.43 kB
 - `ImageCropper` 3.27 kB / gzip 1.42 kB
 - CSS 98.36 kB / gzip 18.38 kB
 
@@ -75,6 +75,7 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 - `screenshots/locale-menu.png`、`locale-menu-ar.png`：语言菜单的固定列宽、统一对齐与 RTL 定位
 - `screenshots/builder-site-nav.png`：站点导航编辑器、页面目标选择、字号与 select 样式
 - `screenshots/builder-cta-target.png`：询价按钮目标改为页面
+- `screenshots/builder-inline-sync.png`：画布标题编辑与右侧检查器实时同步
 - `screenshots/footer-check.png`：页脚与其它区块共用 section gutter
 - `screenshots/preview-mobile.png`
 

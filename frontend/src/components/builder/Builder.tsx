@@ -245,6 +245,8 @@ function Canvas() {
   const selectSection = useBuilderStore((state) => state.selectSection);
   const setZoom = useBuilderStore((state) => state.setZoom);
   const updateSection = useBuilderStore((state) => state.updateSection);
+  const beginSectionEdit = useBuilderStore((state) => state.beginSectionEdit);
+  const endSectionEdit = useBuilderStore((state) => state.endSectionEdit);
   const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -330,6 +332,8 @@ function Canvas() {
               onEditSection={(id, field, value) => {
                 updateSection(id, (section) => ({ ...section, [field]: value }) as typeof section);
               }}
+              onEditStart={beginSectionEdit}
+              onEditEnd={endSectionEdit}
             />
           </div>
         </div>

@@ -1,0 +1,15 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.addInitScript(() => localStorage.setItem('gantry:locale:v1', 'zh-CN'));
+await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle' });
+await page.getByRole('button', { name: /使用(此)?模板 桁架精工/ }).click();
+await page.waitForSelector('.builder');
+const title = page.locator('.device-screen .hero-title[data-editable="true"]');
+await title.click();
+await page.keyboard.press('Control+A');
+await page.keyboard.type('画布与右侧实时同步');
+await page.waitForTimeout(400);
+await page.screenshot({ path: 'E:/asd/gantry-studio/frontend/screenshots/builder-inline-sync.png' });
+await browser.close();
+console.log('inline sync screenshot done');

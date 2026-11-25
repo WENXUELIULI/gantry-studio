@@ -431,6 +431,24 @@ function HeroFields({
   const set = useSectionUpdate(section);
   return (
     <>
+      <TextField
+        label="眉题 / EYEBROW"
+        value={section.eyebrow}
+        onCommit={(eyebrow) => set({ eyebrow })}
+      />
+      <TextField
+        label="主标题 / TITLE"
+        value={section.title}
+        multiline
+        rows={3}
+        onCommit={(title) => set({ title })}
+      />
+      <TextField
+        label="说明 / BODY"
+        value={section.body ?? ''}
+        multiline
+        onCommit={(body) => set({ body })}
+      />
       <SelectField
         label="首屏叙事"
         value={section.heroKind}

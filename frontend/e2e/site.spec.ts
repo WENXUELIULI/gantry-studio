@@ -197,6 +197,24 @@ test.describe('builder', () => {
     );
   });
 
+  test('reflects canvas edits in the inspector and keeps one undo step', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+
+    const title = page.locator('.device-screen .hero-title[data-editable="true"]');
+    const titleField = page.getByLabel('主标题 / TITLE');
+    await expect(titleField).toHaveValue(/0\.01 mm/i);
+
+    await title.click();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.type('画布改的标题');
+    await expect(titleField).toHaveValue(/画布改的标题/);
+
+    await title.evaluate((el) => (el as HTMLElement).blur());
+    await page.getByRole('button', { name: '撤销' }).click();
+    await expect(title).toContainText(/0\.01 mm/i);
+  });
+
   test('updates the canvas while typing in the inspector', async ({ page }) => {
     await page.goto('/');
     await openTemplate(page);
