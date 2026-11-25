@@ -3605,3 +3605,65 @@ html[dir='rtl'] .field-select {
   cursor: pointer;
 }
 .keyframe-remove:hover { color: var(--shell-accent); border-color: var(--shell-accent); }
+
+.field-label {
+  align-items: center;
+}
+
+.field-help {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: var(--shell-muted);
+  cursor: help;
+  border: 1px solid var(--shell-line);
+  border-radius: 50%;
+}
+
+.field-help:hover,
+.field-help:focus-visible {
+  color: var(--shell-accent);
+  border-color: var(--shell-accent);
+  outline: none;
+}
+
+.field-help::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 80;
+  width: 236px;
+  padding: 10px 12px;
+  border: 1px solid var(--shell-ink);
+  background: var(--shell-ink);
+  color: var(--shell-paper);
+  font-family: var(--shell-body);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: 0;
+  text-align: left;
+  white-space: normal;
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.field-help:hover::after,
+.field-help:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 760px) {
+  .field-help::after {
+    right: -8px;
+    width: min(220px, 70vw);
+  }
+}

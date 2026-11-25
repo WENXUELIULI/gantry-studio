@@ -331,8 +331,21 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
     },
 
     undo: () => {
-      const { history, doc } = get();
-      if (!history.length || !doc) return;
+      const { history, doc, editSectionId, editBaseline } = get();
+      if (!doc) return;
+      if (editSectionId && editBaseline) {
+        const savedAt = persist(editBaseline);
+        set({
+          doc: { ...editBaseline, updatedAt: savedAt },
+          future: [structuredClone(doc), ...get().future].slice(0, 30),
+          savedAt,
+          selectedId: editBaseline.sections[0]?.id ?? null,
+          editSectionId: null,
+          editBaseline: null,
+        });
+        return;
+      }
+      if (!history.length) return;
       const previous = history[history.length - 1];
       const savedAt = persist(previous);
       set({

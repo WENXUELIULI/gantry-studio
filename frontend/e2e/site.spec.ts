@@ -231,6 +231,20 @@ test.describe('builder', () => {
     await expect(title).toContainText(/0\.01 mm/i);
   });
 
+  test('reverts the canvas when undo is clicked while editing', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+
+    const title = page.locator('.device-screen .hero-title[data-editable="true"]');
+    await title.click();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.type('撤销前的新标题');
+    await expect(title).toContainText('撤销前的新标题');
+
+    await page.getByRole('button', { name: '撤销', exact: true }).click();
+    await expect(title).toContainText(/0\.01 mm/i);
+  });
+
   test('updates the canvas while typing in the inspector', async ({ page }) => {
     await page.goto('/');
     await openTemplate(page);

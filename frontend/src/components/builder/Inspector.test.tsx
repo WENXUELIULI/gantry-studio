@@ -144,6 +144,9 @@ describe('Inspector', () => {
     select('products');
     render(<Inspector tab="content" onTab={vi.fn()} />);
 
+    expect(
+      screen.getByRole('note', { name: /滚动进入视口时的节奏/ }),
+    ).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('区块布局'), {
       target: { value: 'split' },
     });

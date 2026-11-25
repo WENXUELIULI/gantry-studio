@@ -34,7 +34,13 @@ export function EditableText({
   const edit = useContext(InlineEditContext);
 
   useEffect(() => {
-    if (focused.current) return;
+    if (focused.current && ref.current) {
+      const current = readText(ref.current).replace(/\u00a0/g, ' ').trim();
+      if (current === value) return;
+      ref.current.textContent = value;
+      setRendered(value);
+      return;
+    }
     setRendered(value);
     if (editable && ref.current) ref.current.textContent = value;
   }, [editable, value]);

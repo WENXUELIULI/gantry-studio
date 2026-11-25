@@ -14,7 +14,7 @@ export const STYLE_CONTROLS: StyleControl[] = [
   {
     key: 'layout',
     label: '布局',
-    hint: '区块内部的排布方式',
+    hint: '决定这一区块怎么排：默认 / 左右分栏 / 通栏 / 窄栏 / 上下堆叠。只影响当前区块。',
     options: [
       { value: 'default', label: '默认' },
       { value: 'split', label: '左右分栏' },
@@ -26,7 +26,7 @@ export const STYLE_CONTROLS: StyleControl[] = [
   {
     key: 'density',
     label: '密度',
-    hint: '留白与内容间距',
+    hint: '控制上下留白与内容间距：舒展更松弛，紧凑适合参数多的区块。',
     options: [
       { value: 'airy', label: '舒展' },
       { value: 'balanced', label: '平衡' },
@@ -36,7 +36,7 @@ export const STYLE_CONTROLS: StyleControl[] = [
   {
     key: 'align',
     label: '对齐',
-    hint: '标题与正文的轴线',
+    hint: '标题、正文与按钮沿左侧轴线排，还是整体居中。',
     options: [
       { value: 'left', label: '左对齐' },
       { value: 'center', label: '居中' },
@@ -45,7 +45,7 @@ export const STYLE_CONTROLS: StyleControl[] = [
   {
     key: 'surface',
     label: '表面',
-    hint: '区块底色',
+    hint: '区块底色：跟随页面=透明；浅表面=浅底卡片；强调色=品牌色底；墨色=深色底。',
     options: [
       { value: 'none', label: '跟随页面' },
       { value: 'surface', label: '浅表面' },
@@ -56,7 +56,7 @@ export const STYLE_CONTROLS: StyleControl[] = [
   {
     key: 'ratio',
     label: '媒体比例',
-    hint: '图片/视频裁切比例',
+    hint: '图片/视频的显示比例，超出部分按焦点裁切。',
     options: [
       { value: '1:1', label: '1 : 1' },
       { value: '4:3', label: '4 : 3' },
@@ -68,7 +68,7 @@ export const STYLE_CONTROLS: StyleControl[] = [
   {
     key: 'columns',
     label: '列数',
-    hint: '卡片/条目分列',
+    hint: '卡片/条目一行分几列；手机端会自动降列。',
     options: [
       { value: '1', label: '1 列' },
       { value: '2', label: '2 列' },
@@ -79,7 +79,7 @@ export const STYLE_CONTROLS: StyleControl[] = [
   {
     key: 'overlay',
     label: '影像遮罩',
-    hint: '首屏/CTA 的可读性',
+    hint: '压在图片/视频上的暗层：轻遮罩适合亮图，重遮罩适合复杂背景，用来保证白字可读。',
     options: [
       { value: 'none', label: '无' },
       { value: 'soft', label: '轻遮罩' },
@@ -89,7 +89,7 @@ export const STYLE_CONTROLS: StyleControl[] = [
   {
     key: 'motion',
     label: '动效',
-    hint: '进入视口时的节奏',
+    hint: '滚动进入视口时的节奏：无 / 轻微淡入 / 上浮；会尊重系统“减少动效”设置。',
     options: [
       { value: 'none', label: '无' },
       { value: 'subtle', label: '轻微' },

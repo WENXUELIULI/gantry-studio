@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from 'react';
 import {
+  CircleHelp,
   Code2,
   Copy,
   Download,
@@ -187,17 +188,35 @@ function SelectField<T extends string>({
   value,
   options,
   onChange,
+  hint,
 }: {
   label: string;
   value: T;
   options: { value: T; label: string }[];
   onChange: (value: T) => void;
+  hint?: string;
 }) {
   return (
     <label className="field">
-      <span>{label}</span>
+      <span className="field-label">
+        {label}
+        {hint && (
+          <span
+            className="field-help"
+            tabIndex={0}
+            role="note"
+            aria-label={hint}
+            data-tooltip={hint}
+            title={hint}
+          >
+            <CircleHelp size={12} strokeWidth={1.8} aria-hidden="true" />
+          </span>
+        )}
+      </span>
       <select
         value={value}
+        aria-label={label}
+        title={hint}
         onChange={(event) => onChange(event.target.value as T)}
       >
         {options.map((option) => (
@@ -458,7 +477,9 @@ function KeyframeEditor({
           添加
         </button>
       </div>
-      <p className="style-hint">滚动进度到达关键帧时跳到对应时间，并高亮目标栏目。</p>
+      <p className="style-hint">
+        滚动到「进度」时，视频跳到「时间」，并高亮「栏目」。例如 33% → 2s → 数字：页面滚到三分之一，视频播到第 2 秒，导航高亮数字。
+      </p>
       {frames.map((frame, index) => (
         <div className="keyframe-row" key={`${frame.sectionId}-${index}`}>
           <label>
@@ -599,6 +620,7 @@ function HeroFields({
                 { value: 'ambient', label: '自动循环' },
                 { value: 'scrub', label: '跟随滚动逐帧' },
               ]}
+              hint="自动循环：视频作为背景持续播放。跟随滚动逐帧：页面滚动进度会映射到视频时间，适合用关键帧讲一段产线故事。"
               onChange={(videoPlayback) =>
                 set({ videoPlayback: videoPlayback as 'ambient' | 'scrub' })
               }
@@ -1115,6 +1137,7 @@ function SectionStylePanel({ section }: { section: SiteSection }) {
             label={`区块${control.label}`}
             value={String(current[control.key])}
             options={control.options}
+            hint={control.hint}
             onChange={(value) => change(control, value)}
           />
         ))}

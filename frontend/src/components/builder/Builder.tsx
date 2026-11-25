@@ -423,6 +423,7 @@ function Topbar({
   const redo = useBuilderStore((state) => state.redo);
   const history = useBuilderStore((state) => state.history);
   const future = useBuilderStore((state) => state.future);
+  const editSectionId = useBuilderStore((state) => state.editSectionId);
   const [name, setName] = useState(doc?.name ?? '');
   const [cloudState, setCloudState] = useState<string | null>(null);
   const { t, i18n } = useTranslation();
@@ -504,7 +505,7 @@ function Topbar({
       <LocaleSwitcher compact />
 
       <div className="topbar-group" aria-label={t('common.undo')}>
-        <button type="button" aria-label={t('common.undo')} disabled={!history.length} onClick={undo}>
+        <button type="button" aria-label={t('common.undo')} disabled={!history.length && !editSectionId} onClick={undo}>
           <Undo2 size={13} />
         </button>
         <button type="button" aria-label={t('common.redo')} disabled={!future.length} onClick={redo}>

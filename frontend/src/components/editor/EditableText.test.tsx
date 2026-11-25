@@ -62,6 +62,21 @@ describe('EditableText', () => {
     expect(onCommit).not.toHaveBeenCalled();
   });
 
+  it('applies an external undo while the field is still focused', () => {
+    const onCommit = vi.fn();
+    const { rerender } = render(
+      <EditableText as="h1" value="原始标题" editable onCommit={onCommit} />,
+    );
+    const node = screen.getByRole('textbox');
+    fireEvent.focus(node);
+    node.innerText = '输入中的标题';
+    fireEvent.input(node);
+
+    rerender(<EditableText as="h1" value="撤销后的标题" editable onCommit={onCommit} />);
+
+    expect(node.textContent).toBe('撤销后的标题');
+  });
+
   it('renders a plain element when editing is disabled', () => {
     const onCommit = vi.fn();
     render(
