@@ -24,7 +24,13 @@ await page.getByRole('button', { name: '使用模板 桁架精工' }).click();
 await page.waitForSelector('.builder');
 await page.waitForTimeout(900);
 await page.getByRole('button', { name: '添加页面' }).click();
-await page.waitForTimeout(600);
+await page.waitForTimeout(500);
+await page.getByText('页面设置').click();
+await page.getByLabel('页面标题').fill('产品系列');
+await page.getByLabel('页面标题').press('Enter');
+await page.getByLabel('页面路径').fill('/products');
+await page.getByLabel('页面路径').press('Enter');
+await page.waitForTimeout(500);
 await page.screenshot({ path: `${out}/builder-pages.png` });
 
 await page.getByRole('button', { name: '云端' }).click();

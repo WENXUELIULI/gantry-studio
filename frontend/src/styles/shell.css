@@ -3217,3 +3217,28 @@ a {
   cursor: pointer;
 }
 .export-login-note button:hover { background: #7b301c; color: #fff7ef; }
+
+.rail-page-meta {
+  flex-basis: 100%;
+  padding: 4px 6px 6px;
+  border-top: 1px dashed #cfc8b9;
+  color: #6f6a5e;
+  font-size: 9px;
+}
+.rail-page-meta summary {
+  padding: 4px 2px;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  list-style: none;
+}
+.rail-page-meta summary::-webkit-details-marker { display: none; }
+.rail-page-meta label { display: grid; gap: 4px; margin-top: 4px; }
+.rail-page-meta input {
+  width: 100%;
+  padding: 5px 6px;
+  border: 1px solid #d8d2c5;
+  background: #fffdf8;
+  color: var(--shell-ink);
+  font: inherit;
+  font-size: 10px;
+}

@@ -31,9 +31,20 @@ function PageTabs() {
   const switchPage = useProjectStore((state) => state.switchPage);
   const addPage = useProjectStore((state) => state.addPage);
   const syncActive = useProjectStore((state) => state.syncActive);
+  const updatePageMeta = useProjectStore((state) => state.updatePageMeta);
   const doc = useBuilderStore((state) => state.doc);
+  const activePage = pages.find((page) => page.key === activeKey);
 
   if (!doc || pages.length === 0) return null;
+
+  const commitMeta = (
+    key: string,
+    patch: { title?: string; path?: string },
+  ) => {
+    if (patch.title !== undefined && !patch.title.trim()) return;
+    if (patch.path !== undefined && !patch.path.trim()) return;
+    updatePageMeta(key, patch);
+  };
 
   return (
     <div className="rail-pages">
@@ -53,6 +64,33 @@ function PageTabs() {
           <span className="mono">{page.path}</span>
         </button>
       ))}
+      {activePage ? (
+        <details className="rail-page-meta" key={activePage.key}>
+          <summary>页面设置</summary>
+          <label>
+            <span>标题</span>
+            <input
+              defaultValue={activePage.title}
+              aria-label="页面标题"
+              onBlur={(event) => commitMeta(activePage.key, { title: event.target.value })}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') event.currentTarget.blur();
+              }}
+            />
+          </label>
+          <label>
+            <span>路径</span>
+            <input
+              defaultValue={activePage.path}
+              aria-label="页面路径"
+              onBlur={(event) => commitMeta(activePage.key, { path: event.target.value })}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') event.currentTarget.blur();
+              }}
+            />
+          </label>
+        </details>
+      ) : null}
       <button
         type="button"
         className="rail-page-add"

@@ -114,8 +114,7 @@ export const useProjectStore = create<ProjectState>()((set, get) => ({
   },
 
   addPage: (doc) => {
-    const { pages, activeKey } = get();
-    const active = pages.find((page) => page.key === activeKey);
+    const { pages } = get();
     const count = pages.length + 1;
     let path = `/page-${count}`;
     while (pages.some((page) => page.path === path)) path = `${path}-${count}`;
@@ -132,12 +131,7 @@ export const useProjectStore = create<ProjectState>()((set, get) => ({
       version: 0,
     };
     set({ pages: [...pages, next], activeKey: next.key, dirty: true });
-    import('./builder').then(({ useBuilderStore }) =>
-      useBuilderStore.getState().replaceDocument(next.document),
-    );
-    if (active) {
-      // Keep the previous page's last edit; the caller syncs before adding.
-    }
+    useBuilderStore.getState().replaceDocument(next.document);
   },
 
   removePage: (key) => {

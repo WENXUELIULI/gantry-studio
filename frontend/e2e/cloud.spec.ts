@@ -21,6 +21,11 @@ test('registers, saves a multi-page project and reopens it from cloud', async ({
   await page.getByRole('button', { name: '添加页面' }).click();
   await expect(page.locator('.rail-pages')).toContainText('新页面 2');
   await page.getByRole('button', { name: '新页面 2' }).click();
+  await page.getByText('页面设置').click();
+  await page.getByLabel('页面标题').fill('产品系列');
+  await page.getByLabel('页面标题').press('Enter');
+  await page.getByLabel('页面路径').fill('/products');
+  await page.getByLabel('页面路径').press('Enter');
 
   await page.getByRole('button', { name: '云端' }).click();
   await expect(page.getByText(/云端已保存/)).toBeVisible({ timeout: 15_000 });
@@ -35,5 +40,5 @@ test('registers, saves a multi-page project and reopens it from cloud', async ({
   await expect(page.getByRole('dialog', { name: '云端项目' })).toBeVisible();
   await page.locator('.cloud-project').first().click();
   await expect(page.locator('.builder')).toBeVisible();
-  await expect(page.locator('.rail-pages')).toContainText('新页面 2');
+  await expect(page.locator('.rail-pages')).toContainText('产品系列');
 });
