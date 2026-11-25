@@ -15,6 +15,11 @@ await page.getByRole('option', { name: /العربية/ }).click();
 await page.waitForTimeout(500);
 await page.screenshot({ path: `${out}/gallery-ar.png` });
 
+await page.locator('.locale-trigger').click();
+await page.waitForTimeout(250);
+await page.screenshot({ path: `${out}/locale-menu-ar.png` });
+await page.keyboard.press('Escape');
+
 await page.locator('.template-card').first().click();
 await page.waitForSelector('.builder');
 await page.waitForTimeout(700);

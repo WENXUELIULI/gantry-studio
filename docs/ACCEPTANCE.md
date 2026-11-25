@@ -72,7 +72,7 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 - `screenshots/builder-export.png`：登录提示 + 单文件 HTML + 整站 ZIP + Free/Pro
 - `screenshots/auth-dialog.png`、`builder-pages.png`、`cloud-projects.png`
 - `screenshots/gallery-ar.png`、`builder-ar.png`：阿拉伯语 RTL 界面
-- `screenshots/locale-menu.png`：语言下拉菜单的固定列宽与统一对齐
+- `screenshots/locale-menu.png`、`locale-menu-ar.png`：语言菜单的固定列宽、统一对齐与 RTL 定位
 - `screenshots/preview-mobile.png`
 
 ## 5. 已知边界
