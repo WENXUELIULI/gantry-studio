@@ -337,6 +337,34 @@ test.describe('builder', () => {
       .toBeGreaterThan(offset - 80);
   });
 
+  test('navigates sections from the mobile menu', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+    await page.getByRole('button', { name: '手机视图' }).click();
+
+    await page.locator('.device-screen .site-menu-button').click();
+    await page.locator('.device-screen .site-mobile-menu a[href="#products"]').click();
+
+    const scroller = page.locator('.device-screen .site-scroll');
+    await expect
+      .poll(() => scroller.evaluate((node) => node.scrollTop))
+      .toBeGreaterThan(100);
+    await expect(page.locator('.rail-section').nth(3)).toHaveClass(/is-selected/);
+  });
+
+  test('opens a second page from the mobile menu', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+    await page.locator('.rail-page-add').click();
+    await page.locator('.rail-pages button').first().click();
+    await page.getByRole('button', { name: '手机视图' }).click();
+
+    await page.locator('.device-screen .site-menu-button').click();
+    await page.locator('.device-screen .site-mobile-menu a[href="/page-2"]').click();
+
+    await expect(page.locator('.rail-pages button.is-active')).toContainText('新页面 2');
+  });
+
   test('syncs the left rail when the canvas scrolls', async ({ page }) => {
     await page.goto('/');
     await openTemplate(page);

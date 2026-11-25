@@ -393,6 +393,9 @@
   top: var(--nav-h);
   left: 0;
   right: 0;
+  max-height: calc(100cqh - var(--nav-h));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 12px var(--gutter) 24px;
   background: var(--paper);
   border-bottom: 1px solid var(--line);

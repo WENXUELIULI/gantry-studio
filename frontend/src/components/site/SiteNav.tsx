@@ -97,7 +97,9 @@ export function SiteNav({
   }, [doc.id, doc.sections, activeSceneId]);
 
   const follow = (event: MouseEvent<HTMLAnchorElement>, href: string, kind?: string) => {
-    if (kind === 'page' && onNavigatePage) {
+    const targetKind =
+      kind ?? (href.startsWith('#') ? 'section' : href.startsWith('/') ? 'page' : 'url');
+    if (targetKind === 'page' && onNavigatePage) {
       event.preventDefault();
       setOpen(false);
       onNavigatePage(href);
@@ -106,7 +108,7 @@ export function SiteNav({
     if (!editable) return;
     event.preventDefault();
     setOpen(false);
-    if (kind === 'section') onNavigateSection?.(href.replace(/^#/, ''));
+    if (targetKind === 'section') onNavigateSection?.(href.replace(/^#/, ''));
   };
 
   return (

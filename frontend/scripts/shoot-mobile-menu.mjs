@@ -1,0 +1,15 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.addInitScript(() => localStorage.setItem('gantry:locale:v1', 'zh-CN'));
+await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle' });
+await page.getByRole('button', { name: /使用(此)?模板 桁架精工/ }).click();
+await page.waitForSelector('.builder');
+await page.locator('.rail-page-add').click();
+await page.locator('.rail-pages button').first().click();
+await page.getByRole('button', { name: '手机视图' }).click();
+await page.locator('.device-screen .site-menu-button').click();
+await page.waitForTimeout(350);
+await page.screenshot({ path: 'E:/asd/gantry-studio/frontend/screenshots/builder-mobile-menu.png' });
+await browser.close();
+console.log('mobile menu screenshot done');
