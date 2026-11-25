@@ -51,6 +51,9 @@ export function EditableText({
       role={editable ? 'textbox' : undefined}
       aria-multiline={editable ? multiline : undefined}
       data-editable={editable ? 'true' : undefined}
+      onClick={(event) => {
+        if (editable && event.currentTarget.closest('a')) event.preventDefault();
+      }}
       onFocus={() => {
         if (!editable) return;
         focused.current = true;

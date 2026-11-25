@@ -272,6 +272,20 @@ test.describe('builder', () => {
     await page.keyboard.press('Escape');
   });
 
+  test('edits section item copy directly on the canvas', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+
+    const item = page.locator('.device-screen .capability-title').first();
+    await item.scrollIntoViewIfNeeded();
+    await item.click();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.type('画布直改的能力项');
+    await page.keyboard.press('Tab');
+
+    await expect(item).toHaveText('画布直改的能力项');
+  });
+
   test('scrolls the canvas to the section selected in the rail', async ({ page }) => {
     await page.goto('/');
     await openTemplate(page);
