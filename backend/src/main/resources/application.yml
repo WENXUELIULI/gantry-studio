@@ -1,0 +1,44 @@
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: never
+
+spring:
+  application:
+    name: gantry-api
+  datasource:
+    url: ${GANTRY_DB_URL:jdbc:h2:file:./data/gantry;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH}
+    username: ${GANTRY_DB_USER:sa}
+    password: ${GANTRY_DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  jwt:
+    secret: ${GANTRY_JWT_SECRET:gantry-development-secret-key-change-me-0123456789abcdef}
+    access-ttl: ${GANTRY_ACCESS_TTL:PT15M}
+    refresh-ttl: ${GANTRY_REFRESH_TTL:P30D}
+  cors:
+    allowed-origins: ${GANTRY_CORS_ORIGINS:http://localhost:5174,http://127.0.0.1:5174}
+  limits:
+    max-pages: 20
+    max-document-bytes: 2097152
+    max-export-bytes: 5242880

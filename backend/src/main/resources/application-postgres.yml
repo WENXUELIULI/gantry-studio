@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: ${GANTRY_DB_URL:jdbc:postgresql://localhost:5432/gantry}
+    username: ${GANTRY_DB_USER:gantry}
+    password: ${GANTRY_DB_PASSWORD:gantry}

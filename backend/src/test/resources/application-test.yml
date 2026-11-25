@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:gantry-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+app:
+  jwt:
+    secret: gantry-test-secret-key-that-is-long-enough-0123456789
+    access-ttl: PT15M
+    refresh-ttl: P7D
+  limits:
+    max-pages: 5
+    max-document-bytes: 65536
+    max-export-bytes: 65536
