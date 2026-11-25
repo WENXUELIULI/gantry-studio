@@ -33,6 +33,32 @@ export function createDocumentFromTemplate(
 ): SiteDocument {
   const labels =
     template.market === 'global' ? GLOBAL_NAV_LABELS : CN_NAV_LABELS;
+  const sections = cloneSections(template.sections);
+  const hero = sections.find(
+    (section): section is HeroSection => section.type === 'hero',
+  );
+  if (hero) {
+    const isFilm =
+      hero.media.kind === 'video' ||
+      /\.(webm|mp4|mov)(\?|$)/i.test(hero.media.src);
+    if (isFilm || hero.heroKind === 'video-scrub') {
+      hero.media = { ...hero.media, kind: 'video' };
+      hero.videoPlayback ??=
+        hero.heroKind === 'video-scrub' ? 'scrub' : 'ambient';
+    }
+    if (hero.heroKind === 'video-scrub' && !hero.keyframes?.length) {
+      const targets = [
+        hero,
+        ...sections.filter((section) => section.type !== 'hero').slice(0, 3),
+      ];
+      hero.keyframes = targets.map((section, index) => ({
+        at: targets.length === 1 ? 0 : (index / (targets.length - 1)) * 100,
+        time: index * 2,
+        sectionId: section.id,
+        label: section.title.split('\n')[0],
+      }));
+    }
+  }
   return {
     id: createId('site'),
     code: template.code,
@@ -53,7 +79,7 @@ export function createDocumentFromTemplate(
         labelKey: `nav.${index}`,
       })),
     ctaTarget: { href: '#cta', kind: 'section' as const },
-    sections: cloneSections(template.sections),
+    sections,
     updatedAt: new Date().toISOString(),
   };
 }

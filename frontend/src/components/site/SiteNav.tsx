@@ -1,6 +1,7 @@
-import { useState, type MouseEvent } from 'react';
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import type { SiteDocument } from '../../types/site';
 import { siteChrome } from '../../i18n/siteStrings';
+import { activeKeyframe, computeScrollProgress } from '../../lib/scroll';
 
 export function SiteNav({
   doc,
@@ -14,6 +15,8 @@ export function SiteNav({
   onNavigateSection?: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  const [activeSection, setActiveSection] = useState<string | undefined>();
   const locale = doc.locale ?? (doc.market === 'global' ? 'en' : 'zh-CN');
   const chrome = siteChrome(locale);
   const code = locale === 'zh-CN' ? 'CN' : locale.split('-')[0].toUpperCase();
@@ -24,6 +27,49 @@ export function SiteNav({
     const index = Number(item.labelKey.slice('nav.'.length));
     return chrome.nav[index] ?? item.label;
   };
+
+  useEffect(() => {
+    const navElement = navRef.current;
+    const root = navElement?.closest('.site-root');
+    const scroller = root?.querySelector<HTMLElement>('[data-site-scroll]');
+    const hero = doc.sections.find((section) => section.type === 'hero');
+    if (!scroller || !hero?.keyframes?.length) {
+      setActiveSection(undefined);
+      return;
+    }
+    const target = scroller.querySelector<HTMLElement>(
+      `[data-slot-id="${hero.id}"]`,
+    );
+    if (!target) return;
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const scrollTop = scroller.scrollTop;
+      const sectionTop =
+        target.getBoundingClientRect().top -
+        scroller.getBoundingClientRect().top +
+        scrollTop;
+      const progress = computeScrollProgress({
+        scrollTop,
+        viewportHeight: scroller.clientHeight,
+        sectionTop,
+        sectionHeight: target.offsetHeight,
+      });
+      setActiveSection(activeKeyframe(progress, hero.keyframes)?.sectionId);
+    };
+    const request = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+    update();
+    scroller.addEventListener('scroll', request, { passive: true });
+    window.addEventListener('resize', request);
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      scroller.removeEventListener('scroll', request);
+      window.removeEventListener('resize', request);
+    };
+  }, [doc.id, doc.sections]);
 
   const follow = (event: MouseEvent<HTMLAnchorElement>, href: string, kind?: string) => {
     if (kind === 'page' && onNavigatePage) {
@@ -39,7 +85,10 @@ export function SiteNav({
   };
 
   return (
-    <header className={`site-nav ${doc.theme.dark ? 'site-nav--dark' : ''}`}>
+    <header
+      ref={navRef}
+      className={`site-nav ${doc.theme.dark ? 'site-nav--dark' : ''}`}
+    >
       <a className="site-brand" href="#top" aria-label={`${doc.name} ${chrome.home}`}>
         <span className="site-brand-mark" aria-hidden="true">
           <i />
@@ -59,6 +108,8 @@ export function SiteNav({
           <a
             href={item.href}
             key={`${item.href}-${index}`}
+            className={activeSection === item.href.replace(/^#/, '') ? 'is-active' : undefined}
+            aria-current={activeSection === item.href.replace(/^#/, '') ? 'true' : undefined}
             onClick={(event) => follow(event, item.href, item.kind)}
           >
             {navLabel(item)}

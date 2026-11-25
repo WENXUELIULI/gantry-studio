@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import type { HeroSection } from '../../types/site';
 import { useSectionProgress } from '../../lib/useSectionProgress';
-import { scrubTime } from '../../lib/scroll';
+import { activeKeyframe, keyframeTime } from '../../lib/scroll';
 import { cropBackground, cropVars } from '../../lib/media';
 import { EditableText } from '../editor/EditableText';
 
@@ -9,18 +9,33 @@ export interface HeroProps {
   section: HeroSection;
   editable: boolean;
   onEdit?: (field: 'title' | 'eyebrow', value: string) => void;
+  onActiveSection?: (id: string) => void;
 }
 
-export function Hero({ section, editable, onEdit }: HeroProps) {
+export function Hero({ section, editable, onEdit, onActiveSection }: HeroProps) {
   switch (section.heroKind) {
     case 'video-scrub':
-      return <VideoScrubHero section={section} editable={editable} onEdit={onEdit} />;
+      return (
+        <VideoScrubHero
+          section={section}
+          editable={editable}
+          onEdit={onEdit}
+          onActiveSection={onActiveSection}
+        />
+      );
     case 'image-collage':
       return <ImageCollageHero section={section} editable={editable} onEdit={onEdit} />;
     case 'split-editorial':
       return <SplitHero section={section} editable={editable} onEdit={onEdit} />;
     case 'full-bleed':
-      return <FullBleedHero section={section} editable={editable} onEdit={onEdit} />;
+      return (
+        <FullBleedHero
+          section={section}
+          editable={editable}
+          onEdit={onEdit}
+          onActiveSection={onActiveSection}
+        />
+      );
     case 'kinetic-type':
       return <KineticHero section={section} editable={editable} onEdit={onEdit} />;
     case 'product-stage':
@@ -92,19 +107,53 @@ function CtaRow({ section }: { section: HeroSection }) {
   );
 }
 
-function VideoScrubHero({ section, editable, onEdit }: HeroProps) {
+function MediaSurface({
+  media,
+  className,
+  style,
+}: {
+  media: HeroSection['media'];
+  className: string;
+  style?: CSSProperties;
+}) {
+  if (media.kind === 'video') {
+    return (
+      <video
+        className={`${className} media-video`}
+        src={media.src}
+        style={style}
+        muted
+        loop
+        autoPlay
+        playsInline
+        preload="metadata"
+        aria-label={media.alt}
+      />
+    );
+  }
+  return <img className={className} src={media.src} alt={media.alt} style={style} />;
+}
+
+function VideoScrubHero({ section, editable, onEdit, onActiveSection }: HeroProps) {
   const { ref, progress } = useSectionProgress<HTMLElement>();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [duration, setDuration] = useState(0);
+  const keyframes = useMemo(() => section.keyframes ?? [], [section.keyframes]);
+
+  const active = activeKeyframe(progress, keyframes);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     const total = duration || video.duration;
     if (!total || !Number.isFinite(total)) return;
-    const next = scrubTime(progress, total);
+    const next = keyframeTime(progress, keyframes, total);
     if (Math.abs(video.currentTime - next) > 0.02) video.currentTime = next;
-  }, [progress, duration]);
+  }, [progress, duration, keyframes]);
+
+  useEffect(() => {
+    if (active?.sectionId) onActiveSection?.(active.sectionId);
+  }, [active?.sectionId, onActiveSection]);
 
   const pct = Math.round(progress * 100);
 
@@ -142,6 +191,21 @@ function VideoScrubHero({ section, editable, onEdit }: HeroProps) {
           <Eyebrow section={section} editable={editable} onEdit={onEdit} />
           <Title section={section} editable={editable} onEdit={onEdit} className="hero-title--xl" />
           <CtaRow section={section} />
+
+          <div className="hero-chapters" aria-label="Video chapters">
+            {keyframes.map((keyframe, index) => (
+              <a
+                key={`${keyframe.sectionId}-${keyframe.at}`}
+                className={`hero-chapter ${active?.sectionId === keyframe.sectionId ? 'is-active' : ''}`}
+                href={`#${keyframe.sectionId}`}
+                aria-current={active?.sectionId === keyframe.sectionId ? 'true' : undefined}
+              >
+                <span className="mono">{String(index + 1).padStart(2, '0')}</span>
+                <span>{keyframe.label ?? keyframe.sectionId}</span>
+                <span className="mono">{keyframe.time.toFixed(1)}s</span>
+              </a>
+            ))}
+          </div>
         </div>
 
         <div className="hero-specs">
@@ -183,16 +247,33 @@ function ImageCollageHero({ section, editable, onEdit }: HeroProps) {
         <div className="collage-field" aria-hidden="true">
           {images.slice(0, 4).map((image, index) => (
             <figure className={`collage-image collage-image--${index + 1}`} key={`${image.src}-${index}`}>
-              <img
-                src={image.src}
-                alt={image.alt}
-                loading={index > 1 ? 'lazy' : 'eager'}
-                data-parallax={offsets[index % offsets.length]}
-                style={{
-                  ...cropVars(image.crop),
-                  transform: `translate3d(0, ${progress * offsets[index % offsets.length]}px, 0) scale(${1.04 + progress * 0.03})`,
-                }}
-              />
+              {image.kind === 'video' ? (
+                <video
+                  src={image.src}
+                  aria-label={image.alt}
+                  muted
+                  loop
+                  autoPlay
+                  playsInline
+                  preload="metadata"
+                  data-parallax={offsets[index % offsets.length]}
+                  style={{
+                    ...cropVars(image.crop),
+                    transform: `translate3d(0, ${progress * offsets[index % offsets.length]}px, 0) scale(${1.04 + progress * 0.03})`,
+                  }}
+                />
+              ) : (
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  loading={index > 1 ? 'lazy' : 'eager'}
+                  data-parallax={offsets[index % offsets.length]}
+                  style={{
+                    ...cropVars(image.crop),
+                    transform: `translate3d(0, ${progress * offsets[index % offsets.length]}px, 0) scale(${1.04 + progress * 0.03})`,
+                  }}
+                />
+              )}
               <figcaption className="mono">
                 <span>0{index + 1}</span>
                 <span>{image.caption ?? image.alt}</span>
@@ -253,10 +334,9 @@ function SplitHero({ section, editable, onEdit }: HeroProps) {
         </div>
       </div>
       <div className="split-media">
-        <img
+        <MediaSurface
+          media={section.media}
           className="media-framed"
-          src={section.media.src}
-          alt={section.media.alt}
           style={cropVars(section.media.crop)}
         />
         <div className="split-media-top mono">
@@ -271,8 +351,29 @@ function SplitHero({ section, editable, onEdit }: HeroProps) {
   );
 }
 
-function FullBleedHero({ section, editable, onEdit }: HeroProps) {
+function FullBleedHero({ section, editable, onEdit, onActiveSection }: HeroProps) {
   const { ref, progress } = useSectionProgress<HTMLElement>();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [duration, setDuration] = useState(0);
+  const isVideo = section.media.kind === 'video';
+  const scrub = isVideo && (section.videoPlayback ?? 'ambient') === 'scrub';
+  const keyframes = useMemo(() => section.keyframes ?? [], [section.keyframes]);
+  const active = activeKeyframe(progress, keyframes);
+
+  useEffect(() => {
+    if (!scrub) return;
+    const video = videoRef.current;
+    if (!video) return;
+    const total = duration || video.duration;
+    if (!total || !Number.isFinite(total)) return;
+    const next = keyframeTime(progress, keyframes, total);
+    if (Math.abs(video.currentTime - next) > 0.02) video.currentTime = next;
+  }, [progress, duration, scrub, keyframes]);
+
+  useEffect(() => {
+    if (active?.sectionId) onActiveSection?.(active.sectionId);
+  }, [active?.sectionId, onActiveSection]);
+
   return (
     <section
       ref={ref}
@@ -282,15 +383,32 @@ function FullBleedHero({ section, editable, onEdit }: HeroProps) {
       data-section-id={section.id}
       style={{ '--p': progress } as CSSProperties}
     >
-      <div
-        className="bleed-image"
-        data-bleed
-        style={{
-          backgroundImage: `url(${section.media.src})`,
-          ...cropBackground(section.media.crop),
-          transform: `scale(${1.06 + progress * 0.05})`,
-        }}
-      />
+      {isVideo ? (
+        <video
+          ref={videoRef}
+          className="bleed-image bleed-video media-framed"
+          data-bleed
+          src={section.media.src}
+          style={cropVars(section.media.crop)}
+          muted
+          playsInline
+          preload="auto"
+          autoPlay={!scrub}
+          loop={!scrub}
+          aria-label={section.media.alt}
+          onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
+        />
+      ) : (
+        <div
+          className="bleed-image"
+          data-bleed
+          style={{
+            backgroundImage: `url(${section.media.src})`,
+            ...cropBackground(section.media.crop),
+            transform: `scale(${1.06 + progress * 0.05})`,
+          }}
+        />
+      )}
       <div className="bleed-shade" />
       <div className="hero-topline mono">
         <span>{section.location}</span>
@@ -391,7 +509,11 @@ function ProductStageHero({ section, editable, onEdit }: HeroProps) {
           <span className="stage-cross stage-cross--h" />
           <span className="stage-cross stage-cross--v" />
         </div>
-        <img className="stage-product" src={section.media.src} alt={section.media.alt} />
+        <MediaSurface
+          media={section.media}
+          className="stage-product"
+          style={cropVars(section.media.crop)}
+        />
         <div className="stage-serial mono" aria-hidden="true">
           <span>FIG. 04</span>
           <span>SCALE 1:2</span>

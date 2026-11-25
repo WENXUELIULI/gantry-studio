@@ -35,6 +35,7 @@ import {
   type SiteDocument,
   type SiteSection,
   type Theme,
+  type VideoKeyframe,
 } from '../../types/site';
 import { THEMES } from '../../data/themes';
 import { TEMPLATE_BY_ID } from '../../data/templates';
@@ -423,6 +424,99 @@ function useSectionUpdate(section: SiteSection) {
   };
 }
 
+function KeyframeEditor({
+  section,
+  onChange,
+}: {
+  section: Extract<SiteSection, { type: 'hero' }>;
+  onChange: (frames: VideoKeyframe[]) => void;
+}) {
+  const sections = useBuilderStore((state) => state.doc?.sections ?? []);
+  const frames = section.keyframes ?? [];
+  const patch = (index: number, next: Partial<VideoKeyframe>) =>
+    onChange(frames.map((frame, itemIndex) => (itemIndex === index ? { ...frame, ...next } : frame)));
+
+  return (
+    <div className="keyframe-editor">
+      <div className="inspector-group-head">
+        <span className="mono">关键帧 / KEYFRAMES</span>
+        <button
+          type="button"
+          onClick={() =>
+            onChange([
+              ...frames,
+              {
+                at: frames.length ? Math.min(100, (frames[frames.length - 1]?.at ?? 0) + 20) : 0,
+                time: frames.length ? (frames[frames.length - 1]?.time ?? 0) + 1.5 : 0,
+                sectionId: sections[0]?.id ?? section.id,
+                label: sections[0]?.title.split('\n')[0] ?? section.title.split('\n')[0],
+              },
+            ])
+          }
+        >
+          <Plus size={10} />
+          添加
+        </button>
+      </div>
+      <p className="style-hint">滚动进度到达关键帧时跳到对应时间，并高亮目标栏目。</p>
+      {frames.map((frame, index) => (
+        <div className="keyframe-row" key={`${frame.sectionId}-${index}`}>
+          <label>
+            <span>进度 %</span>
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={frame.at}
+              aria-label={`关键帧 ${index + 1} 进度`}
+              onChange={(event) => patch(index, { at: Number(event.target.value) })}
+            />
+          </label>
+          <label>
+            <span>时间 s</span>
+            <input
+              type="number"
+              min={0}
+              step={0.1}
+              value={frame.time}
+              aria-label={`关键帧 ${index + 1} 时间`}
+              onChange={(event) => patch(index, { time: Number(event.target.value) })}
+            />
+          </label>
+          <label>
+            <span>栏目</span>
+            <select
+              value={frame.sectionId}
+              aria-label={`关键帧 ${index + 1} 栏目`}
+              onChange={(event) => {
+                const target = sections.find((item) => item.id === event.target.value);
+                patch(index, {
+                  sectionId: event.target.value,
+                  label: target?.title.split('\n')[0],
+                });
+              }}
+            >
+              {sections.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {SECTION_LABELS[item.type]}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className="keyframe-remove"
+            aria-label={`删除关键帧 ${index + 1}`}
+            onClick={() => onChange(frames.filter((_, itemIndex) => itemIndex !== index))}
+          >
+            <Trash2 size={10} />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function HeroFields({
   section,
 }: {
@@ -484,6 +578,47 @@ function HeroFields({
         video
         onCommit={(src) => set({ media: { ...section.media, src } })}
       />
+      <SelectField
+        label="媒体类型"
+        value={section.media.kind ?? 'image'}
+        options={[
+          { value: 'image', label: '图片' },
+          { value: 'video', label: '视频' },
+        ]}
+        onChange={(kind) =>
+          set({ media: { ...section.media, kind: kind as 'image' | 'video' } })
+        }
+      />
+      {section.media.kind === 'video' && (
+        <>
+          {(section.heroKind === 'video-scrub' || section.heroKind === 'full-bleed') && (
+            <SelectField
+              label="视频播放"
+              value={section.videoPlayback ?? (section.heroKind === 'video-scrub' ? 'scrub' : 'ambient')}
+              options={[
+                { value: 'ambient', label: '自动循环' },
+                { value: 'scrub', label: '跟随滚动逐帧' },
+              ]}
+              onChange={(videoPlayback) =>
+                set({ videoPlayback: videoPlayback as 'ambient' | 'scrub' })
+              }
+            />
+          )}
+          {(section.heroKind === 'video-scrub' ||
+            section.heroKind === 'full-bleed') &&
+            (section.videoPlayback ?? (section.heroKind === 'video-scrub' ? 'scrub' : 'ambient')) ===
+              'scrub' && (
+            <KeyframeEditor
+              section={section}
+              onChange={(keyframes) => set({ keyframes })}
+            />
+          )}
+          {section.heroKind !== 'video-scrub' &&
+            section.heroKind !== 'full-bleed' && (
+              <p className="style-hint">此首屏的视频自动循环播放；逐帧控制用于滚动视频/全幅影像。</p>
+            )}
+        </>
+      )}
       <CropField
         value={section.media.crop}
         src={section.media.src}

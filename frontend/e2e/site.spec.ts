@@ -345,6 +345,19 @@ test.describe('builder', () => {
     expect(spacing!.offset).toBeGreaterThan(10);
   });
 
+  test('routes keyframes to video time and highlights the target section', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+
+    const target = page.getByLabel('关键帧 1 栏目');
+    await target.selectOption('products');
+
+    await expect(page.locator('.device-screen .hero-chapter').first()).toContainText('四个系列');
+    await expect(
+      page.locator('.device-screen .site-links a[aria-current="true"]'),
+    ).toHaveText('产品');
+  });
+
   test('scroll position drives the hero video timeline', async ({ page }) => {    await page.goto('/');
     await openTemplate(page);
 

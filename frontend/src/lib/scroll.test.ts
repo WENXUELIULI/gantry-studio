@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  activeKeyframe,
   clamp,
   computeScrollProgress,
+  keyframeTime,
   prefersReducedMotion,
   scrubTime,
 } from './scroll';
@@ -64,6 +66,46 @@ describe('scrubTime', () => {
     expect(scrubTime(2, 6)).toBe(6);
     expect(scrubTime(0.5, 0)).toBe(0);
     expect(scrubTime(0.5, Number.NaN)).toBe(0);
+  });
+});
+
+describe('keyframeTime', () => {
+  const keyframes = [
+    { at: 0, time: 0, sectionId: 'hero' },
+    { at: 40, time: 2.4, sectionId: 'metrics' },
+    { at: 75, time: 4.5, sectionId: 'products' },
+  ];
+
+  it('interpolates between authored keyframes', () => {
+    expect(keyframeTime(0.2, keyframes, 6)).toBeCloseTo(1.2);
+    expect(keyframeTime(0.575, keyframes, 6)).toBeCloseTo(3.45);
+  });
+
+  it('clamps to the first and last keyframe', () => {
+    expect(keyframeTime(0, keyframes, 6)).toBe(0);
+    expect(keyframeTime(1, keyframes, 6)).toBe(4.5);
+  });
+
+  it('falls back to linear scrub without keyframes', () => {
+    expect(keyframeTime(0.5, [], 6)).toBe(3);
+  });
+});
+
+describe('activeKeyframe', () => {
+  const keyframes = [
+    { at: 0, time: 0, sectionId: 'hero' },
+    { at: 40, time: 2.4, sectionId: 'metrics' },
+    { at: 75, time: 4.5, sectionId: 'products' },
+  ];
+
+  it('returns the last keyframe reached by progress', () => {
+    expect(activeKeyframe(0.1, keyframes)?.sectionId).toBe('hero');
+    expect(activeKeyframe(0.4, keyframes)?.sectionId).toBe('metrics');
+    expect(activeKeyframe(0.9, keyframes)?.sectionId).toBe('products');
+  });
+
+  it('returns undefined when no keyframes are authored', () => {
+    expect(activeKeyframe(0.5, [])).toBeUndefined();
   });
 });
 

@@ -139,6 +139,16 @@ describe('SiteRenderer', () => {
     expect((slot as HTMLElement).style.getPropertyValue('--section-ratio')).toBe('4 / 3');
   });
 
+  it('renders a video background when a full-bleed hero media is a film', () => {
+    const doc = makeDoc();
+    const hero = doc.sections[0];
+    if (hero.type !== 'hero') throw new Error('missing hero');
+    hero.heroKind = 'full-bleed';
+    hero.media = { ...hero.media, kind: 'video', src: '/assets/truss-loop.webm' };
+    const { container } = render(<SiteRenderer doc={doc} />);
+    expect(container.querySelector('.hero--bleed video.bleed-video')).toBeInTheDocument();
+  });
+
   it('commits an inline hero title edit with the section id', () => {
     const doc = makeDoc();
     const onEditSection = vi.fn();

@@ -120,6 +120,18 @@ export interface MediaRef {
   alt: string;
   caption?: string;
   crop?: MediaCrop;
+  /** The same asset slot can hold a still or a film. */
+  kind?: 'image' | 'video';
+}
+
+export interface VideoKeyframe {
+  /** Scroll progress in percent, 0-100. */
+  at: number;
+  /** Target video time in seconds. */
+  time: number;
+  /** The section highlighted while this keyframe is active. */
+  sectionId: string;
+  label?: string;
 }
 
 export interface NavTarget {
@@ -194,6 +206,8 @@ export interface HeroSection extends SectionBase {
   tone: Tone;
   media: MediaRef;
   collage: MediaRef[];
+  videoPlayback?: 'ambient' | 'scrub';
+  keyframes?: VideoKeyframe[];
   primaryCta: string;
   secondaryCta: string;
   location: string;

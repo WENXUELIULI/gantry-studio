@@ -1,4 +1,4 @@
-import type { MouseEvent } from 'react';
+import { type MouseEvent } from 'react';
 import type { Device, SiteDocument, SiteSection } from '../../types/site';
 import { localeDir, localeHtmlLang } from '../../i18n/locales';
 import { themeStyle } from '../../lib/theme';
@@ -18,6 +18,7 @@ interface SiteRendererProps {
   onEditStart?: (id: string) => void;
   onEditEnd?: () => void;
   onNavigatePage?: (path: string) => void;
+  onActiveSection?: (id: string) => void;
 }
 
 function isInteractive(target: EventTarget | null): boolean {
@@ -34,6 +35,7 @@ function SectionSlot({
   onEditSection,
   onEditStart,
   onEditEnd,
+  onActiveSection,
 }: {
   section: SiteSection;
   index: number;
@@ -43,6 +45,7 @@ function SectionSlot({
   onEditSection?: SiteRendererProps['onEditSection'];
   onEditStart?: (id: string) => void;
   onEditEnd?: () => void;
+  onActiveSection?: (id: string) => void;
 }) {
   if (!section.visible && !editable) return null;
 
@@ -80,7 +83,12 @@ function SectionSlot({
     >
       {section.type === 'hero' ? (
         <InlineEditContext.Provider value={inlineEdit}>
-          <Hero section={section} editable={editable} onEdit={edit} />
+          <Hero
+            section={section}
+            editable={editable}
+            onEdit={edit}
+            onActiveSection={onActiveSection}
+          />
         </InlineEditContext.Provider>
       ) : (
         <InlineEditContext.Provider value={inlineEdit}>
@@ -108,6 +116,7 @@ export function SiteRenderer({
   onNavigatePage,
 }: SiteRendererProps) {
   const locale = doc.locale ?? (doc.market === 'global' ? 'en' : 'zh-CN');
+
   return (
     <div
       className={`site-root ${doc.theme.dark ? 'site-root--dark' : ''} ${editable ? 'site-root--editable' : ''}`}
