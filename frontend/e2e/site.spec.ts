@@ -323,6 +323,50 @@ test.describe('builder', () => {
       .toBeGreaterThan(offset - 80);
   });
 
+  test('scrolls the canvas from a top navigation link', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page);
+
+    const scroller = page.locator('.device-screen .site-scroll');
+    await page.locator('.device-screen .site-links a[href="#products"]').click();
+
+    await expect
+      .poll(() => scroller.evaluate((node) => node.scrollTop))
+      .toBeGreaterThan(300);
+    await expect(page.locator('.device-screen [data-slot-id="products"]')).toHaveClass(
+      /is-selected/,
+    );
+  });
+
+  test('keeps one film behind hero, numbers, capability and products', async ({ page }) => {
+    await page.goto('/');
+    await openTemplate(page, '铸造之夜');
+
+    await expect(page.locator('.device-screen .video-scene')).toBeVisible();
+    const scroller = page.locator('.device-screen .site-scroll');
+    await page.waitForFunction(() => {
+      const video = document.querySelector('.device-screen .video-scene video');
+      return video instanceof HTMLVideoElement && video.readyState >= 2;
+    });
+
+    await scroller.evaluate((node) => {
+      const scene = node.querySelector('.video-scene');
+      if (!(scene instanceof HTMLElement)) return;
+      node.scrollTo({ top: (scene.offsetHeight - node.clientHeight) * 0.55 });
+    });
+
+    await expect
+      .poll(() =>
+        page
+          .locator('.device-screen .video-scene video')
+          .evaluate((node) => (node as HTMLVideoElement).currentTime),
+      )
+      .toBeGreaterThan(1);
+    await expect(
+      page.locator('.device-screen .site-links a[aria-current="true"]'),
+    ).toHaveText('数字');
+  });
+
   test('keeps footer copy aligned with the section gutter', async ({ page }) => {
     await page.goto('/');
     await openTemplate(page);
@@ -358,7 +402,8 @@ test.describe('builder', () => {
     ).toHaveText('产品');
   });
 
-  test('scroll position drives the hero video timeline', async ({ page }) => {    await page.goto('/');
+  test('scroll position drives the hero video timeline', async ({ page }) => {
+    await page.goto('/');
     await openTemplate(page);
 
     const video = page.locator('.device-screen video').first();

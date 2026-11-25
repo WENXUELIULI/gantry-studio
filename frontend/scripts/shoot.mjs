@@ -6,6 +6,7 @@ mkdirSync(out, { recursive: true });
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+await page.addInitScript(() => localStorage.setItem('gantry:locale:v1', 'zh-CN'));
 await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle' });
 await page.waitForTimeout(800);
 
@@ -22,7 +23,9 @@ for (const selector of sections) {
 await page.locator('.gallery').evaluate((el) => el.scrollTo({ top: 0 }));
 await page.waitForTimeout(300);
 
-await page.getByRole('button', { name: '使用模板 桁架精工' }).click();
+const templateButton = page.getByRole('button', { name: /使用(此)?模板 桁架精工/ });
+await templateButton.scrollIntoViewIfNeeded();
+await templateButton.click();
 await page.waitForSelector('.builder');
 await page.waitForTimeout(1200);
 await page.screenshot({ path: `${out}/builder-desktop.png` });

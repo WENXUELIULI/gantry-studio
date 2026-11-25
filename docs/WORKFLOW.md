@@ -28,7 +28,7 @@
 
 - 715 套模板：13 个行业 × 11 种风格 × 每组合 5 套；30 套手工 + 685 套工厂生成。
 - 页面区块：8 类；编辑器支持就地改字、上下移动、显隐、复制、删除、撤销/重做、桌面/手机视图、主题切换、组件级样式、图片焦点/独立裁剪、多页、云端保存、HTML/ZIP/JSON 导出。
-- 质量：145 个 Vitest 测试、19 条 Playwright 用例、4 条后端 Spring Boot 测试、`tsc`、`lint`、`build` 全通过。
+- 质量：145 个 Vitest 测试、21 条 Playwright 用例、4 条后端 Spring Boot 测试、`tsc`、`lint`、`build` 全通过。
 - 已知边界：生成物是静态 HTML/ZIP，不是可二次开发的 React 工程源码；云端保存是显式按钮；支付与真实源码生成未接；手机端只用于查看/预览。
 
 ## 2. v2 范围
@@ -448,7 +448,7 @@ export interface ExportGateway {
 - 图片必须来自 `public/assets/`，且每个新模板至少 4 张不同图片；不得复用同一张图作为 hero + products 主图。
 - 国际模板正文、按钮、导航、meta 全部英文；品牌名可保留外文；不得出现中文标点混排。
 - 每套模板必须有 3 个可信数字（metrics/proof），不得使用“行业领先”这类空词。
-- 30 套模板需覆盖至少 6 种首屏各 4 次以上，避免全部变成同一种 landing page。
+- 30 套模板需覆盖至少 7 种首屏各 4 次以上，避免全部变成同一种 landing page。
 
 ### 5.5 性能：模板懒加载
 
@@ -624,7 +624,7 @@ export interface PaymentProvider {
 
 **Task 0.1 记录基线**
 - 文件：`docs/ADR/0001-baseline.md`
-- 内容：当前 715 套模板、145 单测、19 E2E、构建体积、已知边界。
+- 内容：当前 715 套模板、145 单测、21 E2E、构建体积、已知边界。
 - 命令：`npx tsc --noEmit && npx vitest run && npx playwright test && npm run build`。
 - 验收：四项输出贴进 ADR；后续任何回归可对比。
 
@@ -883,7 +883,7 @@ Screenshots: docs/evidence/style-panel-desktop.png
 
 ### G4 视觉门禁
 - [ ] 60 张截图 diff ≤ 1%。
-- [ ] 6 种首屏各至少 4 套，视觉可区分。
+- [ ] 7 种首屏各至少 4 套，视觉可区分。
 - [ ] 18 套主题切换不出现文字不可读。
 
 ### G5 可访问性门禁

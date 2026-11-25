@@ -116,6 +116,12 @@ export const HERO_KINDS: HeroKindMeta[] = [
     note: '背景视频随页面滚动逐帧前进，适合产线与工艺叙事。',
   },
   {
+    id: 'video-story',
+    label: '视频长镜头',
+    labelEn: 'VIDEO STORY',
+    note: '一条视频贯穿首屏与后续栏目，滚动到关键帧时切换叙事重点。',
+  },
+  {
     id: 'image-collage',
     label: '图片拼贴',
     labelEn: 'IMAGE COLLAGE',

@@ -736,7 +736,7 @@ a {
 }
 
 .template-card:first-child {
-  grid-column: span 2;
+  grid-column: span 1;
 }
 
 .template-cover {
@@ -748,7 +748,7 @@ a {
 }
 
 .template-card:first-child .template-cover {
-  aspect-ratio: 16 / 8.6;
+  aspect-ratio: 4 / 3;
 }
 
 .template-cover img {
@@ -2829,7 +2829,7 @@ a {
   }
 
   .template-card:first-child {
-    grid-column: span 2;
+    grid-column: span 1;
   }
 
   .how-grid {

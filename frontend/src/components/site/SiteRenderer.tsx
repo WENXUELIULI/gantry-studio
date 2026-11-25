@@ -1,11 +1,12 @@
-import { type MouseEvent } from 'react';
-import type { Device, SiteDocument, SiteSection } from '../../types/site';
+import { useState, type MouseEvent } from 'react';
+import type { Device, HeroSection, SiteDocument, SiteSection } from '../../types/site';
 import { localeDir, localeHtmlLang } from '../../i18n/locales';
 import { themeStyle } from '../../lib/theme';
 import { resolveSectionStyle, styleVars } from '../../lib/sectionStyles';
 import { Hero } from './Heroes';
 import { Section } from './Sections';
 import { SiteNav } from './SiteNav';
+import { VideoScene } from './VideoScene';
 import { InlineEditContext } from '../editor/inlineEdit';
 
 interface SiteRendererProps {
@@ -18,6 +19,7 @@ interface SiteRendererProps {
   onEditStart?: (id: string) => void;
   onEditEnd?: () => void;
   onNavigatePage?: (path: string) => void;
+  onNavigateSection?: (id: string) => void;
   onActiveSection?: (id: string) => void;
 }
 
@@ -114,8 +116,38 @@ export function SiteRenderer({
   onEditStart,
   onEditEnd,
   onNavigatePage,
+  onNavigateSection,
 }: SiteRendererProps) {
   const locale = doc.locale ?? (doc.market === 'global' ? 'en' : 'zh-CN');
+  const [sceneActive, setSceneActive] = useState<string | undefined>();
+  const hero = doc.sections.find(
+    (section): section is HeroSection => section.type === 'hero',
+  );
+  const storyHero = hero?.heroKind === 'video-story' ? hero : null;
+  const storyEnd = storyHero
+    ? Math.max(
+        0,
+        Math.max(
+          ...(storyHero.keyframes ?? []).map((keyframe) =>
+            doc.sections.findIndex((section) => section.id === keyframe.sectionId),
+          ),
+        ),
+      )
+    : -1;
+
+  const slots = doc.sections.map((section, index) => (
+    <SectionSlot
+      key={section.id}
+      section={section}
+      index={index + 1}
+      editable={editable}
+      selectedId={selectedId}
+      onSelect={onSelect}
+      onEditSection={onEditSection}
+      onEditStart={onEditStart}
+      onEditEnd={onEditEnd}
+    />
+  ));
 
   return (
     <div
@@ -132,23 +164,19 @@ export function SiteRenderer({
         <SiteNav
           doc={doc}
           editable={editable}
+          activeSceneId={sceneActive}
           onNavigatePage={onNavigatePage}
-          onNavigateSection={onSelect}
+          onNavigateSection={onNavigateSection ?? onSelect}
         />
         <main id="main">
-          {doc.sections.map((section, index) => (
-            <SectionSlot
-              key={section.id}
-              section={section}
-              index={index + 1}
-              editable={editable}
-              selectedId={selectedId}
-              onSelect={onSelect}
-              onEditSection={onEditSection}
-              onEditStart={onEditStart}
-              onEditEnd={onEditEnd}
-            />
-          ))}
+          {storyHero ? (
+            <>
+              <VideoScene hero={storyHero} onActiveChange={setSceneActive}>{slots.slice(0, storyEnd + 1)}</VideoScene>
+              {slots.slice(storyEnd + 1)}
+            </>
+          ) : (
+            slots
+          )}
         </main>
       </div>
     </div>

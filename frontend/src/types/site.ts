@@ -32,6 +32,7 @@ export type StyleId =
 
 export type HeroKind =
   | 'video-scrub'
+  | 'video-story'
   | 'image-collage'
   | 'split-editorial'
   | 'full-bleed'

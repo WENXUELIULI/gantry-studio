@@ -689,13 +689,13 @@ const DOMESTIC_TEMPLATES: TemplateDefinition[] = [
   {
     id: 'foundry-cast',
     market: 'cn', code: 'FRG-09', name: '铸造之夜', nameEn: 'FOUNDRY NIGHT',
-    industry: 'machinery', style: 'industrial-editorial', heroKind: 'video-scrub',
+    industry: 'machinery', style: 'industrial-editorial', heroKind: 'video-story',
     summary: '1600°C 的铸造夜，用滚动视频把熔炼节奏压进首屏。',
     tags: ['视频滚动', '铸造', '暗色'], theme: theme('foundry'),
     cover: { image: `${A}/factory-01.jpg`, secondary: `${A}/metal-01.jpg`, accentWord: '1600°C' },
     sections: [
       hero({
-        heroKind: 'video-scrub', tone: 'dark', eyebrow: 'FOUNDRY NIGHT / SINCE 1998',
+        heroKind: 'video-story', tone: 'dark', eyebrow: 'FOUNDRY NIGHT / SINCE 1998',
         title: '1600°C 之后，\n形状才有意义。',
         body: '灰铸铁、球墨铸铁与耐热合金铸件。从模具到探伤，每一炉都有编号。',
         primaryCta: '发送铸件图纸', secondaryCta: '查看材质表',

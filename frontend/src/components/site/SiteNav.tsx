@@ -6,11 +6,13 @@ import { activeKeyframe, computeScrollProgress } from '../../lib/scroll';
 export function SiteNav({
   doc,
   editable = false,
+  activeSceneId,
   onNavigatePage,
   onNavigateSection,
 }: {
   doc: SiteDocument;
   editable?: boolean;
+  activeSceneId?: string;
   onNavigatePage?: (path: string) => void;
   onNavigateSection?: (id: string) => void;
 }) {
@@ -29,6 +31,11 @@ export function SiteNav({
   };
 
   useEffect(() => {
+    if (activeSceneId) setActiveSection(activeSceneId);
+  }, [activeSceneId]);
+
+  useEffect(() => {
+    if (activeSceneId !== undefined) return;
     const navElement = navRef.current;
     const root = navElement?.closest('.site-root');
     const scroller = root?.querySelector<HTMLElement>('[data-site-scroll]');
@@ -38,7 +45,9 @@ export function SiteNav({
       return;
     }
     const target = scroller.querySelector<HTMLElement>(
-      `[data-slot-id="${hero.id}"]`,
+      hero.heroKind === 'video-story'
+        ? '[data-video-scene]'
+        : `[data-slot-id="${hero.id}"]`,
     );
     if (!target) return;
 
@@ -61,15 +70,31 @@ export function SiteNav({
     const request = () => {
       if (!frame) frame = window.requestAnimationFrame(update);
     };
+    const syncSceneActive = () => {
+      const next = target.getAttribute('data-active') ?? undefined;
+      setActiveSection(next);
+    };
+    const observer =
+      hero.heroKind === 'video-story'
+        ? new MutationObserver(syncSceneActive)
+        : null;
+    if (observer) {
+      observer.observe(target, {
+        attributes: true,
+        attributeFilter: ['data-active'],
+      });
+      syncSceneActive();
+    }
     update();
     scroller.addEventListener('scroll', request, { passive: true });
     window.addEventListener('resize', request);
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
+      observer?.disconnect();
       scroller.removeEventListener('scroll', request);
       window.removeEventListener('resize', request);
     };
-  }, [doc.id, doc.sections]);
+  }, [doc.id, doc.sections, activeSceneId]);
 
   const follow = (event: MouseEvent<HTMLAnchorElement>, href: string, kind?: string) => {
     if (kind === 'page' && onNavigatePage) {
@@ -88,6 +113,7 @@ export function SiteNav({
     <header
       ref={navRef}
       className={`site-nav ${doc.theme.dark ? 'site-nav--dark' : ''}`}
+      data-active-section={activeSection}
     >
       <a className="site-brand" href="#top" aria-label={`${doc.name} ${chrome.home}`}>
         <span className="site-brand-mark" aria-hidden="true">

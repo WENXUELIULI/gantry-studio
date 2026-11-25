@@ -8,7 +8,7 @@ import { EditableText } from '../editor/EditableText';
 export interface HeroProps {
   section: HeroSection;
   editable: boolean;
-  onEdit?: (field: 'title' | 'eyebrow', value: string) => void;
+  onEdit?: (field: 'title' | 'eyebrow' | 'body', value: string) => void;
   onActiveSection?: (id: string) => void;
 }
 
@@ -23,6 +23,8 @@ export function Hero({ section, editable, onEdit, onActiveSection }: HeroProps) 
           onActiveSection={onActiveSection}
         />
       );
+    case 'video-story':
+      return <VideoStoryHero section={section} editable={editable} onEdit={onEdit} />;
     case 'image-collage':
       return <ImageCollageHero section={section} editable={editable} onEdit={onEdit} />;
     case 'split-editorial':
@@ -103,6 +105,28 @@ function CtaRow({ section }: { section: HeroSection }) {
       <a className="btn btn--ghost" href="#proof">
         {section.secondaryCta}
       </a>
+    </div>
+  );
+}
+
+function VideoStoryHero({ section, editable, onEdit }: HeroProps) {
+  return (
+    <div className="hero hero--story">
+      <div className="hero-inner">
+        <Eyebrow section={section} editable={editable} onEdit={onEdit} />
+        <div className="hero-copy">
+          <Title section={section} editable={editable} onEdit={onEdit} className="hero-title--xl" />
+          <EditableText
+            as="p"
+            value={section.body ?? ''}
+            editable={editable}
+            multiline
+            className="hero-body"
+            onCommit={(value) => onEdit?.('body', value)}
+          />
+          <CtaRow section={section} />
+        </div>
+      </div>
     </div>
   );
 }

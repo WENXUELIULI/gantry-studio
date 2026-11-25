@@ -41,12 +41,15 @@ export function createDocumentFromTemplate(
     const isFilm =
       hero.media.kind === 'video' ||
       /\.(webm|mp4|mov)(\?|$)/i.test(hero.media.src);
-    if (isFilm || hero.heroKind === 'video-scrub') {
+    if (isFilm || hero.heroKind === 'video-scrub' || hero.heroKind === 'video-story') {
       hero.media = { ...hero.media, kind: 'video' };
       hero.videoPlayback ??=
-        hero.heroKind === 'video-scrub' ? 'scrub' : 'ambient';
+        hero.heroKind === 'video-scrub' || hero.heroKind === 'video-story' ? 'scrub' : 'ambient';
     }
-    if (hero.heroKind === 'video-scrub' && !hero.keyframes?.length) {
+    if (
+      (hero.heroKind === 'video-scrub' || hero.heroKind === 'video-story') &&
+      !hero.keyframes?.length
+    ) {
       const targets = [
         hero,
         ...sections.filter((section) => section.type !== 'hero').slice(0, 3),

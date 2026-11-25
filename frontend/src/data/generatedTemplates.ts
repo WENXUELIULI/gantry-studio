@@ -6,6 +6,7 @@ import type {
   Metric,
   ProcessStep,
   Product,
+  SectionStyle,
   SiteSection,
   StyleId,
   TemplateDefinition,
@@ -64,6 +65,7 @@ const STYLE_PROFILE: Record<StyleId, StyleProfile> = {
 };
 
 const HERO_ORDER: HeroKind[] = [
+  'video-story',
   'video-scrub',
   'image-collage',
   'split-editorial',
@@ -177,6 +179,18 @@ function buildSections(
   const primary = global ? 'Request a quote' : '获取报价';
   const secondary = global ? 'See the range' : '查看产品';
   const image = (index: number) => copy.images[index % copy.images.length];
+  const layouts = ['default', 'wide', 'split', 'narrow', 'stacked'] as const;
+  const densities = ['balanced', 'compact', 'airy'] as const;
+  const variation = (offset: number): SectionStyle => ({
+    layout: layouts[(edition + offset) % layouts.length],
+    density: densities[(edition + offset) % densities.length],
+    align: edition % 5 === 3 ? 'center' : 'left',
+    surface: edition % 5 === 2 ? 'surface' : 'none',
+    ratio: '16:9',
+    columns: edition % 2 === 0 ? 3 : 2,
+    overlay: 'soft',
+    motion: edition % 3 === 0 ? 'subtle' : 'rise',
+  });
 
   return [
     {
@@ -208,6 +222,7 @@ function buildSections(
       title: global ? 'What the line can promise.' : '产线能承诺的，\n先写成数字。',
       visible: true,
       tone: theme.dark ? 'dark' : 'light',
+      style: variation(1),
       items: metricItems(global),
     },
     {
@@ -217,6 +232,7 @@ function buildSections(
       title: global ? 'Three things we refuse to hand-wave.' : '有三件事，\n不靠口头保证。',
       visible: true,
       tone: theme.dark ? 'dark' : 'light',
+      style: variation(2),
       variant: style.capability,
       items: capabilityItems(copy, global),
     },
@@ -227,6 +243,7 @@ function buildSections(
       title: global ? 'A small, legible range.' : '系列不多，\n每一类都能说清。',
       visible: true,
       tone: theme.dark ? 'dark' : 'light',
+      style: variation(3),
       variant: style.product,
       items: productItems(copy, global),
     },
@@ -237,6 +254,7 @@ function buildSections(
       title: global ? 'From drawing to a repeatable handover.' : '从一张图纸，\n到一次可复制的交付。',
       visible: true,
       tone: theme.dark ? 'dark' : 'light',
+      style: variation(4),
       items: processItems(copy, global),
     },
     {
@@ -246,6 +264,7 @@ function buildSections(
       title: global ? 'Trust is a record, not a slogan.' : '信任不是口号，\n是一份可查的记录。',
       visible: true,
       tone: theme.dark ? 'dark' : 'accent',
+      style: variation(0),
       quote: global
         ? `The ${copy.nounEn} arrived with the records already in order. That is the whole product.`
         : `${copy.noun}到场时，记录已经齐了。这才是完整的产品。`,
@@ -292,6 +311,7 @@ export function buildCatalogue(curated: TemplateDefinition[]): TemplateDefinitio
   for (const industry of INDUSTRIES) {
     const copy = COPY[industry.id];
     for (const style of STYLES) {
+      const styleIndex = STYLES.findIndex((item) => item.id === style.id);
       const profile = STYLE_PROFILE[style.id];
       const existing = curated.filter(
         (template) => template.industry === industry.id && template.style === style.id,
@@ -300,9 +320,11 @@ export function buildCatalogue(curated: TemplateDefinition[]): TemplateDefinitio
       for (let edition = 0; edition < need; edition += 1) {
         const variant = (existing.length + edition) % 5;
         const themeId =
-          edition % 2 === 0
+          edition % 3 === 0
             ? profile.theme
-            : profile.themeAlt ?? themeList[edition % themeList.length];
+            : edition % 3 === 1
+              ? profile.themeAlt ?? themeList[(styleIndex + 3) % themeList.length]
+              : themeList[(styleIndex * 2 + 5) % themeList.length];
         const theme = cloneTheme(THEME_BY_ID[themeId] ?? THEME_BY_ID['hot-rolled']);
         const market: MarketId = edition % 5 < 3 ? 'cn' : 'global';
         const global = market === 'global';
@@ -326,8 +348,8 @@ export function buildCatalogue(curated: TemplateDefinition[]): TemplateDefinitio
           tags: [style.label, copy.short, '5×覆盖'],
           theme,
           cover: {
-            image: copy.images[variant % copy.images.length],
-            secondary: copy.images[(variant + 1) % copy.images.length],
+            image: copy.images[(variant + styleIndex * 2) % copy.images.length],
+            secondary: copy.images[(variant + styleIndex * 2 + 2) % copy.images.length],
             accentWord: profile.accent,
           },
           sections: buildSections(copy, profile, theme, variant, global, name),
@@ -336,5 +358,18 @@ export function buildCatalogue(curated: TemplateDefinition[]): TemplateDefinitio
     }
   }
 
-  return result;
+  const generated = result.slice(curated.length);
+  const merged: TemplateDefinition[] = [];
+  let generatedIndex = 0;
+  curated.forEach((template, index) => {
+    merged.push(template);
+    if (index % 2 === 1 && generatedIndex < generated.length) {
+      merged.push(generated[generatedIndex]);
+      generatedIndex += 1;
+    }
+  });
+  for (; generatedIndex < generated.length; generatedIndex += 1) {
+    merged.push(generated[generatedIndex]);
+  }
+  return merged;
 }

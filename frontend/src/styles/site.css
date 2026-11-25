@@ -2858,6 +2858,76 @@
 .site-links a.is-active::after { right: 0; }
 .bleed-video { object-fit: cover; width: 100%; height: 100%; }
 
+/* ---------------- video story: one film behind several chapters ---------------- */
+.video-scene {
+  position: relative;
+  background: #08090a;
+  color: #f4f0e7;
+}
+.video-scene-media {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100cqh;
+  margin-bottom: -100cqh;
+  overflow: hidden;
+  pointer-events: none;
+}
+.video-scene-film {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.video-scene-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(4, 6, 7, 0.42) 0%, rgba(4, 6, 7, 0.26) 42%, rgba(4, 6, 7, 0.78) 100%),
+    linear-gradient(90deg, rgba(4, 6, 7, 0.52) 0%, rgba(4, 6, 7, 0.08) 62%);
+}
+.video-scene-body { position: relative; z-index: 1; }
+.video-scene .hero--story {
+  min-height: 100cqh;
+  display: flex;
+  align-items: flex-end;
+  padding: calc(var(--nav-h) + 48px) 0 96px;
+}
+.video-scene .hero--story .hero-inner { width: 100%; }
+.video-scene .hero--story .hero-copy { max-width: 820px; }
+.video-scene .hero--story .hero-title { color: #fff; }
+.video-scene .hero--story .hero-body { color: rgba(255, 255, 255, 0.74); max-width: 620px; }
+.video-scene .section-slot .site-section {
+  min-height: 100cqh;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  --tone-ink: #f1eee5;
+  --tone-line: rgba(241, 238, 229, 0.22);
+}
+.video-scene .section-slot .section-inner { width: 100%; }
+.video-scene .section-slot .section-title,
+.video-scene .section-slot .metric-value,
+.video-scene .section-slot .capability-title,
+.video-scene .section-slot .product-name,
+.video-scene .section-slot .process-title { color: #fff; }
+.video-scene .section-slot .section-deck,
+.video-scene .section-slot .metric-label,
+.video-scene .section-slot .capability-body,
+.video-scene .section-slot .product-spec,
+.video-scene .section-slot .process-body { color: rgba(255, 255, 255, 0.68); }
+.video-scene .section-slot .section-head { border-color: rgba(255, 255, 255, 0.22); }
+.video-scene .section-slot .section-index,
+.video-scene .section-slot .section-eyebrow { color: rgba(255, 255, 255, 0.52); }
+.video-scene-chapters {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: 56px;
+  z-index: 2;
+  max-width: none;
+  pointer-events: auto;
+}
+
 @container site (max-width: 760px) {
   .hero-chapters { display: none; }
 }

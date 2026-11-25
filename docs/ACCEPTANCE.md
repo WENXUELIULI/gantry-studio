@@ -8,11 +8,11 @@
 低代码官网生成器的主链路通过验收：
 
 - 715 套官网模板可筛选、可打开、可编辑、可生成；每个「行业 × 风格」组合恰好 5 套。
-- 6 种首屏叙事、8 类区块、18 套主题、11 种风格、13 个行业。
+- 7 种首屏叙事、8 类区块、18 套主题、11 种风格、13 个行业。
 - 桌面/手机双视图、滚动视频、3–4 图拼贴、组件级样式、图片焦点/独立裁剪均可用。
 - 七语言 UI（zh-CN / en / ar / tr / he / fa / ur）与 RTL；生成站点可设置 locale，导出写入 lang/dir。
 - 登录、云端项目、多页编辑、PC → 手机接力、单页 HTML / 整站 ZIP 导出已打通。
-- 前端 145 个单元测试、19 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
+- 前端 145 个单元测试、21 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
 
 尚未完成：真实源码（React/Java）生成、在线支付、手机端编辑工作台。JSON 项目源文件当前是页面文档，不是生成出来的工程源码。
 
@@ -24,6 +24,7 @@
 | 国内外风格 | 20 套中文 + 10 套英文；市场筛选；英文导航/CTA/文档语言 | `e2e/site.spec.ts` 市场筛选用例 |
 | 用户配置图片 | 上传、焦点 X/Y、缩放 1–2.5、独立裁剪弹窗；烘焙到 HTML inline style | `Inspector` 的 `MediaField`/`CropField`/`ImageCropper`、`frontend/src/lib/media.ts` |
 | 视频背景随滚动播放 | `useSectionProgress` 驱动 `video.currentTime`；235cqh 滚动段 | E2E `scroll position drives the hero video timeline` |
+| 视频贯穿场景 | 首屏、数字、能力矩阵、产品系列共用一条视频；滚动到关键帧时推进视频并切换高亮章节 | VideoScene.tsx、E2E keeps one film behind hero... |
 | 首屏视频与关键帧 | 媒体类型可切图片/视频；ambient/scrub；关键帧跳转时间并高亮栏目 | `Heroes.tsx`、`scroll.ts` 的 `keyframeTime`/`activeKeyframe`、E2E `routes keyframes to video time...` |
 | 3–4 张图按页面高度组合 | image-collage；图片按滚动进度位移 | `Heroes.tsx`、`site.css` |
 | 桌面/手机切换 | Builder 设备切换；容器查询重排；手机预览 390×844 | E2E 手机无横向溢出、`builder-mobile.png` |
@@ -44,15 +45,15 @@ npx tsc --noEmit          # 通过
 npx vitest run            # 23 files, 145 tests passed
 npx playwright test       # 9 passed (35.6s)
 npm run lint              # 0 error, 0 warning
-npm run build             # 1662 modules
+npm run build             # 1663 modules
 ```
 
 前端构建体积：
 
-- 首屏 `index` 476.67 kB / gzip 159.01 kB
-- 按需 `Builder` 357.19 kB / gzip 104.33 kB，`Gallery` 15.67 kB / gzip 4.78 kB
+- 首屏 `index` 477.49 kB / gzip 159.35 kB
+- 按需 `Builder` 362.01 kB / gzip 105.36 kB，`Gallery` 15.67 kB / gzip 4.78 kB
 - `ImageCropper` 3.27 kB / gzip 1.42 kB
-- CSS 100.27 kB / gzip 18.73 kB
+- CSS 102.03 kB / gzip 19.00 kB
 
 后端：
 
@@ -89,7 +90,7 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 2. 云端保存是显式按钮，不是自动保存；冲突时由 `expectedVersion` 返回 409。
 3. 支付未接；Pro 仍是本地演示 + 服务端 plan 字段，没有真实订单。
 4. 编辑器是桌面工作台；手机用于查看/预览，不提供完整编辑。
-5. 首屏 JS 约 476.67 kB；Builder 与 Gallery 已拆包，模板数据仍可继续懒加载。
+5. 首屏 JS 约 477.49 kB；Builder 与 Gallery 已拆包，模板数据仍可继续懒加载。
 6. 后端默认 H2 文件库；生产需切 PostgreSQL 并配置真实 JWT secret。
 7. 七语言 UI 已覆盖导航、首屏、筛选、登录、云端、Builder 顶栏与导出面板；Inspector 字段与模板正文仍以中文/英文为主，五语内容翻译待补。
 

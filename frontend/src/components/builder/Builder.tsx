@@ -243,6 +243,7 @@ function Canvas() {
   const pages = useProjectStore((state) => state.pages);
   const switchPage = useProjectStore((state) => state.switchPage);
   const selectSection = useBuilderStore((state) => state.selectSection);
+  const revealSection = useBuilderStore((state) => state.revealSection);
   const setZoom = useBuilderStore((state) => state.setZoom);
   const updateSection = useBuilderStore((state) => state.updateSection);
   const beginSectionEdit = useBuilderStore((state) => state.beginSectionEdit);
@@ -325,6 +326,7 @@ function Canvas() {
               editable
               selectedId={selectedId}
               onSelect={selectSection}
+              onNavigateSection={(id) => revealSection(id)}
               onNavigatePage={(path) => {
                 const page = pages.find((item) => item.path === path);
                 if (page) switchPage(page.key);
