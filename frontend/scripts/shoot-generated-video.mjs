@@ -3,9 +3,9 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 await page.addInitScript(() => localStorage.setItem('gantry:locale:v1', 'zh-CN'));
 await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle' });
-await page.getByLabel('搜索').fill('机械');
+await page.getByLabel('搜索').fill('MCH-ST-05');
 await page.waitForTimeout(500);
-await page.locator('.template-card:has(.template-film)').filter({ hasNotText: 'TRS-01' }).first().click();
+await page.locator('.template-card:has(.template-film)').first().click();
 await page.waitForSelector('.builder');
 const scroller = page.locator('.device-screen .site-scroll');
 await scroller.evaluate((node) => {
@@ -22,3 +22,4 @@ const info = await page.locator('.device-screen video').first().evaluate((v) => 
 console.log(JSON.stringify(info));
 await page.screenshot({ path: 'E:/asd/gantry-studio/frontend/screenshots/builder-generated-video.png' });
 await browser.close();
+

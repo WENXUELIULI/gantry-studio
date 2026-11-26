@@ -16,6 +16,11 @@ FILMS = {
     'film-chip': ('chip-01.jpg', 'SUBSTRATE / CLEANROOM'),
     'film-line': ('glass-02.jpg', 'LINE / ASSEMBLY'),
     'film-lab': ('industry/lab-glass.jpg', 'LAB / REAGENT'),
+    'film-machine': ('industry/machine-detail.jpg', 'MACHINE / PRECISION'),
+    'film-robotics': ('glass-02.jpg', 'ROBOTICS / CELL'),
+    'film-instrument': ('engineer-02.jpg', 'INSTRUMENT / MEASURE'),
+    'film-architecture': ('glass-03.jpg', 'FACADE / LIGHT'),
+    'film-medical': ('engineer-01.jpg', 'MEDICAL / CLEAN'),
 }
 
 def frame(base, name, label, t):

@@ -31,7 +31,7 @@ GANTRY 的第一步目标不是做一个通用页面搭建器，而是验证一�
 - `npx tsc --noEmit`：通过。
 - `npx vitest run`：23 个测试文件，147 个测试通过。
 - `npx playwright test`：11/11 passed，覆盖 30 套模板 smoke、独立裁剪、云端多页、导航切页与登录闸门。
-- `npm run build`：1665 modules；首屏 `index` 478.41 kB / gzip 159.58 kB；按需 `Builder` 365.86 kB、`Gallery` 16.35 kB；CSS 104.77 kB。
+- `npm run build`：1665 modules；首屏 `index` 478.44 kB / gzip 159.60 kB；按需 `Builder` 365.86 kB、`Gallery` 16.35 kB；CSS 104.77 kB。
 - `mvn -B test`：4 tests，0 failures。
 - `npm run lint`：0 error / 0 warning。
 

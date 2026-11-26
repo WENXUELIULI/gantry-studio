@@ -50,7 +50,7 @@ npm run build             # 1665 modules
 
 前端构建体积：
 
-- 首屏 `index` 478.41 kB / gzip 159.58 kB
+- 首屏 `index` 478.44 kB / gzip 159.60 kB
 - 按需 `Builder` 365.86 kB / gzip 107.01 kB，`Gallery` 16.35 kB / gzip 5.11 kB
 - `ImageCropper` 3.27 kB / gzip 1.42 kB
 - CSS 104.77 kB / gzip 19.48 kB
@@ -96,7 +96,7 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 2. 云端保存是显式按钮，不是自动保存；冲突时由 `expectedVersion` 返回 409。
 3. 支付未接；Pro 仍是本地演示 + 服务端 plan 字段，没有真实订单。
 4. 编辑器是桌面工作台；手机用于查看/预览，不提供完整编辑。
-5. 首屏 JS 约 478.41 kB；Builder 与 Gallery 已拆包，模板数据仍可继续懒加载。
+5. 首屏 JS 约 478.44 kB；Builder 与 Gallery 已拆包，模板数据仍可继续懒加载。
 6. 后端默认 H2 文件库；生产需切 PostgreSQL 并配置真实 JWT secret。
 7. 七语言 UI 已覆盖导航、首屏、筛选、登录、云端、Builder 顶栏与导出面板；Inspector 字段与模板正文仍以中文/英文为主，五语内容翻译待补。
 
