@@ -204,6 +204,12 @@ describe('builder store', () => {
     expect(useBuilderStore.getState().view).toBe('gallery');
     expect(useBuilderStore.getState().doc).not.toBeNull();
     expect(localStorage.getItem(STORAGE_KEY)).toContain('truss-precision');
+
+    useBuilderStore.getState().resumeDraft();
+    expect(useBuilderStore.getState().view).toBe('builder');
+    expect(useBuilderStore.getState().selectedId).toBe(
+      useBuilderStore.getState().doc?.sections[0]?.id,
+    );
   });
 
   it('builds a blank document from a hero and section variants', () => {

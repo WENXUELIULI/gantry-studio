@@ -31,6 +31,7 @@ export default function App() {
   const doc = useBuilderStore((state) => state.doc);
   const openTemplate = useBuilderStore((state) => state.openTemplate);
   const openBlankDocument = useBuilderStore((state) => state.openBlankDocument);
+  const resumeDraft = useBuilderStore((state) => state.resumeDraft);
   const [session, setSession] = useState<AuthSession | null>(() => readSession());
   const [authOpen, setAuthOpen] = useState(false);
   const [blankOpen, setBlankOpen] = useState(false);
@@ -62,6 +63,11 @@ export default function App() {
     useProjectStore.getState().startFromDocument(doc);
   };
 
+  const handleResume = () => {
+    resumeDraft();
+    if (doc) useProjectStore.getState().startFromDocument(doc);
+  };
+
   return (
     <Suspense fallback={<Loading />}>
       {view === 'builder' && doc ? (
@@ -70,6 +76,9 @@ export default function App() {
         <Gallery
           onOpen={handleOpen}
           onBlank={() => setBlankOpen(true)}
+          hasDraft={Boolean(doc)}
+          draftName={doc?.name}
+          onResume={handleResume}
           user={session?.user ?? null}
           onCloud={() => (session ? setCloudOpen(true) : setAuthOpen(true))}
           onAuth={() => setAuthOpen(true)}

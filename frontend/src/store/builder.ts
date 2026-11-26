@@ -38,6 +38,7 @@ interface BuilderState {
   editBaseline: SiteDocument | null;
   openTemplate: (templateId: string) => void;
   openBlankDocument: (doc: SiteDocument) => void;
+  resumeDraft: () => void;
   replaceDocument: (doc: SiteDocument) => void;
   closeProject: () => void;
   selectSection: (id: string | null) => void;
@@ -132,7 +133,7 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
 
   return {
     doc: initialDoc,
-    view: initialDoc ? 'builder' : 'gallery',
+    view: 'gallery',
     selectedId: initialDoc?.sections[0]?.id ?? null,
     scrollRequest: null,
     device: 'desktop',
@@ -173,6 +174,18 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
         history: [],
         future: [],
         savedAt,
+        editSectionId: null,
+        editBaseline: null,
+      });
+    },
+
+    resumeDraft: () => {
+      const current = get().doc;
+      if (!current) return;
+      set({
+        view: 'builder',
+        selectedId: current.sections[0]?.id ?? null,
+        scrollRequest: null,
         editSectionId: null,
         editBaseline: null,
       });

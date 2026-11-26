@@ -32,7 +32,7 @@ gantry-studio/
 - 生成与导出要求登录；JSON 项目源文件带 Pro 权益接缝。
 - 七语言界面：简体中文、English、العربية、Türkçe、עברית、فارسی、اردو；阿拉伯语/希伯来语/波斯语/乌尔都语自动 RTL。
 - 生成站点可单独设置语言，导出 HTML 写入对应 `lang` 与 `dir`。
-- 前端 149 个 Vitest 单测、32 条 Playwright E2E；后端 4 条 Spring Boot 集成测试。
+- 前端 149 个 Vitest 单测、33 条 Playwright E2E；后端 4 条 Spring Boot 集成测试。
 
 ## 本地运行
 

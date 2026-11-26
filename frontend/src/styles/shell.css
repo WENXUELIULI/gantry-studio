@@ -339,6 +339,21 @@ a {
   border-color: var(--shell-ink);
 }
 
+.gallery-resume {
+  max-width: 320px;
+}
+
+.gallery-resume-name {
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 8px;
+  border-left: 1px solid var(--shell-line);
+  color: var(--shell-muted);
+  font-size: 10px;
+}
+
 .gallery-btn--light {
   background: var(--shell-paper);
   border-color: var(--shell-paper);

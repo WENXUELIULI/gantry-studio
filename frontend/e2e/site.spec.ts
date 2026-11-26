@@ -404,6 +404,22 @@ test.describe('builder', () => {
     expect(box?.y ?? 999).toBeLessThan(190);
   });
 
+  test('returns to the gallery first and resumes the local draft', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await openTemplate(page);
+    await expect(page.locator('.builder')).toBeVisible();
+
+    await page.reload();
+    await expect(page.locator('.gallery')).toBeVisible();
+    await expect(page.locator('.builder')).toHaveCount(0);
+
+    await page.getByRole('button', { name: /继续上次编辑/ }).click();
+    await expect(page.locator('.builder')).toBeVisible();
+    await expect(page.locator('.rail-section')).toHaveCount(8);
+  });
+
   test('scrolls the canvas to the section when an inspector field is focused', async ({
     page,
   }) => {

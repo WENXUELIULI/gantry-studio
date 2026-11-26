@@ -4,6 +4,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Play,
+  RotateCcw,
   Search,
   Sparkles,
 } from 'lucide-react';
@@ -28,6 +29,9 @@ import { LocaleSwitcher } from '../i18n/LocaleSwitcher';
 interface GalleryProps {
   onOpen: (templateId: string) => void;
   onBlank?: () => void;
+  hasDraft?: boolean;
+  draftName?: string;
+  onResume?: () => void;
   user?: { displayName: string } | null;
   onCloud?: () => void;
   onAuth?: () => void;
@@ -173,7 +177,16 @@ function TemplateCard({
 
 const PAGE_SIZE = 24;
 
-export function Gallery({ onOpen, onBlank, user, onCloud, onAuth }: GalleryProps) {
+export function Gallery({
+  onOpen,
+  onBlank,
+  hasDraft = false,
+  draftName,
+  onResume,
+  user,
+  onCloud,
+  onAuth,
+}: GalleryProps) {
   const { t } = useTranslation();
   const [market, setMarket] = useState<MarketId | 'all'>('all');
   const [industry, setIndustry] = useState<IndustryId | 'all'>('all');
@@ -279,6 +292,20 @@ export function Gallery({ onOpen, onBlank, user, onCloud, onAuth }: GalleryProps
                 >
                   <Sparkles size={15} strokeWidth={1.6} />
                   从空白开始
+                </button>
+              )}
+              {hasDraft && onResume && (
+                <button
+                  type="button"
+                  className="gallery-btn gallery-btn--ghost gallery-resume"
+                  onClick={onResume}
+                  title={draftName}
+                >
+                  <RotateCcw size={15} strokeWidth={1.6} />
+                  {t('gallery.resumeDraft')}
+                  {draftName && (
+                    <span className="gallery-resume-name">{draftName}</span>
+                  )}
                 </button>
               )}
             </div>
