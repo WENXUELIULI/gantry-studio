@@ -930,6 +930,8 @@ function ProcessFields({
           <TextField
             label="标题"
             value={item.title}
+            multiline
+            rows={2}
             onCommit={(title) => update({ ...item, title })}
           />
           <TextField

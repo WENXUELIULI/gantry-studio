@@ -249,6 +249,7 @@ function Canvas() {
   const beginSectionEdit = useBuilderStore((state) => state.beginSectionEdit);
   const endSectionEdit = useBuilderStore((state) => state.endSectionEdit);
   const stageRef = useRef<HTMLDivElement>(null);
+  const scrollGuardRef = useRef(0);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -275,6 +276,7 @@ function Canvas() {
       `[data-slot-id="${scrollRequest.id}"]`,
     );
     if (!target) return;
+    scrollGuardRef.current = Date.now() + 900;
     scroller.scrollTo({
       top: Math.max(0, target.offsetTop - 12),
       behavior: prefersReducedMotion() ? 'auto' : 'smooth',
@@ -289,6 +291,7 @@ function Canvas() {
     let frame = 0;
     const sync = () => {
       frame = 0;
+      if (Date.now() < scrollGuardRef.current) return;
       const slots = Array.from(
         scroller.querySelectorAll<HTMLElement>('[data-slot-id]'),
       );

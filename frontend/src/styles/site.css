@@ -2714,6 +2714,12 @@
   text-align: center;
 }
 
+.section-slot[data-align='center'] .section-head-main {
+  grid-column: 1 / -1;
+  width: min(100%, 940px);
+  margin-inline: auto;
+}
+
 .section-slot[data-align='center'] .section-index,
 .section-slot[data-align='center'] .section-head-mark {
   display: none;

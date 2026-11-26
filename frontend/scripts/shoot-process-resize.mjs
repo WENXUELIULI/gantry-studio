@@ -1,0 +1,13 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.addInitScript(() => localStorage.setItem('gantry:locale:v1', 'zh-CN'));
+await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle' });
+await page.getByLabel('搜索').fill('GLS-WC-04');
+await page.locator('.template-card').first().click();
+await page.waitForSelector('.builder');
+await page.locator('.rail-section').filter({ hasText: '交付流程' }).click();
+await page.waitForTimeout(500);
+await page.screenshot({ path: 'E:/asd/gantry-studio/frontend/screenshots/builder-process-resize.png' });
+await browser.close();
+console.log('process screenshot done');

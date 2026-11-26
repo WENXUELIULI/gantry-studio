@@ -12,7 +12,7 @@
 - 桌面/手机双视图、滚动视频、3–4 图拼贴、组件级样式、图片焦点/独立裁剪均可用。
 - 七语言 UI（zh-CN / en / ar / tr / he / fa / ur）与 RTL；生成站点可设置 locale，导出写入 lang/dir。
 - 登录、云端项目、多页编辑、PC → 手机接力、单页 HTML / 整站 ZIP 导出已打通。
-- 前端 147 个单元测试、28 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
+- 前端 147 个单元测试、29 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
 
 尚未完成：真实源码（React/Java）生成、在线支付、手机端编辑工作台。JSON 项目源文件当前是页面文档，不是生成出来的工程源码。
 
@@ -51,9 +51,9 @@ npm run build             # 1665 modules
 前端构建体积：
 
 - 首屏 `index` 478.44 kB / gzip 159.60 kB
-- 按需 `Builder` 365.86 kB / gzip 107.01 kB，`Gallery` 16.35 kB / gzip 5.11 kB
+- 按需 `Builder` 366.10 kB / gzip 107.08 kB，`Gallery` 16.35 kB / gzip 5.11 kB
 - `ImageCropper` 3.27 kB / gzip 1.42 kB
-- CSS 104.77 kB / gzip 19.48 kB
+- CSS 104.88 kB / gzip 19.50 kB
 
 后端：
 
@@ -71,6 +71,7 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 - `screenshots/gallery-media.png`：FILM 徽章、视频卡片悬浮预览与三列不同封面
 - `screenshots/builder-video-story.png`：视频贯穿场景与 LIVE FILM 徽章
 - `screenshots/builder-generated-video.png`：生成方案的真实视频背景
+- `screenshots/builder-process-resize.png`：居中长标题恢复横向排版，流程标题可调整高度
 - `screenshots/gallery-global.png`、`gallery-global-cards.png`：国际市场模板
 - `screenshots/builder-desktop.png`、`builder-mobile.png`
 - `screenshots/builder-hdw.png`、`builder-lgc.png`、`builder-chm.png`、`builder-med.png`、`builder-aut.png`、`builder-apx.png`

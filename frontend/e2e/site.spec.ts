@@ -104,7 +104,31 @@ test.describe('template gallery', () => {
       .toBe(false);
   });
 
-  test('opens a generated industry-by-style combination', async ({ page }) => {    await page.goto('/');
+  test('allows resizing long process step titles', async ({ page }) => {
+    await page.goto('/');
+    await page.getByLabel('搜索').fill('GLS-WC-04');
+    await page.locator('.template-card').first().click();
+    await expect(page.locator('.builder')).toBeVisible();
+
+    await page.locator('.rail-section').filter({ hasText: '交付流程' }).click();
+    await page.waitForTimeout(1000);
+    const processGroup = page
+      .locator('.inspector-group')
+      .filter({ hasText: '流程 / PROCESS' });
+    await expect(processGroup).toBeVisible();
+    const firstStep = processGroup.locator('.item-card').first();
+    const title = firstStep.getByLabel('标题');
+    await expect(title).toHaveJSProperty('tagName', 'TEXTAREA');
+    await expect(title).toHaveAttribute('rows', '2');
+
+    const canvasTitle = page.locator('[data-slot-id="process"] .section-title').first();
+    await expect(canvasTitle).toContainText('From drawing');
+    const box = await canvasTitle.boundingBox();
+    expect(box?.width ?? 0).toBeGreaterThan(280);
+  });
+
+  test('opens a generated industry-by-style combination', async ({ page }) => {
+    await page.goto('/');
     await page.getByLabel('搜索').fill('工业编辑风 · 第');
     await expect(page.locator('.template-card').first()).toBeVisible();
     await page.locator('.template-card').first().click();
