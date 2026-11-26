@@ -23,22 +23,23 @@ interface Copy {
   place: string;
   placeEn: string;
   images: string[];
+  video: string;
 }
 
 const COPY: Record<IndustryId, Copy> = {
-  machinery: { short: '机械', shortEn: 'Machinery', noun: '机械零件', nounEn: 'machined parts', place: '河北 · 沧州', placeEn: 'Cangzhou, CN', images: ['/assets/metal-01.jpg', '/assets/factory-01.jpg', '/assets/pipes-01.jpg', '/assets/engineer-01.jpg', '/assets/industrial-01.jpg'] },
-  glass: { short: '玻璃', shortEn: 'Glass', noun: '玻璃制品', nounEn: 'glass objects', place: '河北 · 河间', placeEn: 'Hejian, CN', images: ['/assets/glassware-01.jpg', '/assets/glassware-02.jpg', '/assets/glass-01.jpg', '/assets/glass-03.jpg', '/assets/glass-02.jpg'] },
-  commodity: { short: '商品', shortEn: 'Goods', noun: '工业耗材', nounEn: 'industrial goods', place: '广东 · 深圳', placeEn: 'Shenzhen, CN', images: ['/assets/warehouse-01.jpg', '/assets/factory-02.jpg', '/assets/industrial-01.jpg', '/assets/pipes-01.jpg', '/assets/metal-01.jpg'] },
-  semiconductor: { short: '半导体', shortEn: 'Semiconductor', noun: '半导体部件', nounEn: 'semiconductor parts', place: '江苏 · 无锡', placeEn: 'Wuxi, CN', images: ['/assets/chip-01.jpg', '/assets/engineer-02.jpg', '/assets/glass-02.jpg', '/assets/chip-01.jpg', '/assets/engineer-02.jpg'] },
-  energy: { short: '能源', shortEn: 'Energy', noun: '能源装备', nounEn: 'energy systems', place: '江苏 · 常州', placeEn: 'Changzhou, CN', images: ['/assets/solar-01.jpg', '/assets/wind-01.jpg', '/assets/pipes-01.jpg', '/assets/solar-01.jpg', '/assets/wind-01.jpg'] },
-  robotics: { short: '机器人', shortEn: 'Robotics', noun: '协作机器人', nounEn: 'cobots', place: '广东 · 东莞', placeEn: 'Dongguan, CN', images: ['/assets/glass-02.jpg', '/assets/robot-01.jpg', '/assets/engineer-02.jpg', '/assets/glass-02.jpg', '/assets/robot-01.jpg'] },
-  instrument: { short: '仪器', shortEn: 'Instrument', noun: '精密仪器', nounEn: 'precision instruments', place: '江苏 · 苏州', placeEn: 'Suzhou, CN', images: ['/assets/engineer-02.jpg', '/assets/chip-01.jpg', '/assets/robot-01.jpg', '/assets/engineer-01.jpg', '/assets/chip-01.jpg'] },
-  architecture: { short: '建筑', shortEn: 'Architecture', noun: '建筑立面', nounEn: 'facades', place: '上海 · 临港', placeEn: 'Shanghai, CN', images: ['/assets/glass-01.jpg', '/assets/glass-03.jpg', '/assets/glass-02.jpg', '/assets/glass-01.jpg', '/assets/glass-03.jpg'] },
-  hardware: { short: '五金', shortEn: 'Hardware', noun: '五金件', nounEn: 'hardware components', place: '河北 · 邯郸', placeEn: 'Handan, CN', images: ['/assets/metal-01.jpg', '/assets/factory-01.jpg', '/assets/pipes-01.jpg', '/assets/industrial-01.jpg', '/assets/factory-01.jpg'] },
-  logistics: { short: '物流', shortEn: 'Logistics', noun: '物流装备', nounEn: 'logistics systems', place: '上海 · 临港', placeEn: 'Shanghai, CN', images: ['/assets/warehouse-01.jpg', '/assets/industrial-01.jpg', '/assets/factory-02.jpg', '/assets/warehouse-01.jpg', '/assets/industrial-01.jpg'] },
-  chemical: { short: '化工', shortEn: 'Chemical', noun: '化工材料', nounEn: 'chemical materials', place: '江苏 · 泰州', placeEn: 'Taizhou, CN', images: ['/assets/pipes-01.jpg', '/assets/chip-01.jpg', '/assets/factory-01.jpg', '/assets/pipes-01.jpg', '/assets/engineer-01.jpg'] },
-  medical: { short: '医疗', shortEn: 'Medical', noun: '医疗器械', nounEn: 'medical devices', place: '江苏 · 常州', placeEn: 'Changzhou, CN', images: ['/assets/engineer-01.jpg', '/assets/robot-01.jpg', '/assets/chip-01.jpg', '/assets/engineer-01.jpg', '/assets/glass-03.jpg'] },
-  automotive: { short: '汽车', shortEn: 'Automotive', noun: '汽车零部件', nounEn: 'auto parts', place: '湖北 · 武汉', placeEn: 'Wuhan, CN', images: ['/assets/glass-02.jpg', '/assets/factory-02.jpg', '/assets/metal-01.jpg', '/assets/glass-02.jpg', '/assets/factory-02.jpg'] },
+  machinery: { short: '机械', shortEn: 'Machinery', noun: '机械零件', nounEn: 'machined parts', place: '河北 · 沧州', placeEn: 'Cangzhou, CN', images: ['/assets/metal-01.jpg', '/assets/factory-01.jpg', '/assets/pipes-01.jpg', '/assets/engineer-01.jpg', '/assets/industrial-01.jpg'], video: '/assets/truss-loop.webm' },
+  glass: { short: '玻璃', shortEn: 'Glass', noun: '玻璃制品', nounEn: 'glass objects', place: '河北 · 河间', placeEn: 'Hejian, CN', images: ['/assets/glassware-01.jpg', '/assets/glassware-02.jpg', '/assets/glass-01.jpg', '/assets/glass-03.jpg', '/assets/glass-02.jpg'], video: '/assets/film-glass.webm' },
+  commodity: { short: '商品', shortEn: 'Goods', noun: '工业耗材', nounEn: 'industrial goods', place: '广东 · 深圳', placeEn: 'Shenzhen, CN', images: ['/assets/warehouse-01.jpg', '/assets/industry/containers.jpg', '/assets/industry/port-crane.jpg', '/assets/factory-02.jpg', '/assets/industrial-01.jpg'], video: '/assets/film-cargo.webm' },
+  semiconductor: { short: '半导体', shortEn: 'Semiconductor', noun: '半导体部件', nounEn: 'semiconductor parts', place: '江苏 · 无锡', placeEn: 'Wuxi, CN', images: ['/assets/chip-01.jpg', '/assets/engineer-02.jpg', '/assets/industry/lab-glass.jpg', '/assets/glass-02.jpg', '/assets/engineer-01.jpg'], video: '/assets/film-chip.webm' },
+  energy: { short: '能源', shortEn: 'Energy', noun: '能源装备', nounEn: 'energy systems', place: '江苏 · 常州', placeEn: 'Changzhou, CN', images: ['/assets/solar-01.jpg', '/assets/wind-01.jpg', '/assets/pipes-01.jpg', '/assets/industrial-01.jpg', '/assets/glass-02.jpg'], video: '/assets/film-energy.webm' },
+  robotics: { short: '机器人', shortEn: 'Robotics', noun: '协作机器人', nounEn: 'cobots', place: '广东 · 东莞', placeEn: 'Dongguan, CN', images: ['/assets/glass-02.jpg', '/assets/robot-01.jpg', '/assets/engineer-02.jpg', '/assets/industry/electronics.jpg', '/assets/robot-01.jpg'], video: '/assets/film-line.webm' },
+  instrument: { short: '仪器', shortEn: 'Instrument', noun: '精密仪器', nounEn: 'precision instruments', place: '江苏 · 苏州', placeEn: 'Suzhou, CN', images: ['/assets/engineer-02.jpg', '/assets/chip-01.jpg', '/assets/robot-01.jpg', '/assets/industry/lab-research.jpg', '/assets/engineer-01.jpg'], video: '/assets/film-chip.webm' },
+  architecture: { short: '建筑', shortEn: 'Architecture', noun: '建筑立面', nounEn: 'facades', place: '上海 · 临港', placeEn: 'Shanghai, CN', images: ['/assets/glass-01.jpg', '/assets/glass-03.jpg', '/assets/glass-02.jpg', '/assets/industry/port-crane.jpg', '/assets/industrial-01.jpg'], video: '/assets/film-glass.webm' },
+  hardware: { short: '五金', shortEn: 'Hardware', noun: '五金件', nounEn: 'hardware components', place: '河北 · 邯郸', placeEn: 'Handan, CN', images: ['/assets/metal-01.jpg', '/assets/factory-01.jpg', '/assets/industry/machine-detail.jpg', '/assets/industrial-01.jpg', '/assets/pipes-01.jpg'], video: '/assets/truss-loop.webm' },
+  logistics: { short: '物流', shortEn: 'Logistics', noun: '物流装备', nounEn: 'logistics systems', place: '上海 · 临港', placeEn: 'Shanghai, CN', images: ['/assets/warehouse-01.jpg', '/assets/industry/containers.jpg', '/assets/industry/port-crane.jpg', '/assets/industrial-01.jpg', '/assets/factory-02.jpg'], video: '/assets/film-port.webm' },
+  chemical: { short: '化工', shortEn: 'Chemical', noun: '化工材料', nounEn: 'chemical materials', place: '江苏 · 泰州', placeEn: 'Taizhou, CN', images: ['/assets/pipes-01.jpg', '/assets/industry/lab-glass.jpg', '/assets/factory-01.jpg', '/assets/industry/lab-research.jpg', '/assets/engineer-01.jpg'], video: '/assets/film-lab.webm' },
+  medical: { short: '医疗', shortEn: 'Medical', noun: '医疗器械', nounEn: 'medical devices', place: '江苏 · 常州', placeEn: 'Changzhou, CN', images: ['/assets/engineer-01.jpg', '/assets/industry/lab-research.jpg', '/assets/industry/lab-glass.jpg', '/assets/chip-01.jpg', '/assets/glass-03.jpg'], video: '/assets/film-lab.webm' },
+  automotive: { short: '汽车', shortEn: 'Automotive', noun: '汽车零部件', nounEn: 'auto parts', place: '湖北 · 武汉', placeEn: 'Wuhan, CN', images: ['/assets/glass-02.jpg', '/assets/factory-02.jpg', '/assets/industry/warehouse-aisle.jpg', '/assets/metal-01.jpg', '/assets/industrial-01.jpg'], video: '/assets/film-line.webm' },
 };
 
 interface StyleProfile {
@@ -176,6 +177,7 @@ function buildSections(
   name: string,
 ): SiteSection[] {
   const heroKind = HERO_ORDER[(HERO_ORDER.indexOf(style.hero) + edition) % HERO_ORDER.length];
+  const isFilm = heroKind === 'video-story' || heroKind === 'video-scrub';
   const primary = global ? 'Request a quote' : '获取报价';
   const secondary = global ? 'See the range' : '查看产品';
   const image = (index: number) => copy.images[index % copy.images.length];
@@ -204,7 +206,9 @@ function buildSections(
       visible: true,
       tone: theme.dark ? 'dark' : 'light',
       heroKind,
-      media: { src: image(edition), alt: `${copy.short} ${style.accent}` },
+      media: isFilm
+        ? { src: copy.video, kind: 'video' as const, alt: `${copy.short} ${style.accent} film` }
+        : { src: image(edition), kind: 'image' as const, alt: `${copy.short} ${style.accent}` },
       collage: [0, 1, 2, 3].map((item) => ({ src: image(item + edition), alt: `${copy.short} ${item + 1}` })),
       primaryCta: primary,
       secondaryCta: secondary,

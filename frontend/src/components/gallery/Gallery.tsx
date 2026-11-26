@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowRight,
   ArrowUpRight,
+  Play,
   Search,
   Sparkles,
 } from 'lucide-react';
@@ -68,16 +69,55 @@ function TemplateCard({
   index: number;
 }) {
   const { t } = useTranslation();
+  const hero = template.sections[0];
+  const filmSrc =
+    hero?.type === 'hero' &&
+    (hero.media.kind === 'video' || /\.webm$/.test(hero.media.src))
+      ? hero.media.src
+      : null;
+  const isFilm =
+    filmSrc !== null ||
+    template.heroKind === 'video-scrub' ||
+    template.heroKind === 'video-story';
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [previewing, setPreviewing] = useState(false);
+
+  const startPreview = () => {
+    if (!filmSrc) return;
+    setPreviewing(true);
+    void videoRef.current?.play().catch(() => undefined);
+  };
+
+  const stopPreview = () => {
+    setPreviewing(false);
+    videoRef.current?.pause();
+  };
+
   return (
     <button
       type="button"
       className="template-card"
       onClick={() => onOpen(template.id)}
+      onMouseEnter={startPreview}
+      onMouseLeave={stopPreview}
+      onFocus={startPreview}
+      onBlur={stopPreview}
       aria-label={`${t('gallery.useTemplate')} ${template.name}`}
     >
       <div className="template-cover">
         <img className="template-cover-main" src={template.cover.image} alt="" loading="lazy" />
         <img className="template-cover-alt" src={template.cover.secondary} alt="" loading="lazy" />
+        {filmSrc && (
+          <video
+            ref={videoRef}
+            className={`template-cover-video ${previewing ? 'is-previewing' : ''}`}
+            src={filmSrc}
+            muted
+            loop
+            playsInline
+            preload="none"
+          />
+        )}
         <div className="template-cover-shade" />
         <div className="template-cover-top">
           <span className="mono">{template.code}</span>
@@ -85,6 +125,12 @@ function TemplateCard({
             {HERO_KIND_BY_ID[template.heroKind]?.labelEn ?? template.heroKind}
           </span>
         </div>
+        {isFilm && (
+          <span className="template-film mono">
+            <Play size={10} fill="currentColor" strokeWidth={1.5} />
+            FILM
+          </span>
+        )}
         <div className="template-cover-bottom">
           <span className="template-cover-index mono">
             {String(index + 1).padStart(2, '0')} / {TEMPLATES.length}

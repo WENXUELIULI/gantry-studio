@@ -23,15 +23,15 @@ GANTRY 的第一步目标不是做一个通用页面搭建器，而是验证一�
 - 8 个区块：hero / metrics / capabilities / products / process / proof / cta / footer。
 - 编辑器：模板库筛选、区块内容编辑、图片上传、图片焦点/缩放/独立裁剪、组件级 SectionStyle、主题 token、多页、云端项目、桌面/手机视图、预览、undo/redo、localStorage 草稿。
 - 导出：单文件 HTML（内联 CSS、图片 dataURL、滚动/菜单 runtime）、整站 ZIP，以及 JSON 项目源文件；JSON 带演示级 Pro 门槛。
-- 质量门禁：146 个 Vitest 单测、27 条 Playwright E2E、4 条后端 Spring Boot 测试、tsc、ESLint、build。
+- 质量门禁：147 个 Vitest 单测、28 条 Playwright E2E、4 条后端 Spring Boot 测试、tsc、ESLint、build。
 - 后端：Java 21 + Spring Boot 3.5.6、JWT/refresh、项目/页面、乐观锁、导出 artifact、H2/PostgreSQL、Flyway。
 
 ## 验证输出（2026-11-25）
 
 - `npx tsc --noEmit`：通过。
-- `npx vitest run`：23 个测试文件，146 个测试通过。
+- `npx vitest run`：23 个测试文件，147 个测试通过。
 - `npx playwright test`：11/11 passed，覆盖 30 套模板 smoke、独立裁剪、云端多页、导航切页与登录闸门。
-- `npm run build`：1665 modules；首屏 `index` 477.72 kB / gzip 159.41 kB；按需 `Builder` 364.71 kB、`Gallery` 15.67 kB；CSS 103.50 kB。
+- `npm run build`：1665 modules；首屏 `index` 478.41 kB / gzip 159.58 kB；按需 `Builder` 365.86 kB、`Gallery` 16.35 kB；CSS 104.77 kB。
 - `mvn -B test`：4 tests，0 failures。
 - `npm run lint`：0 error / 0 warning。
 

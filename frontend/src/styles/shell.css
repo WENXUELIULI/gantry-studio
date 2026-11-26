@@ -768,6 +768,21 @@ a {
   opacity: 0;
 }
 
+.template-cover-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.template-cover-video.is-previewing {
+  opacity: 1;
+}
+
 .template-card:hover .template-cover-main {
   opacity: 0;
   transform: scale(1.035);
@@ -781,6 +796,7 @@ a {
 .template-cover-shade {
   position: absolute;
   inset: 0;
+  z-index: 2;
   background:
     linear-gradient(0deg, rgba(8, 10, 10, 0.66) 0%, transparent 46%),
     linear-gradient(180deg, rgba(8, 10, 10, 0.26) 0%, transparent 30%);
@@ -791,6 +807,7 @@ a {
   left: 12px;
   right: 12px;
   top: 12px;
+  z-index: 3;
   display: flex;
   justify-content: space-between;
   gap: 10px;
@@ -805,11 +822,27 @@ a {
   font-size: 7px !important;
 }
 
+.template-film {
+  position: absolute;
+  left: 12px;
+  top: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  background: var(--shell-accent);
+  color: #fffaf1;
+  font-size: 8px !important;
+  letter-spacing: 0.12em;
+  z-index: 4;
+}
+
 .template-cover-bottom {
   position: absolute;
   left: 12px;
   right: 12px;
   bottom: 12px;
+  z-index: 3;
   display: flex;
   justify-content: space-between;
   align-items: center;

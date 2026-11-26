@@ -44,6 +44,7 @@ export function VideoScene({
           autoPlay={!isScrub}
         />
         <div className="video-scene-shade" />
+        <span className="video-scene-badge">LIVE FILM · KEYFRAME STORY</span>
         {keyframes.length > 0 && (
           <nav className="hero-chapters video-scene-chapters" aria-label="Video chapters">
             {keyframes.map((keyframe, index) => (

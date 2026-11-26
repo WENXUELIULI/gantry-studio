@@ -207,7 +207,9 @@ function VideoScrubHero({ section, editable, onEdit, onActiveSection }: HeroProp
 
         <div className="hero-topline mono">
           <span>{section.location}</span>
-          <span className="hero-topline-mid">SCROLL-DRIVEN FILM / 00:06</span>
+          <span className="hero-topline-mid">
+            <span className="hero-film-state">LIVE FILM · SCROLL</span>
+          </span>
           <span>GANTRY SYSTEMS</span>
         </div>
 

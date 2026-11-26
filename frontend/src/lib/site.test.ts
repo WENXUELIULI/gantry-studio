@@ -141,4 +141,30 @@ describe('template library', () => {
       expect(item.sections[0].type).toBe('hero');
     }
   });
+
+  it('gives every film hero a real local video and distinct covers per industry', () => {
+    const films = TEMPLATES.filter(
+      (item) => item.heroKind === 'video-scrub' || item.heroKind === 'video-story',
+    );
+    expect(films.length).toBeGreaterThan(100);
+    for (const item of films) {
+      const document = createDocumentFromTemplate(item);
+      const hero = document.sections[0];
+      if (hero.type !== 'hero') throw new Error('hero section missing');
+      const isVideo = hero.media.kind === 'video' || /\.webm$/.test(hero.media.src);
+      expect(isVideo).toBe(true);
+      if (item.id.startsWith('gen-')) {
+        expect(hero.media.kind).toBe('video');
+        expect(hero.media.src).toMatch(/^\/assets\/.*\.webm$/);
+        expect(hero.keyframes?.length).toBeGreaterThanOrEqual(3);
+      }
+    }
+
+    for (const industry of INDUSTRIES) {
+      const covers = new Set(
+        TEMPLATES.filter((item) => item.industry === industry.id).map((item) => item.cover.image),
+      );
+      expect(covers.size).toBeGreaterThanOrEqual(4);
+    }
+  });
 });

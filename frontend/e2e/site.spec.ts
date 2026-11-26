@@ -91,8 +91,20 @@ test.describe('template gallery', () => {
     await expect(page.locator('.template-card')).toHaveCount(PAGE_SIZE);
   });
 
-  test('opens a generated industry-by-style combination', async ({ page }) => {
+  test('previews film templates on hover', async ({ page }) => {
     await page.goto('/');
+    await page.getByLabel('搜索').fill('工业编辑风');
+    const card = page.locator('.template-card:has(.template-film)').first();
+    await expect(card).toBeVisible();
+    await card.hover();
+    const video = card.locator('video');
+    await expect(video).toHaveClass(/is-previewing/);
+    await expect
+      .poll(() => video.evaluate((node) => (node as HTMLVideoElement).paused))
+      .toBe(false);
+  });
+
+  test('opens a generated industry-by-style combination', async ({ page }) => {    await page.goto('/');
     await page.getByLabel('搜索').fill('工业编辑风 · 第');
     await expect(page.locator('.template-card').first()).toBeVisible();
     await page.locator('.template-card').first().click();

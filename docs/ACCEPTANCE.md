@@ -12,7 +12,7 @@
 - 桌面/手机双视图、滚动视频、3–4 图拼贴、组件级样式、图片焦点/独立裁剪均可用。
 - 七语言 UI（zh-CN / en / ar / tr / he / fa / ur）与 RTL；生成站点可设置 locale，导出写入 lang/dir。
 - 登录、云端项目、多页编辑、PC → 手机接力、单页 HTML / 整站 ZIP 导出已打通。
-- 前端 146 个单元测试、27 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
+- 前端 147 个单元测试、28 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
 
 尚未完成：真实源码（React/Java）生成、在线支付、手机端编辑工作台。JSON 项目源文件当前是页面文档，不是生成出来的工程源码。
 
@@ -42,7 +42,7 @@
 ```bash
 cd frontend
 npx tsc --noEmit          # 通过
-npx vitest run            # 23 files, 146 tests passed
+npx vitest run            # 23 files, 147 tests passed
 npx playwright test       # 9 passed (35.6s)
 npm run lint              # 0 error, 0 warning
 npm run build             # 1665 modules
@@ -50,10 +50,10 @@ npm run build             # 1665 modules
 
 前端构建体积：
 
-- 首屏 `index` 477.72 kB / gzip 159.41 kB
-- 按需 `Builder` 364.71 kB / gzip 106.75 kB，`Gallery` 15.67 kB / gzip 4.78 kB
+- 首屏 `index` 478.41 kB / gzip 159.58 kB
+- 按需 `Builder` 365.86 kB / gzip 107.01 kB，`Gallery` 16.35 kB / gzip 5.11 kB
 - `ImageCropper` 3.27 kB / gzip 1.42 kB
-- CSS 103.50 kB / gzip 19.25 kB
+- CSS 104.77 kB / gzip 19.48 kB
 
 后端：
 
@@ -68,6 +68,9 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 - `screenshots/gallery-templates.png`：715 套目录（首屏 24 套分页）
 - `screenshots/gallery-715.png`：715 套模板计数与筛选
 - `screenshots/builder-generated.png`：工厂生成的行业 × 风格组合模板
+- `screenshots/gallery-media.png`：FILM 徽章、视频卡片悬浮预览与三列不同封面
+- `screenshots/builder-video-story.png`：视频贯穿场景与 LIVE FILM 徽章
+- `screenshots/builder-generated-video.png`：生成方案的真实视频背景
 - `screenshots/gallery-global.png`、`gallery-global-cards.png`：国际市场模板
 - `screenshots/builder-desktop.png`、`builder-mobile.png`
 - `screenshots/builder-hdw.png`、`builder-lgc.png`、`builder-chm.png`、`builder-med.png`、`builder-aut.png`、`builder-apx.png`
@@ -93,7 +96,7 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 2. 云端保存是显式按钮，不是自动保存；冲突时由 `expectedVersion` 返回 409。
 3. 支付未接；Pro 仍是本地演示 + 服务端 plan 字段，没有真实订单。
 4. 编辑器是桌面工作台；手机用于查看/预览，不提供完整编辑。
-5. 首屏 JS 约 477.72 kB；Builder 与 Gallery 已拆包，模板数据仍可继续懒加载。
+5. 首屏 JS 约 478.41 kB；Builder 与 Gallery 已拆包，模板数据仍可继续懒加载。
 6. 后端默认 H2 文件库；生产需切 PostgreSQL 并配置真实 JWT secret。
 7. 七语言 UI 已覆盖导航、首屏、筛选、登录、云端、Builder 顶栏与导出面板；Inspector 字段与模板正文仍以中文/英文为主，五语内容翻译待补。
 
