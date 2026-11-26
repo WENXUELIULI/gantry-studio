@@ -85,12 +85,16 @@ function SectionEditProvider({
 }) {
   const beginSectionEdit = useBuilderStore((state) => state.beginSectionEdit);
   const endSectionEdit = useBuilderStore((state) => state.endSectionEdit);
+  const revealSection = useBuilderStore((state) => state.revealSection);
   const value = useMemo(
     () => ({
-      begin: () => beginSectionEdit(sectionId),
+      begin: () => {
+        beginSectionEdit(sectionId);
+        revealSection(sectionId);
+      },
       end: () => endSectionEdit(),
     }),
-    [beginSectionEdit, endSectionEdit, sectionId],
+    [beginSectionEdit, endSectionEdit, revealSection, sectionId],
   );
   return (
     <SectionEditContext.Provider value={value}>
@@ -196,6 +200,7 @@ function SelectField<T extends string>({
   onChange: (value: T) => void;
   hint?: string;
 }) {
+  const edit = useContext(SectionEditContext);
   return (
     <label className="field">
       <span className="field-label">
@@ -206,6 +211,8 @@ function SelectField<T extends string>({
         value={value}
         aria-label={label}
         title={hint}
+        onFocus={() => edit?.begin()}
+        onBlur={() => edit?.end()}
         onChange={(event) => onChange(event.target.value as T)}
       >
         {options.map((option) => (

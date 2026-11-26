@@ -404,6 +404,27 @@ test.describe('builder', () => {
     expect(box?.y ?? 999).toBeLessThan(190);
   });
 
+  test('scrolls the canvas to the section when an inspector field is focused', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await openTemplate(page);
+
+    const scroller = page.locator('.device-screen .site-scroll');
+    await scroller.evaluate((node) => node.scrollTo({ top: 1200 }));
+    await expect
+      .poll(() => scroller.evaluate((node) => node.scrollTop))
+      .toBeGreaterThan(1000);
+
+    await page.getByRole('combobox', { name: '媒体类型' }).focus();
+    await expect
+      .poll(() => scroller.evaluate((node) => node.scrollTop))
+      .toBeLessThan(200);
+    await expect(page.locator('.rail-section.is-selected')).toContainText(
+      '首屏',
+    );
+  });
+
   test('scrolls the canvas to the section selected in the rail', async ({ page }) => {
     await page.goto('/');
     await openTemplate(page);
