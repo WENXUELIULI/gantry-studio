@@ -1,0 +1,28 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.addInitScript(() => {
+  localStorage.setItem('gantry:locale:v1', 'zh-CN');
+  localStorage.removeItem('gantry:site:v1');
+});
+const errors = [];
+page.on('pageerror', (err) => errors.push(err.message));
+await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle' });
+await page.getByRole('button', { name: '从空白开始' }).click();
+await page.waitForSelector('.blank-dialog');
+await page.getByLabel('项目名称 / NAME').fill('空白测试工厂');
+await page.screenshot({ path: 'E:/asd/gantry-studio/frontend/screenshots/blank-start.png' });
+await page.getByRole('button', { name: '进入空白画布' }).click();
+await page.waitForSelector('.blank-stage');
+await page.waitForTimeout(500);
+await page.screenshot({ path: 'E:/asd/gantry-studio/frontend/screenshots/blank-canvas.png' });
+await page.getByRole('button', { name: '视频长镜头' }).click();
+await page.waitForTimeout(600);
+await page.getByRole('button', { name: '添加区块' }).click();
+await page.waitForTimeout(300);
+await page.screenshot({ path: 'E:/asd/gantry-studio/frontend/screenshots/blank-catalog.png' });
+await page.getByRole('button', { name: '能力矩阵 · 卡片' }).click();
+await page.waitForTimeout(600);
+await page.screenshot({ path: 'E:/asd/gantry-studio/frontend/screenshots/blank-built.png' });
+console.log(JSON.stringify({ errors, url: page.url(), sections: await page.locator('.rail-section').count() }));
+await browser.close();

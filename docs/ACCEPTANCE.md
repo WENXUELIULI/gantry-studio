@@ -12,7 +12,7 @@
 - 桌面/手机双视图、滚动视频、3–4 图拼贴、组件级样式、图片焦点/独立裁剪均可用。
 - 七语言 UI（zh-CN / en / ar / tr / he / fa / ur）与 RTL；生成站点可设置 locale，导出写入 lang/dir。
 - 登录、云端项目、多页编辑、PC → 手机接力、单页 HTML / 整站 ZIP 导出已打通。
-- 前端 147 个单元测试、29 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
+- 前端 149 个单元测试、30 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
 
 尚未完成：真实源码（React/Java）生成、在线支付、手机端编辑工作台。JSON 项目源文件当前是页面文档，不是生成出来的工程源码。
 
@@ -29,6 +29,7 @@
 | 3–4 张图按页面高度组合 | image-collage；图片按滚动进度位移 | `Heroes.tsx`、`site.css` |
 | 桌面/手机切换 | Builder 设备切换；容器查询重排；手机预览 390×844 | E2E 手机无横向溢出、`builder-mobile.png` |
 | 模板选择后自由编辑 | 内容字段、内联文本、区块增删/排序/隐藏、主题、SectionStyle、撤销/重做 | `frontend/src/store/builder.ts`、`Inspector.tsx` |
+| 空白创建 | 启动面板设语境 → 空白画布选 7 种首屏之一 → 按分组添加区块/变体；首屏、页脚受限；无首屏导出提示 | `BlankStartDialog.tsx`、`createBlankDocument`、E2E `starts from an empty canvas...` |
 | 多页官网 | 页面 tab、添加页面、每页独立文档、整站 ZIP | `frontend/src/store/project.ts`、`e2e/cloud.spec.ts` |
 | 登录与跨设备 | JWT 注册/登录/刷新；云端项目；PC 保存后同账号重新打开 | `backend/src/main/java/com/gantry/auth`、`frontend/src/lib/api.ts`、`cloudSave.ts` |
 | 生成要求登录 | 未登录点击导出弹出登录；登录后才生成 HTML/ZIP | E2E `requires login before generating or exporting` |
@@ -42,18 +43,18 @@
 ```bash
 cd frontend
 npx tsc --noEmit          # 通过
-npx vitest run            # 23 files, 147 tests passed
-npx playwright test       # 9 passed (35.6s)
+npx vitest run            # 23 files, 149 tests passed
+npx playwright test       # 30 passed (2.1m)
 npm run lint              # 0 error, 0 warning
-npm run build             # 1665 modules
+npm run build             # 1666 modules
 ```
 
 前端构建体积：
 
-- 首屏 `index` 478.44 kB / gzip 159.60 kB
-- 按需 `Builder` 366.10 kB / gzip 107.08 kB，`Gallery` 16.35 kB / gzip 5.11 kB
+- 首屏 `index` 482.46 kB / gzip 160.83 kB
+- 按需 `Builder` 369.16 kB / gzip 107.82 kB，`Gallery` 16.72 kB / gzip 5.18 kB
 - `ImageCropper` 3.27 kB / gzip 1.42 kB
-- CSS 104.88 kB / gzip 19.50 kB
+- CSS 109.30 kB / gzip 20.23 kB
 
 后端：
 
@@ -88,6 +89,7 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 - `screenshots/builder-video-story.png`：视频贯穿首屏与数字/能力/产品章节
 - `screenshots/builder-inline-sync.png`：画布标题编辑与右侧检查器实时同步
 - `screenshots/builder-tooltip.png`：字段悬浮解释（媒体类型/播放方式/关键帧操作）
+- `screenshots/blank-start.png`、`blank-canvas.png`、`blank-catalog.png`、`blank-built.png`：从空白开始、首屏选择、区块目录、空白画布成品
 - `screenshots/footer-check.png`：页脚与其它区块共用 section gutter
 - `screenshots/preview-mobile.png`
 
@@ -97,7 +99,7 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 2. 云端保存是显式按钮，不是自动保存；冲突时由 `expectedVersion` 返回 409。
 3. 支付未接；Pro 仍是本地演示 + 服务端 plan 字段，没有真实订单。
 4. 编辑器是桌面工作台；手机用于查看/预览，不提供完整编辑。
-5. 首屏 JS 约 478.44 kB；Builder 与 Gallery 已拆包，模板数据仍可继续懒加载。
+5. 首屏 JS 约 482.46 kB；Builder 与 Gallery 已拆包，模板数据仍可继续懒加载。
 6. 后端默认 H2 文件库；生产需切 PostgreSQL 并配置真实 JWT secret。
 7. 七语言 UI 已覆盖导航、首屏、筛选、登录、云端、Builder 顶栏与导出面板；Inspector 字段与模板正文仍以中文/英文为主，五语内容翻译待补。
 

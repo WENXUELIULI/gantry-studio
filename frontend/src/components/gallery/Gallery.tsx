@@ -27,6 +27,7 @@ import { LocaleSwitcher } from '../i18n/LocaleSwitcher';
 
 interface GalleryProps {
   onOpen: (templateId: string) => void;
+  onBlank?: () => void;
   user?: { displayName: string } | null;
   onCloud?: () => void;
   onAuth?: () => void;
@@ -172,7 +173,7 @@ function TemplateCard({
 
 const PAGE_SIZE = 24;
 
-export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
+export function Gallery({ onOpen, onBlank, user, onCloud, onAuth }: GalleryProps) {
   const { t } = useTranslation();
   const [market, setMarket] = useState<MarketId | 'all'>('all');
   const [industry, setIndustry] = useState<IndustryId | 'all'>('all');
@@ -270,6 +271,16 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
               <a className="gallery-btn gallery-btn--ghost" href="#how">
                 {t('gallery.how')}
               </a>
+              {onBlank && (
+                <button
+                  type="button"
+                  className="gallery-btn gallery-btn--ghost"
+                  onClick={onBlank}
+                >
+                  <Sparkles size={15} strokeWidth={1.6} />
+                  从空白开始
+                </button>
+              )}
             </div>
             <div className="gallery-stats">
               <div>
@@ -361,7 +372,15 @@ export function Gallery({ onOpen, user, onCloud, onAuth }: GalleryProps) {
               </div>
               <h2 className="gallery-h2">{t('gallery.libraryTitle')}</h2>
             </div>
-            <p>{t('gallery.libraryLead')}</p>
+            <div className="library-head-side">
+              <p>{t('gallery.libraryLead')}</p>
+              {onBlank && (
+                <button type="button" className="library-blank" onClick={onBlank}>
+                  <Sparkles size={15} strokeWidth={1.6} />
+                  不用模板，从空白搭
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="library-controls">

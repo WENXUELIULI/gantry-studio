@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useBuilderStore, STORAGE_KEY } from './builder';
+import { createBlankDocument } from '../lib/site';
 import type { HeroSection, SiteDocument } from '../types/site';
 
 function resetStore() {
@@ -203,6 +204,44 @@ describe('builder store', () => {
     expect(useBuilderStore.getState().view).toBe('gallery');
     expect(useBuilderStore.getState().doc).not.toBeNull();
     expect(localStorage.getItem(STORAGE_KEY)).toContain('truss-precision');
+  });
+
+  it('builds a blank document from a hero and section variants', () => {
+    useBuilderStore.getState().openBlankDocument(
+      createBlankDocument({
+        name: '空白工厂',
+        market: 'cn',
+        locale: 'zh-CN',
+        industry: 'hardware',
+        themeId: 'hot-rolled',
+      }),
+    );
+    expect(useBuilderStore.getState().doc?.sections).toHaveLength(0);
+
+    useBuilderStore.getState().addSection('hero', { heroKind: 'video-story' });
+    const withHero = useBuilderStore.getState().doc as SiteDocument;
+    expect(withHero.sections).toHaveLength(1);
+    expect(withHero.sections[0].type).toBe('hero');
+    expect((withHero.sections[0] as HeroSection).heroKind).toBe('video-story');
+    expect((withHero.sections[0] as HeroSection).media.kind).toBe('video');
+
+    useBuilderStore.getState().addSection('capabilities', { variant: 'grid' });
+    const withCapability = useBuilderStore.getState().doc as SiteDocument;
+    const capability = withCapability.sections[1];
+    expect(capability.type).toBe('capabilities');
+    expect(capability.type === 'capabilities' && capability.variant).toBe('grid');
+    expect(withCapability.nav).toHaveLength(1);
+
+    useBuilderStore.getState().addSection('footer');
+    const withFooter = useBuilderStore.getState().doc as SiteDocument;
+    expect(withFooter.sections.at(-1)?.type).toBe('footer');
+
+    useBuilderStore.getState().addSection('footer');
+    expect(useBuilderStore.getState().doc?.sections).toHaveLength(3);
+
+    const heroId = withHero.sections[0].id;
+    useBuilderStore.getState().removeSection(heroId);
+    expect(useBuilderStore.getState().doc?.sections).toHaveLength(2);
   });
 
   it('resets the project and clears the draft', () => {

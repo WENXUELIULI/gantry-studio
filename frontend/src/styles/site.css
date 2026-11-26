@@ -1564,6 +1564,10 @@
   min-height: 240px;
 }
 
+.capabilities--grid .capability-list > .capability:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
 .capabilities--grid .capability-title {
   margin: 28px 0 12px;
 }

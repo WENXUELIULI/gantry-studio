@@ -9,8 +9,9 @@ import type {
   Theme,
 } from '../types/site';
 import { TEMPLATE_BY_ID } from '../data/templates';
+import { SECTION_LABELS } from '../types/site';
 import { createId } from '../lib/id';
-import { createSection } from '../lib/sections';
+import { createSection, type SectionCreateOptions } from '../lib/sections';
 import { createDocumentFromTemplate } from '../lib/site';
 import type { LocaleCode } from '../i18n/locales';
 
@@ -36,6 +37,7 @@ interface BuilderState {
   editSectionId: string | null;
   editBaseline: SiteDocument | null;
   openTemplate: (templateId: string) => void;
+  openBlankDocument: (doc: SiteDocument) => void;
   replaceDocument: (doc: SiteDocument) => void;
   closeProject: () => void;
   selectSection: (id: string | null) => void;
@@ -55,7 +57,7 @@ interface BuilderState {
   setDocumentLocale: (locale: LocaleCode) => void;
   moveSection: (id: string, direction: -1 | 1) => void;
   toggleSection: (id: string) => void;
-  addSection: (type: SectionType) => void;
+  addSection: (type: SectionType, options?: SectionCreateOptions) => void;
   duplicateSection: (id: string) => void;
   removeSection: (id: string) => void;
   undo: () => void;
@@ -145,6 +147,22 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
       const template = TEMPLATE_BY_ID[templateId];
       if (!template) return;
       const doc = createDocumentFromTemplate(template);
+      const savedAt = persist(doc);
+      set({
+        doc: { ...doc, updatedAt: savedAt },
+        view: 'builder',
+        selectedId: doc.sections[0]?.id ?? null,
+        scrollRequest: null,
+        device: 'desktop',
+        history: [],
+        future: [],
+        savedAt,
+        editSectionId: null,
+        editBaseline: null,
+      });
+    },
+
+    openBlankDocument: (doc) => {
       const savedAt = persist(doc);
       set({
         doc: { ...doc, updatedAt: savedAt },
@@ -288,17 +306,39 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
       }));
     },
 
-    addSection: (type) => {
+    addSection: (type, options) => {
       withDoc((doc) => {
-        const section = createSection(type, doc.sections);
+        if (type === 'hero' && doc.sections.some((item) => item.type === 'hero')) {
+          return null;
+        }
+        if (type === 'footer' && doc.sections.some((item) => item.type === 'footer')) {
+          return null;
+        }
+        const section = createSection(type, doc.sections, options);
         const footerIndex = doc.sections.findIndex(
           (item) => item.type === 'footer',
         );
         const insertAt = footerIndex < 0 ? doc.sections.length : footerIndex;
         const sections = [...doc.sections];
         sections.splice(insertAt, 0, section);
-        set({ selectedId: section.id });
-        return { ...doc, sections };
+        const nav =
+          type === 'hero' || type === 'footer' || doc.nav.length >= 4
+            ? doc.nav
+            : [
+                ...doc.nav,
+                {
+                  label:
+                    section.title.split('\n')[0]?.trim() ||
+                    SECTION_LABELS[type],
+                  href: `#${section.id}`,
+                  kind: 'section' as const,
+                },
+              ];
+        set({
+          selectedId: section.id,
+          scrollRequest: { id: section.id, token: Date.now() },
+        });
+        return { ...doc, sections, nav };
       });
     },
 
@@ -321,12 +361,14 @@ export const useBuilderStore = create<BuilderState>()((set, get) => {
     removeSection: (id) => {
       withDoc((doc) => {
         const section = doc.sections.find((item) => item.id === id);
-        if (!section || section.type === 'hero') return null;
+        if (!section) return null;
+        if (section.type === 'hero' && doc.templateId !== 'blank') return null;
         const sections = doc.sections.filter((item) => item.id !== id);
+        const nav = doc.nav.filter((item) => item.href !== `#${id}`);
         if (get().selectedId === id) {
           set({ selectedId: sections[0]?.id ?? null });
         }
-        return { ...doc, sections };
+        return { ...doc, sections, nav };
       });
     },
 

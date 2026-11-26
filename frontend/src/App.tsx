@@ -4,6 +4,8 @@ import { useProjectStore } from './store/project';
 import { readSession, type AuthSession } from './lib/api';
 import { AuthDialog } from './components/auth/AuthDialog';
 import { CloudProjects } from './components/cloud/CloudProjects';
+import { BlankStartDialog } from './components/gallery/BlankStartDialog';
+import { createBlankDocument, type BlankDocumentOptions } from './lib/site';
 
 const Gallery = lazy(() =>
   import('./components/gallery/Gallery').then((module) => ({
@@ -28,8 +30,10 @@ export default function App() {
   const view = useBuilderStore((state) => state.view);
   const doc = useBuilderStore((state) => state.doc);
   const openTemplate = useBuilderStore((state) => state.openTemplate);
+  const openBlankDocument = useBuilderStore((state) => state.openBlankDocument);
   const [session, setSession] = useState<AuthSession | null>(() => readSession());
   const [authOpen, setAuthOpen] = useState(false);
+  const [blankOpen, setBlankOpen] = useState(false);
   const [cloudOpen, setCloudOpen] = useState(false);
 
   useEffect(() => {
@@ -51,6 +55,13 @@ export default function App() {
     if (next) useProjectStore.getState().startFromDocument(next);
   };
 
+  const handleBlank = (options: BlankDocumentOptions) => {
+    const doc = createBlankDocument(options);
+    setBlankOpen(false);
+    openBlankDocument(doc);
+    useProjectStore.getState().startFromDocument(doc);
+  };
+
   return (
     <Suspense fallback={<Loading />}>
       {view === 'builder' && doc ? (
@@ -58,11 +69,17 @@ export default function App() {
       ) : (
         <Gallery
           onOpen={handleOpen}
+          onBlank={() => setBlankOpen(true)}
           user={session?.user ?? null}
           onCloud={() => (session ? setCloudOpen(true) : setAuthOpen(true))}
           onAuth={() => setAuthOpen(true)}
         />
       )}
+      <BlankStartDialog
+        open={blankOpen}
+        onClose={() => setBlankOpen(false)}
+        onCreate={handleBlank}
+      />
       <AuthDialog
         open={authOpen}
         onClose={() => setAuthOpen(false)}

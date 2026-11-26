@@ -1500,6 +1500,14 @@ function ExportPanel() {
   if (!doc) return null;
   const stats = documentStats(doc);
   const sourceUnlocked = canExportSource(plan);
+  const hasHero = doc.sections.some((section) => section.type === 'hero');
+
+  const requireContent = () => {
+    if (hasHero) return true;
+    setStatus('error');
+    setMessage('请先添加首屏，再生成或导出。');
+    return false;
+  };
 
   const requireLogin = () => {
     if (session) return true;
@@ -1521,6 +1529,7 @@ function ExportPanel() {
   };
 
   const handleDownload = async () => {
+    if (!requireContent()) return;
     if (!requireLogin()) return;
     setStatus('working');
     setMessage('正在内嵌图片与视频…');
@@ -1542,6 +1551,7 @@ function ExportPanel() {
   };
 
   const handleDownloadSite = async () => {
+    if (!requireContent()) return;
     if (!requireLogin()) return;
     setStatus('working');
     setMessage('正在打包整站页面…');
@@ -1562,6 +1572,7 @@ function ExportPanel() {
   };
 
   const handleCopyHtml = async () => {
+    if (!requireContent()) return;
     if (!requireLogin()) return;
     setStatus('working');
     setMessage('正在生成并复制…');
@@ -1597,6 +1608,13 @@ function ExportPanel() {
           >
             去登录
           </button>
+        </div>
+      )}
+
+      {!hasHero && (
+        <div className="export-login-note is-warning">
+          <Lock size={13} />
+          <p>空白画布还没有首屏。先添加首屏，再生成或导出。</p>
         </div>
       )}
 

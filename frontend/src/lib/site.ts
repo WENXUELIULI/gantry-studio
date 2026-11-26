@@ -1,10 +1,44 @@
 import type {
   HeroSection,
+  IndustryId,
+  MarketId,
   SiteDocument,
   SiteSection,
+  StyleId,
   TemplateDefinition,
 } from '../types/site';
+import type { LocaleCode } from '../i18n/locales';
+import { THEME_BY_ID } from '../data/themes';
 import { createId } from './id';
+
+export interface BlankDocumentOptions {
+  name: string;
+  market: MarketId;
+  locale: LocaleCode;
+  industry: IndustryId;
+  style?: StyleId;
+  themeId: string;
+}
+
+export function createBlankDocument(
+  options: BlankDocumentOptions,
+): SiteDocument {
+  const theme = THEME_BY_ID[options.themeId] ?? THEME_BY_ID['hot-rolled'];
+  return {
+    id: createId('site'),
+    code: `BLANK-${new Date().getFullYear()}`,
+    name: options.name.trim() || '未命名官网',
+    templateId: 'blank',
+    market: options.market,
+    locale: options.locale,
+    industry: options.industry,
+    style: options.style ?? 'industrial-editorial',
+    theme: { ...theme },
+    nav: [],
+    sections: [],
+    updatedAt: new Date().toISOString(),
+  };
+}
 
 export function cloneSections(sections: SiteSection[]): SiteSection[] {
   return structuredClone(sections);

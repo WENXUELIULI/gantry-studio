@@ -160,6 +160,39 @@ test.describe('template gallery', () => {
   });
 });
 
+test.describe('blank site', () => {
+  test('starts from an empty canvas and builds a hero, section and footer', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: '从空白开始' }).first().click();
+    await page.getByLabel('项目名称 / NAME').fill('空白测试工厂');
+    await page.getByRole('button', { name: '进入空白画布' }).click();
+
+    await expect(page.locator('.blank-stage')).toBeVisible();
+    await expect(page.locator('.blank-hero-grid button')).toHaveCount(7);
+    await expect(page.locator('.rail-section')).toHaveCount(0);
+
+    await page.getByRole('button', { name: '视频长镜头' }).click();
+    await expect(page.locator('.rail-section')).toHaveCount(1);
+
+    await page.getByRole('button', { name: '添加区块' }).click();
+    await page.getByRole('button', { name: '能力矩阵 · 卡片' }).click();
+    await expect(page.locator('.rail-section')).toHaveCount(2);
+    await expect
+      .poll(() =>
+        page
+          .locator('.device-screen .site-scroll')
+          .evaluate((node) => node.scrollTop),
+      )
+      .toBeGreaterThan(100);
+
+    await page.getByRole('button', { name: '添加区块' }).click();
+    await page.getByRole('button', { name: '页脚' }).click();
+    await expect(page.locator('.rail-section')).toHaveCount(3);
+  });
+});
+
 test.describe('builder', () => {
   test('requires login before generating or exporting', async ({ page }) => {
     await page.goto('/');

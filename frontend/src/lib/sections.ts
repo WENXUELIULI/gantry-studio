@@ -2,6 +2,7 @@ import type {
   Capability,
   CtaSection,
   FooterSection,
+  HeroKind,
   HeroSection,
   Metric,
   ProcessStep,
@@ -12,6 +13,11 @@ import type {
 import { uniqueSectionId } from './id';
 
 const A = '/assets';
+
+export interface SectionCreateOptions {
+  heroKind?: HeroKind;
+  variant?: string;
+}
 
 const metrics: Metric[] = [
   { value: '12', label: '年行业经验', note: 'Since 2014' },
@@ -43,27 +49,42 @@ const process: ProcessStep[] = [
 export function createSection(
   type: SectionType,
   existing: { id: string }[],
+  options: SectionCreateOptions = {},
 ): SiteSection {
   const id = uniqueSectionId(type, existing);
 
+  const capabilitiesVariant =
+    options.variant === 'grid' || options.variant === 'sticky'
+      ? options.variant
+      : 'rows';
+  const productsVariant =
+    options.variant === 'index' || options.variant === 'stage'
+      ? options.variant
+      : 'cards';
+
   switch (type) {
     case 'hero': {
+      const heroKind = options.heroKind ?? 'split-editorial';
+      const isFilm = heroKind === 'video-scrub' || heroKind === 'video-story';
       const hero: HeroSection = {
         id,
         type: 'hero',
         visible: true,
         eyebrow: 'NEW SITE / 2026',
-        title: '把复杂的产品，\n讲成一句人话。',
-        body: '从行业、风格到首屏叙事，选择一个起点，然后把它改成你的。',
+        title: '复杂产品，\n讲清楚。',
+        body: '从一个空白页开始，把首屏、区块和内容搭成你的官网。',
         tone: 'light',
-        heroKind: 'split-editorial',
-        media: { src: `${A}/factory-01.jpg`, alt: '工业产线' },
+        heroKind,
+        media: isFilm
+          ? { src: `${A}/truss-loop.webm`, alt: '工业影片', kind: 'video' }
+          : { src: `${A}/factory-01.jpg`, alt: '工业产线' },
         collage: [
           { src: `${A}/factory-01.jpg`, alt: '焊接产线' },
           { src: `${A}/metal-01.jpg`, alt: '金属加工' },
           { src: `${A}/engineer-01.jpg`, alt: '工程师' },
           { src: `${A}/pipes-01.jpg`, alt: '管路' },
         ],
+        videoPlayback: isFilm ? 'scrub' : undefined,
         primaryCta: '开始合作',
         secondaryCta: '查看产品',
         location: '中国 · 制造现场',
@@ -95,7 +116,7 @@ export function createSection(
         title: '我们做的，\n不止一道工序。',
         body: '把能力拆成可解释的模块，让采购和技术都能看懂。',
         items: capabilities,
-        variant: 'rows',
+        variant: capabilitiesVariant,
       };
     case 'products':
       return {
@@ -106,7 +127,7 @@ export function createSection(
         title: '产品，\n按工况选。',
         body: '不堆 SKU，先讲清楚每一类产品解决什么问题。',
         items: products,
-        variant: 'cards',
+        variant: productsVariant,
       };
     case 'process':
       return {

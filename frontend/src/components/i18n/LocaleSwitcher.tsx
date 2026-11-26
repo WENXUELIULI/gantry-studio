@@ -13,6 +13,7 @@ export function LocaleSwitcher({ compact = false, onChange }: LocaleSwitcherProp
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const switchTimer = useRef<number | null>(null);
   const current = resolveLocale(i18n.language);
   const currentLocale = LOCALES.find((locale) => locale.code === current) ?? LOCALES[0];
 
@@ -32,13 +33,24 @@ export function LocaleSwitcher({ compact = false, onChange }: LocaleSwitcherProp
     };
   }, [open]);
 
+  useEffect(() => {
+    return () => {
+      if (switchTimer.current !== null) {
+        window.clearTimeout(switchTimer.current);
+      }
+    };
+  }, []);
+
   const handleChange = (value: string) => {
     const next = resolveLocale(value);
     document.documentElement.classList.add('locale-switching');
-    window.setTimeout(
-      () => document.documentElement.classList.remove('locale-switching'),
-      260,
-    );
+    if (switchTimer.current !== null) {
+      window.clearTimeout(switchTimer.current);
+    }
+    switchTimer.current = window.setTimeout(() => {
+      document.documentElement.classList.remove('locale-switching');
+      switchTimer.current = null;
+    }, 260);
     void changeLocale(next);
     onChange?.(next);
     setOpen(false);

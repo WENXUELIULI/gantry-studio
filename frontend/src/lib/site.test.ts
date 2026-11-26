@@ -4,6 +4,7 @@ import { INDUSTRIES, STYLES } from '../data/taxonomy';
 import {
   cloneSections,
   countWords,
+  createBlankDocument,
   createDocumentFromTemplate,
   documentStats,
   findHero,
@@ -51,6 +52,24 @@ describe('createDocumentFromTemplate', () => {
     const document = createDocumentFromTemplate(template);
     expect(document.sections).not.toBe(template.sections);
     expect(document.sections[0]).not.toBe(template.sections[0]);
+  });
+});
+
+describe('createBlankDocument', () => {
+  it('starts with no sections and no navigation', () => {
+    const document = createBlankDocument({
+      name: '空白工厂',
+      market: 'cn',
+      locale: 'zh-CN',
+      industry: 'hardware',
+      themeId: 'hot-rolled',
+    });
+    expect(document.templateId).toBe('blank');
+    expect(document.name).toBe('空白工厂');
+    expect(document.sections).toEqual([]);
+    expect(document.nav).toEqual([]);
+    expect(document.theme.id).toBe('hot-rolled');
+    expect(document.locale).toBe('zh-CN');
   });
 });
 

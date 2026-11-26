@@ -23,10 +23,42 @@ import { saveProjectToCloud } from '../../lib/cloudSave';
 import { readSession } from '../../lib/api';
 import { SiteRenderer } from '../site/SiteRenderer';
 import { Inspector, type InspectorTab } from './Inspector';
-import { SECTION_LABELS, SECTION_TYPES, type SectionType } from '../../types/site';
+import { SECTION_LABELS, type SectionType } from '../../types/site';
 import { documentStats } from '../../lib/site';
 import { prefersReducedMotion } from '../../lib/scroll';
+import { HERO_KINDS } from '../../data/taxonomy';
 import { LocaleSwitcher } from '../i18n/LocaleSwitcher';
+
+const SECTION_GROUPS: {
+  label: string;
+  items: { type: SectionType; variant?: string; label: string; note: string }[];
+}[] = [
+  {
+    label: '数据与能力',
+    items: [
+      { type: 'metrics', label: '数字凭证', note: '四个可验证指标' },
+      { type: 'capabilities', variant: 'rows', label: '能力矩阵 · 行式', note: '适合采购阅读' },
+      { type: 'capabilities', variant: 'grid', label: '能力矩阵 · 卡片', note: '三列能力卡' },
+      { type: 'capabilities', variant: 'sticky', label: '能力矩阵 · 吸附', note: '标题随滚动停留' },
+    ],
+  },
+  {
+    label: '产品与过程',
+    items: [
+      { type: 'products', variant: 'cards', label: '产品系列 · 图片卡', note: '最直观的产品墙' },
+      { type: 'products', variant: 'index', label: '产品系列 · 索引', note: '像目录一样阅读' },
+      { type: 'products', variant: 'stage', label: '产品系列 · 舞台', note: '首个产品放大' },
+      { type: 'process', label: '交付流程', note: '四个节点的时间轴' },
+    ],
+  },
+  {
+    label: '信任与转化',
+    items: [
+      { type: 'proof', label: '客户证言', note: '引语、数字与客户名单' },
+      { type: 'cta', label: '行动召唤', note: '页面末尾的转化区' },
+    ],
+  },
+];
 
 function PageTabs() {
   const { t } = useTranslation();
@@ -121,6 +153,12 @@ function SectionRail() {
   const [adding, setAdding] = useState(false);
   if (!doc) return null;
   const stats = documentStats(doc);
+  const hasHero = doc.sections.some((section) => section.type === 'hero');
+  const hasFooter = doc.sections.some((section) => section.type === 'footer');
+  const add = (type: SectionType, options?: { heroKind?: (typeof HERO_KINDS)[number]['id']; variant?: string }) => {
+    addSection(type, options);
+    setAdding(false);
+  };
 
   return (
     <aside className="rail">
@@ -209,19 +247,54 @@ function SectionRail() {
           添加区块
         </button>
         {adding && (
-          <div className="add-menu">
-            {SECTION_TYPES.filter((type) => type !== 'hero' && type !== 'footer').map((type: SectionType) => (
-              <button
-                type="button"
-                key={type}
-                onClick={() => {
-                  addSection(type);
-                  setAdding(false);
-                }}
-              >
-                {SECTION_LABELS[type]}
-              </button>
+          <div className="add-menu add-menu--catalog">
+            {!hasHero && (
+              <div className="add-group">
+                <span className="add-group-label mono">首屏 / HERO</span>
+                <div className="add-grid">
+                  {HERO_KINDS.map((kind) => (
+                    <button
+                      type="button"
+                      key={kind.id}
+                      aria-label={kind.label}
+                      onClick={() => add('hero', { heroKind: kind.id })}
+                    >
+                      <strong>{kind.label}</strong>
+                      <small>{kind.note}</small>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {SECTION_GROUPS.map((group) => (
+              <div className="add-group" key={group.label}>
+                <span className="add-group-label mono">{group.label}</span>
+                <div className="add-grid">
+                  {group.items.map((item) => (
+                    <button
+                      type="button"
+                      key={`${item.type}-${item.variant ?? 'default'}`}
+                      aria-label={item.label}
+                      onClick={() => add(item.type, { variant: item.variant })}
+                    >
+                      <strong>{item.label}</strong>
+                      <small>{item.note}</small>
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
+            {!hasFooter && (
+              <div className="add-group">
+                <span className="add-group-label mono">结束 / FOOTER</span>
+                <div className="add-grid">
+                  <button type="button" aria-label="页脚" onClick={() => add('footer')}>
+                    <strong>页脚</strong>
+                    <small>品牌、栏目与版权</small>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -244,6 +317,7 @@ function Canvas() {
   const switchPage = useProjectStore((state) => state.switchPage);
   const selectSection = useBuilderStore((state) => state.selectSection);
   const revealSection = useBuilderStore((state) => state.revealSection);
+  const addSection = useBuilderStore((state) => state.addSection);
   const setZoom = useBuilderStore((state) => state.setZoom);
   const updateSection = useBuilderStore((state) => state.updateSection);
   const beginSectionEdit = useBuilderStore((state) => state.beginSectionEdit);
@@ -357,23 +431,49 @@ function Canvas() {
           </div>
           <div className="device-notch" />
           <div className="device-screen">
-            <SiteRenderer
-              doc={doc}
-              device={device}
-              editable
-              selectedId={selectedId}
-              onSelect={selectSection}
-              onNavigateSection={(id) => revealSection(id)}
-              onNavigatePage={(path) => {
-                const page = pages.find((item) => item.path === path);
-                if (page) switchPage(page.key);
-              }}
-              onEditSection={(id, field, value) => {
-                updateSection(id, (section) => ({ ...section, [field]: value }) as typeof section);
-              }}
-              onEditStart={beginSectionEdit}
-              onEditEnd={endSectionEdit}
-            />
+            {doc.sections.length === 0 ? (
+              <div className="blank-stage">
+                <div className="blank-stage-head">
+                  <span className="mono">BLANK CANVAS / 00</span>
+                  <h2>先选一个开场。</h2>
+                  <p>不用模板。选一种首屏叙事，再往下逐个添加区块。</p>
+                </div>
+                <div className="blank-hero-grid">
+                  {HERO_KINDS.map((kind) => (
+                    <button
+                      type="button"
+                      key={kind.id}
+                      onClick={() => addSection('hero', { heroKind: kind.id })}
+                    >
+                      <span className="mono">{kind.labelEn}</span>
+                      <strong>{kind.label}</strong>
+                      <small>{kind.note}</small>
+                    </button>
+                  ))}
+                </div>
+                <p className="blank-stage-note mono">
+                  也可以从左侧「添加区块」随时插入首屏、能力、产品、流程和页脚。
+                </p>
+              </div>
+            ) : (
+              <SiteRenderer
+                doc={doc}
+                device={device}
+                editable
+                selectedId={selectedId}
+                onSelect={selectSection}
+                onNavigateSection={(id) => revealSection(id)}
+                onNavigatePage={(path) => {
+                  const page = pages.find((item) => item.path === path);
+                  if (page) switchPage(page.key);
+                }}
+                onEditSection={(id, field, value) => {
+                  updateSection(id, (section) => ({ ...section, [field]: value }) as typeof section);
+                }}
+                onEditStart={beginSectionEdit}
+                onEditEnd={endSectionEdit}
+              />
+            )}
           </div>
         </div>
         <span className="canvas-hint">CLICK A SECTION TO EDIT · AUTO-SAVED</span>
