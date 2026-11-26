@@ -385,6 +385,25 @@ test.describe('builder', () => {
     await expect(item).toHaveText('画布直改的能力项');
   });
 
+  test('keeps the selected section visible while editing inspector fields', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await openTemplate(page);
+
+    const mediaType = page.getByRole('combobox', { name: '媒体类型' });
+    await mediaType.scrollIntoViewIfNeeded();
+    await mediaType.focus();
+
+    const header = page.locator('.inspector-title').first();
+    await expect(header).toContainText('首屏');
+    await expect
+      .poll(() => header.evaluate((node) => getComputedStyle(node).position))
+      .toBe('sticky');
+    const box = await header.boundingBox();
+    expect(box?.y ?? 999).toBeLessThan(190);
+  });
+
   test('scrolls the canvas to the section selected in the rail', async ({ page }) => {
     await page.goto('/');
     await openTemplate(page);

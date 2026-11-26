@@ -1971,6 +1971,32 @@ a {
   padding: 14px;
 }
 
+.inspector-scroll .inspector-title {
+  position: sticky;
+  top: -14px;
+  z-index: 8;
+  margin: -14px -14px 14px;
+  padding: 14px 14px 12px;
+  background: color-mix(in srgb, var(--shell-paper) 94%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.inspector-scroll:focus-within .inspector-title {
+  border-color: var(--shell-accent);
+  box-shadow: inset 0 -2px 0 var(--shell-accent);
+}
+
+.inspector-scroll:focus-within .inspector-title h3::after {
+  content: '正在编辑';
+  margin-left: 8px;
+  color: var(--shell-accent);
+  font-family: var(--shell-mono);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  vertical-align: middle;
+}
+
 .inspector-title {
   display: flex;
   align-items: flex-start;

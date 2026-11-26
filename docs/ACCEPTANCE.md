@@ -12,7 +12,7 @@
 - 桌面/手机双视图、滚动视频、3–4 图拼贴、组件级样式、图片焦点/独立裁剪均可用。
 - 七语言 UI（zh-CN / en / ar / tr / he / fa / ur）与 RTL；生成站点可设置 locale，导出写入 lang/dir。
 - 登录、云端项目、多页编辑、PC → 手机接力、单页 HTML / 整站 ZIP 导出已打通。
-- 前端 149 个单元测试、30 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
+- 前端 149 个单元测试、31 条 Playwright E2E；后端 4 条 Spring Boot 集成测试；类型检查、Lint、生产构建全部通过。
 
 尚未完成：真实源码（React/Java）生成、在线支付、手机端编辑工作台。JSON 项目源文件当前是页面文档，不是生成出来的工程源码。
 
@@ -44,7 +44,7 @@
 cd frontend
 npx tsc --noEmit          # 通过
 npx vitest run            # 23 files, 149 tests passed
-npx playwright test       # 30 passed (2.1m)
+npx playwright test       # 31 passed (2.4m)
 npm run lint              # 0 error, 0 warning
 npm run build             # 1666 modules
 ```
@@ -52,9 +52,9 @@ npm run build             # 1666 modules
 前端构建体积：
 
 - 首屏 `index` 482.46 kB / gzip 160.83 kB
-- 按需 `Builder` 369.16 kB / gzip 107.82 kB，`Gallery` 16.72 kB / gzip 5.18 kB
+- 按需 `Builder` 369.16 kB / gzip 107.82 kB，`Gallery` 16.72 kB / gzip 5.19 kB
 - `ImageCropper` 3.27 kB / gzip 1.42 kB
-- CSS 109.30 kB / gzip 20.23 kB
+- CSS 109.90 kB / gzip 20.37 kB
 
 后端：
 
@@ -90,6 +90,7 @@ mvn -B test               # 4 tests, 0 failures, BUILD SUCCESS
 - `screenshots/builder-inline-sync.png`：画布标题编辑与右侧检查器实时同步
 - `screenshots/builder-tooltip.png`：字段悬浮解释（媒体类型/播放方式/关键帧操作）
 - `screenshots/blank-start.png`、`blank-canvas.png`、`blank-catalog.png`、`blank-built.png`：从空白开始、首屏选择、区块目录、空白画布成品
+- `screenshots/builder-inspector-context.png`：检查器标题固定在顶部，输入时显示“正在编辑”
 - `screenshots/footer-check.png`：页脚与其它区块共用 section gutter
 - `screenshots/preview-mobile.png`
 
